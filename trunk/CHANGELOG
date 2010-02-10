@@ -1,0 +1,26 @@
+# v2.2 [2010-02-08]
+
+- Geolocation of messages based on their presence data
+- Ability to purge messages older than X days
+- Ability to delete a message
+- Creating a FOAF profile if not provided
+- Parser for hyperlinks
+- Updated installer
+- Various bugfixes and code-cleaning
+
+# v2.1 [2010-02-04]
+
+- RSS feed for hub owner messages
+- Integration of Twitter timeline
+- Added @reply when replying to a Twitter message
+- Moved #tags mappings to a tabs interface
+- Direct @reply browsing
+- Starring system
+- Various bugfixes
+
+# v2.0 [2010-01-22] 
+
+- Major rewritting of the original SMOB code
+  See http://apassant.net/blog/2010/01/22/smob-v20 for details
+
+

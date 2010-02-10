@@ -1,0 +1,66 @@
+SMOB - a framework for open, distributed and semantic microblog
+===============================================================
+
+SMOB provides a decentralized system for microblogging, consisting of
+various SMOB hubs that interact each others to share messages.
+Each hub also exposes its data in RDFa, and provides ways to link
+microblog post to URIs from the Linking Open Data Cloud.
+
+The code is accessible via Subversion using the following command:
+
+  svn co http://smob.googlecode.com/svn/trunk/
+
+
+Requirements
+------------
+
+1. You need to have a server on the internet to set up the service on - this
+   is like a blog.
+
+2. The server needs to have 
+  - a WWW server with PHP5 or higher.
+  - MySQL 4.0.4 or higher.
+
+3. PHP needs to have the CURL functions.
+  - For example, in Debian the package is called php5-curl or php4-curl
+  - Or, you can download libcurl from http://curl.haxx.se/dlwiz/?type=lib
+
+
+Installation
+------------
+
+1. Checkout or download the SMOB source code and put it in a web server 
+   directory that can be accessed by you as well as by the SMOB servers 
+   on which you want to publish your data / SMOB clients you want to 
+   aggregate, e.g. at http://example.org/smob
+
+2. Go to http://example.org/smob and follow the instructions
+
+3. Enjoy
+
+
+Copyright
+---------
+
+SMOB is (c) 2008 - 2010 DERI, National University of Ireland, Galway
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program as the file LICENSE.txt; if not, please see
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+
+
+Maintainers and contact
+-----------------------
+
+For informations about current maintainers of SMOB and how to contact us,
+as well as reporting bugs and suggesting features improvement, please check
+http://smob.me
