@@ -36,6 +36,20 @@ if(!SMOBTools::check_config()) {
 				$local = "INSERT INTO <".SMOB_ROOT."data/followings> { $follow }";
 				SMOBStore::query($local);
 				SMOBTemplate::header('');
+
+				// Add subscription to the hub
+
+                                $hub_url = "http://pubsubhubbub.appspot.com";
+                                $callback_url = SMOB_ROOT."callback";
+                                $feed = $remote_user.'/rss';
+                                var_dump($callback_url);
+                                var_dump($feed);
+                                // create a new subscriber
+                                $s = new Subscriber($hub_url, $callback_url);
+                                // subscribe to a feed
+                                $s->subscribe($feed);
+
+
 				print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
 				SMOBTemplate::footer();	
 				// And ping to update the followers list remotely
@@ -75,7 +89,17 @@ if(!SMOBTools::check_config()) {
 			SMOBTools::checkAccess($_POST);
 		}
 		$ep = ARC2::getStoreEndpoint(SMOBTools::arc_config());
-		$ep->go();	
+		$ep->go();
+
+	// callback script to process the incoming hub POSTs
+        elseif($t == 'callback') {
+                if($_POST) {
+                        SMOBStore::query("LOAD <$_POST>");
+                        SMOBTemplate::header('');
+                        var_dump($_POST);
+                        print "updated $_POST in local db";
+                        SMOBTemplate::footer();
+                }	
 	} else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);

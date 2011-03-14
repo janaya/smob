@@ -28,4 +28,5 @@ RewriteRule ^remove/follower/(.*)$ index.php?a=remove&t=follower&u=$1 [L,QSA]
 
 RewriteRule ^sparql(.*)$ index.php?t=sparql [L,QSA]
 
+RewriteRule ^callback(.*)$ index.php?t=callback [L,QSA]
 
