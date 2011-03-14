@@ -304,17 +304,26 @@ WHERE {
 	public function notify($action = 'LOAD') {
 		$followers = SMOBTools::followers();
 		if($followers) {
-			foreach($followers as $follow) {
-				// In case some hubs are still in 2.0
-				$uri = $follow['uri'];
-				if (substr($uri, -2) == 'me') {
-					$endpoint = substr($uri, 0, -2) . 'sparql';
-				} else {
-					$endpoint = $uri . 'sparql';
-				}
-				$graph = $this->graph();
-				$query = 'query='.urlencode("$action <$graph>");
-				$res = SMOBTools::do_curl($endpoint, $query);
+			// publishing to the hub
+			// @TODO: needed for each new feed?
+
+			// demo hub on app engine to publish the new feeds
+                        $hub_url = 'http://pubsubhubbub.appspot.com/publish';
+                        // create a new pubsubhubbub publisher
+                        $p = new Publisher($hub_url);
+
+                        // not sending now just the new post but the feed streem 
+                        $topic_url = 'http://smob.rhizomatik.net/me/rss';
+                        // notify the hub that the specified topic_url (ATOM feed) has been updated  
+
+                        var_dump($p->publish_update($topic_url));
+//                      if ($p->publish_update($topic_url)) {
+//                      |  |  print "was successfully published to";
+//                      } else {
+//                      |  |  echo "Ooops...";
+//                      |  |  print_r($p->last_response());
+//                      }
+
 			}
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
