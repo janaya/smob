@@ -3,6 +3,7 @@
 parse_str($_SERVER['QUERY_STRING']);
 
 require_once(dirname(__FILE__).'/lib/smob/SMOB.php'); 
+require_once(dirname(__FILE__).'/lib/subscriber.php');
 
 if(!SMOBTools::check_config()) {
 	$installer = new SMOBInstaller();

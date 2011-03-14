@@ -3,6 +3,7 @@
 /*
 	Representing posts
 */
+include_once(dirname(__FILE__).'/../publisher.php');
 	
 class SMOBPost {
 	
