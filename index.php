@@ -107,7 +107,7 @@ if(!SMOBTools::check_config()) {
 		$ep->go();
 
 	// callback script to process the incoming hub POSTs
-        elseif($t == 'callback') {
+    } elseif($t == 'callback') {
                 if(isset($_GET["hub_challenge"])) {
                         echo $_GET["hub_challenge"];
                         error_log($_GET["hub_challenge"],0);
