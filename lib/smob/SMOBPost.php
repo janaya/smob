@@ -309,23 +309,21 @@ WHERE {
 			// @TODO: needed for each new feed?
 
 			// demo hub on app engine to publish the new feeds
-                        $hub_url = 'http://pubsubhubbub.appspot.com/publish';
-                        // create a new pubsubhubbub publisher
-                        $p = new Publisher($hub_url);
+            $hub_url = 'http://pubsubhubbub.appspot.com/publish';
+            // create a new pubsubhubbub publisher
+            $p = new Publisher($hub_url);
 
-                        // not sending now just the new post but the feed streem 
-                        $topic_url = 'http://smob.rhizomatik.net/me/rss';
-                        // notify the hub that the specified topic_url (ATOM feed) has been updated  
+            // not sending now just the new post but the feed streem 
+            $topic_url = SMOB_ROOT.'me/rss';
+            // notify the hub that the specified topic_url (ATOM feed) has been updated  
 
-                        var_dump($p->publish_update($topic_url));
+            error_log($p->publish_update($topic_url));
 //                      if ($p->publish_update($topic_url)) {
-//                      |  |  print "was successfully published to";
+//                            print "was successfully published to";
 //                      } else {
-//                      |  |  echo "Ooops...";
-//                      |  |  print_r($p->last_response());
+//                            echo "Ooops...";
+//                            print_r($p->last_response());
 //                      }
-
-			}
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
 			} else {

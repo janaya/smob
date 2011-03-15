@@ -31,32 +31,44 @@ if(!SMOBTools::check_config()) {
 				print "<a href='$u'>$u</a> is not a valid Hub, user cannot be added";
 				SMOBTemplate::footer();	
 			} else {
-				// Store the new relationship locally
-				$local_user = SMOBTools::user_uri();			
-				$follow = "<$local_user> sioc:follows <$remote_user> . ";
-				$local = "INSERT INTO <".SMOB_ROOT."data/followings> { $follow }";
-				SMOBStore::query($local);
-				SMOBTemplate::header('');
+		        // @TODO: check that the user were not already a following? 
+			    // Store the new relationship in local repository
+			    $local_user = SMOBTools::user_uri();			
+			    $follow = "<$local_user> sioc:follows <$remote_user> . ";
+			    $local = "INSERT INTO <".SMOB_ROOT."data/followings> { $follow }";
+			    SMOBStore::query($local);
+			    SMOBTemplate::header('');
 
-				// Add subscription to the hub
+			    // Add subscription to the hub
 
-                                $hub_url = "http://pubsubhubbub.appspot.com";
-                                $callback_url = SMOB_ROOT."callback";
-                                $feed = $remote_user.'/rss';
-                                var_dump($callback_url);
-                                var_dump($feed);
-                                // create a new subscriber
-                                $s = new Subscriber($hub_url, $callback_url);
-                                // subscribe to a feed
-                                $s->subscribe($feed);
+                $hub_url = "http://pubsubhubbub.appspot.com";
+                $callback_url = urlencode(SMOB_ROOT."callback");
+                $feed = urlencode($remote_user.'/rss');
+                error_log($callback_url,0);
+                error_log($feed,0);
 
+    //                // create a new subscriber
+    //                $s = new Subscriber($hub_url, $callback_url);
+    //                // subscribe to a feed
+    //                $s->subscribe($feed);
 
-				print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
-				SMOBTemplate::footer();	
-				// And ping to update the followers list remotely
-				$ping = "{$u}add/follower/$local_user";
-				SMOBTools::do_curl($ping);
-			}
+                $ch = curl_init($hub_url);
+                curl_setopt($ch, CURLOPT_POST, TRUE);
+                curl_setopt($ch,CURLOPT_POSTFIELDS,"hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+                $response = curl_exec($ch);
+                $info = curl_getinfo($ch);
+        
+                // all good -- anything in the 200 range 
+                if (substr($info['http_code'],0,1) == "2") {
+                    error_log($response);
+                }
+
+			    print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
+			    SMOBTemplate::footer();	
+			    // And ping to update the followers list remotely
+			    $ping = "{$u}add/follower/$local_user";
+			    SMOBTools::do_curl($ping);
+			 }
 		}
 	}
 	elseif($a && $a == 'remove') {
@@ -69,6 +81,7 @@ if(!SMOBTools::check_config()) {
 			$follow = "<$remote_user> sioc:follows <$local_user> . ";	
 			$local = "DELETE FROM <".SMOB_ROOT."data/followers> { $follow }";
 			SMOBStore::query($local);
+			//@TODO: notify the following?
 		} 
 		// Remove a following
 		elseif($t == 'following') {
@@ -77,6 +90,7 @@ if(!SMOBTools::check_config()) {
 			$follow = "<$local_user> sioc:follows <$remote_user> . ";			
 			$local = "DELETE FROM <".SMOB_ROOT."data/followings> { $follow }";
 			SMOBStore::query($local);
+			//@TODO: notify the follower?
 		}
 		header("Location: ".SMOB_ROOT."${t}s");
 	}	
@@ -94,13 +108,19 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
         elseif($t == 'callback') {
-                if($_POST) {
-                        SMOBStore::query("LOAD <$_POST>");
-                        SMOBTemplate::header('');
-                        var_dump($_POST);
-                        print "updated $_POST in local db";
-                        SMOBTemplate::footer();
-                }	
+                if(isset($_GET["hub_challenge"])) {
+                        echo $_GET["hub_challenge"];
+                        error_log($_GET["hub_challenge"],0);
+                }
+                if(isset($_POST)) {
+                        //@TODO: parse feed
+                        error_log(join(' ', $_POST));
+                //      SMOBStore::query("LOAD <$_POST>");
+                //      SMOBTemplate::header('');
+                  //      var_dump($_POST);
+                //      print "updated $_POST in local db";
+                //      SMOBTemplate::footer();
+                }
 	} else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);
