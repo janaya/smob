@@ -44,7 +44,7 @@ class SMOBFeed {
 
 <channel rdf:about='".SMOB_ROOT."'>
 	<title>$title</title>
-	<link>".SMOB_ROOT."</link>
+	<link rel='hub' href='http://pubsubhubbub.appspot.com'>".SMOB_ROOT."</link>
 	<description>$title</description>
 	<dc:creator>$owner</dc:creator>
 	<dc:date>$ts</dc:date>
