@@ -95,7 +95,8 @@ $form .= '
 			
 	public function header($publisher, $reply_of = null, $ismap = null) {
 		global $type;
-		if(!defined('SMOB_ROOT')) {
+		//if(!defined('SMOB_ROOT')) {
+		if(!defined(SMOB_ROOT)) {
 			define('SMOB_ROOT', '');
 		}
 		if($publisher) {
