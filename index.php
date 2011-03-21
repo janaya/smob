@@ -60,14 +60,15 @@ if(!SMOBTools::check_config()) {
         
                 // all good -- anything in the 200 range 
                 if (substr($info['http_code'],0,1) == "2") {
-                    error_log($response);
+                    error_log($response,0);
                 }
 
 			    print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
 			    SMOBTemplate::footer();	
 			    // And ping to update the followers list remotely
 			    $ping = "{$u}add/follower/$local_user";
-			    SMOBTools::do_curl($ping);
+			    $result = SMOBTools::do_curl($ping);
+			    error_log(join(' ', $result),0)
 			 }
 		}
 	}
@@ -114,7 +115,8 @@ if(!SMOBTools::check_config()) {
                 }
                 if(isset($_POST)) {
                         //@TODO: parse feed
-                        error_log(join(' ', $_POST));
+                        error_log(join(' ', $_POST),0);
+                        error_log($HTTP_RAW_POST_DATA,0);
                 //      SMOBStore::query("LOAD <$_POST>");
                 //      SMOBTemplate::header('');
                   //      var_dump($_POST);
