@@ -317,7 +317,7 @@ WHERE {
             $topic_url = SMOB_ROOT.'me/rss';
             // notify the hub that the specified topic_url (ATOM feed) has been updated  
 
-            error_log($p->publish_update($topic_url));
+            error_log($p->publish_update($topic_url),0);
 //                      if ($p->publish_update($topic_url)) {
 //                            print "was successfully published to";
 //                      } else {
