@@ -68,7 +68,7 @@ if(!SMOBTools::check_config()) {
 			    // And ping to update the followers list remotely
 			    $ping = "{$u}add/follower/$local_user";
 			    $result = SMOBTools::do_curl($ping);
-			    error_log(join(' ', $result),0)
+			    error_log(join(' ', $result),0);
 			 }
 		}
 	}
