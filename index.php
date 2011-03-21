@@ -108,18 +108,17 @@ if(!SMOBTools::check_config()) {
 		$ep->go();
 
 	// callback script to process the incoming hub POSTs
-    } elseif($t == 'callback') {
+	} elseif($t == 'callback') {
                 if(isset($_GET["hub_challenge"])) {
                         echo $_GET["hub_challenge"];
                         error_log($_GET["hub_challenge"],0);
                 }
                 if(isset($_POST)) {
                         //@TODO: parse feed
-                        error_log(join(' ', $_POST),0);
                         error_log($HTTP_RAW_POST_DATA,0);
                 //      SMOBStore::query("LOAD <$_POST>");
                 //      SMOBTemplate::header('');
-                  //      var_dump($_POST);
+                //      var_dump($_POST);
                 //      print "updated $_POST in local db";
                 //      SMOBTemplate::footer();
                 }
