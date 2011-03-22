@@ -112,7 +112,7 @@ function setupSMOB() {
 	$config = "
 define('SMOB_ROOT', '$smob_root');
 define('PURGE', '$purge');
-define('HUB_URL', 'http://pubsubhubbub.appspot.com');
+define('HUB_URL', 'http://pubsubhubbub.appspot.com/');
 ";
 
 	$f = fopen(dirname(__FILE__).'/../config/config.php', 'a');

@@ -43,17 +43,21 @@ if(!SMOBTools::check_config()) {
 
                 // Get the Publisher (following) Hub
 			    $remote_user_feed = $remote_user.'/rss';
+			    error_log("remote user feed",0);
 			    error_log($remote_user_feed,0);
 			    //$result = SMOBTools::do_curl($ping);
 			    //error_log(join(' ', $result),0);
 			    $xml = simplexml_load_file($remote_user_feed);
+			    error_log("xml",0);
                 error_log($xml,0);
                 if(count($xml) == 0)
                     return;
                 $link_attributes = (string) $xml->channel->link->attributes();
                 error_log($link_attributes,0);
+			    error_log("link attributes",0);
                 if($link_attributes['rel'] == 'hub') {
                     $hub_url = $link_attributes['href'];
+			        error_log("hub url",0);
                     error_log($hub_url,0);
                 }
                 //$hub_url = "http://pubsubhubbub.appspot.com";
@@ -95,6 +99,7 @@ if(!SMOBTools::check_config()) {
 			    error_log($u,0);
 			    error_log($remote_user,0);
 			    $ping = "$u/add/follower/$local_user";
+			    error_log($ping,0);
 			    $result = SMOBTools::do_curl($ping);
 			    error_log(join(' ', $result),0);
 			 }
