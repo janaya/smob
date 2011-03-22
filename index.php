@@ -70,7 +70,7 @@ if(!SMOBTools::check_config()) {
                 //$s->subscribe($feed);
 
                 // Reusing do_curl function
-                $result = do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+                $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
                 // all good -- anything in the 200 range 
                 if (substr($result[2],0,1) == "2") {
                     error_log($result[0],0);
@@ -127,12 +127,15 @@ if(!SMOBTools::check_config()) {
 		    // Unsubscribe to the Hub
 
             //$hub_url = "http://pubsubhubbub.appspot.com";
+            //@TODO: following Hub should be stored?, 
+            // otherwise, how we get it again?, getting feed directly from the following
+            // what if it changed?
             $hub_url = HUB_URL;
             $callback_url = urlencode(SMOB_ROOT."callback");
             $feed = urlencode($remote_user.'/rss');
             error_log($callback_url,0);
             error_log($feed,0);
-            $result = do_curl($hub_url, $postfields = "hub.mode=unsubscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+            $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=unsubscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
             // all good -- anything in the 200 range 
             if (substr($result[2],0,1) == "2") {
                 error_log($result[0],0);
