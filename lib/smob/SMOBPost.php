@@ -305,25 +305,21 @@ WHERE {
 	public function notify($action = 'LOAD') {
 		$followers = SMOBTools::followers();
 		if($followers) {
-			// publishing to the hub
-			// @TODO: needed for each new feed?
+			// Publish new feed to the hub
 
-			// demo hub on app engine to publish the new feeds
-            $hub_url = 'http://pubsubhubbub.appspot.com/publish';
-            // create a new pubsubhubbub publisher
+            //$hub_url = 'http://pubsubhubbub.appspot.com/publish';
+            $hub_url = HUB_URL.'/publish';
             $p = new Publisher($hub_url);
-
-            // not sending now just the new post but the feed streem 
             $topic_url = SMOB_ROOT.'me/rss';
             // notify the hub that the specified topic_url (ATOM feed) has been updated  
-
-            error_log($p->publish_update($topic_url),0);
-//                      if ($p->publish_update($topic_url)) {
-//                            print "was successfully published to";
-//                      } else {
-//                            echo "Ooops...";
-//                            print_r($p->last_response());
-//                      }
+            $result = $p->publish_update($topic_url);
+            if ($result) {
+                error_log("was successfully published to",0);
+            } else {
+                error_log("Ooops...",0);
+                error_log($p->last_response(),0);
+            }
+            
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
 			} else {

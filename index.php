@@ -39,33 +39,61 @@ if(!SMOBTools::check_config()) {
 			    SMOBStore::query($local);
 			    SMOBTemplate::header('');
 
-			    // Add subscription to the hub
+			    // Subscribe to the hub
 
-                $hub_url = "http://pubsubhubbub.appspot.com";
+                // Get the Publisher (following) Hub
+			    $remote_user_feed = $remote_user.'/rss';
+			    error_log($remote_user_feed,0);
+			    //$result = SMOBTools::do_curl($ping);
+			    //error_log(join(' ', $result),0);
+			    $xml = simplexml_load_file($remote_user_feed);
+                error_log($xml,0);
+                if(count($xml) == 0)
+                    return;
+                $link_attributes = (string) $xml->channel->link->attributes();
+                error_log($link_attributes,0);
+                if($link_attributes['rel'] == 'hub') {
+                    $hub_url = $link_attributes['href'];
+                    error_log($hub_url,0);
+                }
+                //$hub_url = "http://pubsubhubbub.appspot.com";
+                //$hub_url = HUB_URL;
                 $callback_url = urlencode(SMOB_ROOT."callback");
-                $feed = urlencode($remote_user.'/rss');
+                $feed = urlencode($remote_user_feed);
                 error_log($callback_url,0);
                 error_log($feed,0);
+                
+                // Not using subscriber library as it does not allow async verify
+                // create a new subscriber
+                //$s = new Subscriber($hub_url, $callback_url);
+                /// subscribe to a feed
+                //$s->subscribe($feed);
 
-    //                // create a new subscriber
-    //                $s = new Subscriber($hub_url, $callback_url);
-    //                // subscribe to a feed
-    //                $s->subscribe($feed);
-
-                $ch = curl_init($hub_url);
-                curl_setopt($ch, CURLOPT_POST, TRUE);
-                curl_setopt($ch,CURLOPT_POSTFIELDS,"hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
-                $response = curl_exec($ch);
-                $info = curl_getinfo($ch);
-        
+                // Reusing do_curl function
+                $result = do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
                 // all good -- anything in the 200 range 
-                if (substr($info['http_code'],0,1) == "2") {
-                    error_log($response,0);
+                if (substr($result[2],0,1) == "2") {
+                    error_log($result[0],0);
                 }
+                error_log(join(' ', $result),0);
+                
+                // Directly with curl
+                //$ch = curl_init($hub_url);
+                //curl_setopt($ch, CURLOPT_POST, TRUE);
+                //curl_setopt($ch,CURLOPT_POSTFIELDS,"hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+                //$response = curl_exec($ch);
+                //$info = curl_getinfo($ch);
+        
+                //// all good -- anything in the 200 range 
+                //if (substr($info['http_code'],0,1) == "2") {
+                //    error_log($response,0);
+                //}
 
 			    print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
 			    SMOBTemplate::footer();	
 			    // And ping to update the followers list remotely
+			    error_log($u,0);
+			    error_log($remote_user,0)
 			    $ping = "$u/add/follower/$local_user";
 			    $result = SMOBTools::do_curl($ping);
 			    error_log(join(' ', $result),0);
@@ -92,6 +120,25 @@ if(!SMOBTools::check_config()) {
 			$local = "DELETE FROM <".SMOB_ROOT."data/followings> { $follow }";
 			SMOBStore::query($local);
 			//@TODO: notify the follower?
+		    //$ping = "$u/remove/follower/$local_user";
+		    //$result = SMOBTools::do_curl($ping);
+		    //error_log(join(' ', $result),0);
+		    
+		    // Unsubscribe to the Hub
+
+            //$hub_url = "http://pubsubhubbub.appspot.com";
+            $hub_url = HUB_URL;
+            $callback_url = urlencode(SMOB_ROOT."callback");
+            $feed = urlencode($remote_user.'/rss');
+            error_log($callback_url,0);
+            error_log($feed,0);
+            $result = do_curl($hub_url, $postfields = "hub.mode=unsubscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+            // all good -- anything in the 200 range 
+            if (substr($result[2],0,1) == "2") {
+                error_log($result[0],0);
+            }
+            error_log(join(' ', $result),0);
+            
 		}
 		header("Location: ".SMOB_ROOT."${t}s");
 	}	
@@ -143,7 +190,9 @@ if(!SMOBTools::check_config()) {
                             error_log(join(' ', $result),0);
                         }
 
+
                 }
+        }
 	} else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);
