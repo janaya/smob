@@ -44,28 +44,14 @@ if(!SMOBTools::check_config()) {
 
                 // Get the Publisher (following) Hub
 			    $remote_user_feed = $remote_user.'/rss';
-			    error_log("remote user feed",0);
-			    error_log($remote_user_feed,0);
-			    //$result = SMOBTools::do_curl($ping);
-			    //error_log(join(' ', $result),0);
+			    error_log("remote user feed url: ",0);
 			    $xml = simplexml_load_file($remote_user_feed);
-			    error_log("xml",0);
-                error_log(print_r($xml,1),0);
                 if(count($xml) == 0)
                     return;
-                $link_attributes = (string) $xml->channel->link->attributes();
-			    error_log("link attributes",0);
-                error_log(print_r($link_attributes,1),0);
-                foreach ($link_attributes as $header => $value) {
-                    error_log("$header: $value <br />\n",0);
-                }
-                //$link_attributes = $xml->documentElement->getElementsByTagName('channel')->getElementsByTagName('link')->getAttribute("href");
-			    //error_log("link attributes",0);
-                //error_log($link_attributes,0);
-                
+                $link_attributes = $xml->channel->link->attributes();
                 if($link_attributes['rel'] == 'hub') {
                     $hub_url = $link_attributes['href'];
-			        error_log("hub url",0);
+			        error_log("hub url:",0);
                     error_log($hub_url,0);
                 }
                 //$hub_url = "http://pubsubhubbub.appspot.com";
@@ -80,14 +66,6 @@ if(!SMOBTools::check_config()) {
                 //$s = new Subscriber($hub_url, $callback_url);
                 /// subscribe to a feed
                 //$s->subscribe($feed);
-
-                // Reusing do_curl function
-                $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
-                // all good -- anything in the 200 range 
-                if (substr($result[2],0,1) == "2") {
-                    error_log("Succesfullyl subscribed",0);
-                }
-                error_log(join(' ', $result),0);
                 
                 // Directly with curl
                 //$ch = curl_init($hub_url);
@@ -101,13 +79,20 @@ if(!SMOBTools::check_config()) {
                 //    error_log($response,0);
                 //}
 
+                // Reusing do_curl function
+                $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+                // all good -- anything in the 200 range 
+                if (substr($result[2],0,1) == "2") {
+                    error_log("Succesfullyl subscribed",0);
+                }
+                error_log(join(' ', $result),0);
+
 			    print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
 			    SMOBTemplate::footer();	
+			    
 			    // And ping to update the followers list remotely
-			    error_log($u,0);
-			    error_log($remote_user,0);
+			    // @TODO: This will work only if $u doesn't have /me or something in the end
 			    $ping = "$u/add/follower/$local_user";
-			    error_log($ping,0);
 			    $result = SMOBTools::do_curl($ping);
 			    error_log(join(' ', $result),0);
 			 }
@@ -133,6 +118,7 @@ if(!SMOBTools::check_config()) {
 			$follow = "<$local_user> sioc:follows <$remote_user> . ";			
 			$local = "DELETE FROM <".SMOB_ROOT."data/followings> { $follow }";
 			SMOBStore::query($local);
+			
 			//@TODO: notify the the remote_user to remove local_user as follower?
 		    //$ping = "$u/remove/follower/$local_user";
 		    //$result = SMOBTools::do_curl($ping);
