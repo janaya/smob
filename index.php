@@ -44,7 +44,6 @@ if(!SMOBTools::check_config()) {
 
                 // Get the Publisher (following) Hub
 			    $remote_user_feed = $remote_user.'/rss';
-			    error_log("remote user feed url: ",0);
 			    $xml = simplexml_load_file($remote_user_feed);
                 if(count($xml) == 0)
                     return;
@@ -163,6 +162,7 @@ if(!SMOBTools::check_config()) {
         if(isset($_GET["hub_challenge"])) {
                 // send confirmation to the hub
                 echo $_GET["hub_challenge"];
+                error_log("hub challenge:",0);
                 error_log($_GET["hub_challenge"],0);
         }
         // Getting feed updates from hub
@@ -178,7 +178,6 @@ if(!SMOBTools::check_config()) {
                 // and this subscriber must store the rdf in a url like:
                 // http://smob.rhizomatik.net/data/2011-03-21T18:33:21+01:00
                 $xml = simplexml_load_string($post_data);
-                error_log($xml,0);
                 if(count($xml) == 0)
                     return;
 
