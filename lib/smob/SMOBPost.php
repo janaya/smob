@@ -309,6 +309,8 @@ WHERE {
 
             //$hub_url = 'http://pubsubhubbub.appspot.com/publish';
             $hub_url = HUB_URL.'publish';
+            error_log($hub_url,0);
+
             $p = new Publisher($hub_url);
             $topic_url = SMOB_ROOT.'me/rss';
             // notify the hub that the specified topic_url (ATOM feed) has been updated  
