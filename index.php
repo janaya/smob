@@ -44,7 +44,6 @@ if(!SMOBTools::check_config()) {
 
                 // Get the Publisher (following) Hub
 			    $remote_user_feed = $remote_user.'/rss';
-			    error_log("remote user feed url: ",0);
 			    $xml = simplexml_load_file($remote_user_feed);
                 if(count($xml) == 0)
                     return;
@@ -159,40 +158,29 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
 	} elseif($t == 'callback') {
-	            // Getting hub_challenge from hub after sending it post subscription
-                if(isset($_GET["hub_challenge"])) {
-                        // send confirmation to the hub
-                        echo $_GET["hub_challenge"];
-                        error_log($_GET["hub_challenge"],0);
-                }
-                // Getting feed updates from hub
-                if(isset($_POST)) {
-                        //@TODO: parse feed
 
-
-                        $post_data = file_get_contents("php://input");
-                        error_log($post_data,0);
-                        
-                        // Parsing the new feeds to load in the triple store
-                        // post data will contain something like:
-                        // <item rdf:about="http://smob.rhizomatik.net/post/2011-03-21T18:33:21+01:00">
-                        // and this subscriber must store the rdf in a url like:
-                        // http://smob.rhizomatik.net/data/2011-03-21T18:33:21+01:00
-                        $xml = simplexml_load_string($post_data);
-                        error_log($xml,0);
-                        if(count($xml) == 0)
-                            return;
-
-                        foreach($xml->item as $item) {
-                            error_log($item,0);
-                            $link = (string) $item->link;
-                            error_log($link,0);
-                            $link = str_replace("post", "data", $link);
-                            error_log($link,0);
-                            $result = SMOBStore::query("LOAD <$link>");
-                            error_log(join(' ', $result),0);
-                        }
-
+        // Getting hub_challenge from hub after sending it post subscription
+        if(isset($_GET["hub_challenge"])) {
+                // send confirmation to the hub
+                echo $_GET["hub_challenge"];
+                error_log("hub challenge:",0);
+                error_log($_GET["hub_challenge"],0);
+        }
+        // Getting feed updates from hub
+        if(isset($_POST)) {
+                //error_log($HTTP_RAW_POST_DATA,0);
+                //error_log(join(' ', $_POST),0);
+                $post_data = file_get_contents("php://input");
+                error_log($post_data,0);
+                
+                // Parsing the new feeds to load in the triple store
+                // post data will contain something like:
+                // <item rdf:about="http://smob.rhizomatik.net/post/2011-03-21T18:33:21+01:00">
+                // and this subscriber must store the rdf in a url like:
+                // http://smob.rhizomatik.net/data/2011-03-21T18:33:21+01:00
+                $xml = simplexml_load_string($post_data);
+                if(count($xml) == 0)
+                    return;
 
                 }
         }
