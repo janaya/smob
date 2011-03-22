@@ -50,15 +50,16 @@ if(!SMOBTools::check_config()) {
 			    //error_log(join(' ', $result),0);
 			    $xml = simplexml_load_file($remote_user_feed);
 			    error_log("xml",0);
-                error_log($xml,0);
+                error_log(print_r($xml,0));
                 if(count($xml) == 0)
                     return;
                 $link_attributes = (string) $xml->channel->link->attributes();
 			    error_log("link attributes",0);
-                error_log($link_attributes,0);
-                $link_attributes = $xml->documentElement->getElementsByTagName('channel')->getElementsByTagName('link')->getAttribute("href");
-			    error_log("link attributes",0);
-                error_log($link_attributes,0);
+                error_log(print_r($link_attributes,0));
+                //$link_attributes = $xml->documentElement->getElementsByTagName('channel')->getElementsByTagName('link')->getAttribute("href");
+			    //error_log("link attributes",0);
+                //error_log($link_attributes,0);
+                
                 if($link_attributes['rel'] == 'hub') {
                     $hub_url = $link_attributes['href'];
 			        error_log("hub url",0);
@@ -102,7 +103,7 @@ if(!SMOBTools::check_config()) {
 			    // And ping to update the followers list remotely
 			    error_log($u,0);
 			    error_log($remote_user,0);
-			    $u = explode("/",$u)[0];
+			    list($u,$upath) = explode("/",$u);
 			    $ping = "$u/add/follower/$local_user";
 			    error_log($ping,0);
 			    $result = SMOBTools::do_curl($ping);
