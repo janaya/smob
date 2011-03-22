@@ -110,7 +110,8 @@ if(!SMOBTools::check_config()) {
 			$follow = "<$remote_user> sioc:follows <$local_user> . ";	
 			$local = "DELETE FROM <".SMOB_ROOT."data/followers> { $follow }";
 			SMOBStore::query($local);
-			//@TODO: notify the following?
+			//@TODO: notify the remote_user to remove local_user as following?
+			// Should also make the follower to send unsubscribe request to the Hub?
 		} 
 		// Remove a following
 		elseif($t == 'following') {
@@ -119,7 +120,7 @@ if(!SMOBTools::check_config()) {
 			$follow = "<$local_user> sioc:follows <$remote_user> . ";			
 			$local = "DELETE FROM <".SMOB_ROOT."data/followings> { $follow }";
 			SMOBStore::query($local);
-			//@TODO: notify the follower?
+			//@TODO: notify the the remote_user to remove local_user as follower?
 		    //$ping = "$u/remove/follower/$local_user";
 		    //$result = SMOBTools::do_curl($ping);
 		    //error_log(join(' ', $result),0);
