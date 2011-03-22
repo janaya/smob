@@ -33,6 +33,7 @@ if(!SMOBTools::check_config()) {
 			} else {
 		        // @TODO: check that the user were not already a following? 
 			    // Store the new relationship in local repository
+			    error_log("storing to local repository");
 			    $local_user = SMOBTools::user_uri();			
 			    $follow = "<$local_user> sioc:follows <$remote_user> . ";
 			    $local = "INSERT INTO <".SMOB_ROOT."data/followings> { $follow }";
@@ -53,8 +54,11 @@ if(!SMOBTools::check_config()) {
                 if(count($xml) == 0)
                     return;
                 $link_attributes = (string) $xml->channel->link->attributes();
-                error_log($link_attributes,0);
 			    error_log("link attributes",0);
+                error_log($link_attributes,0);
+                $link_attributes = $xml->documentElement->getElementsByTagName('channel')->getElementsByTagName('link')->getAttribute("href");
+			    error_log("link attributes",0);
+                error_log($link_attributes,0);
                 if($link_attributes['rel'] == 'hub') {
                     $hub_url = $link_attributes['href'];
 			        error_log("hub url",0);
@@ -98,6 +102,7 @@ if(!SMOBTools::check_config()) {
 			    // And ping to update the followers list remotely
 			    error_log($u,0);
 			    error_log($remote_user,0);
+			    $u = explode("/",$u)[0];
 			    $ping = "$u/add/follower/$local_user";
 			    error_log($ping,0);
 			    $result = SMOBTools::do_curl($ping);
