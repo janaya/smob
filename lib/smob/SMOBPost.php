@@ -312,17 +312,22 @@ WHERE {
 
             $p = new Publisher($hub_url);
             //$topic_url = SMOB_ROOT.'me/rss';
+            $topic_url = SMOB_ROOT.'rdf';
+            
             // trying with the RDF itself
             $graph = $this->graph();
-            //$query = 'query='.urlencode("$action <$graph>");
-            $query = $graph;
-            error_log($query);
-            // notify the hub that the specified topic_url (ATOM feed) has been updated  
-            //$result = $p->publish_update($topic_url);
+            $rdf = SMOBTools::render_sparql_triples($this->triples);
+            error_log($rdf,0);
+		    $query = "INSERT INTO <$graph> {$rdf}";
+            
             // send the hub the RDF to be load
             $result = $p->publish_update($query);
+		    
+            // notify the hub that the specified topic_url (ATOM feed) has been updated  
+            //$result = $p->publish_update($topic_url);
             if ($result) {
-                error_log("$topic_url was successfully published to $hub_url",0);
+                //error_log("$topic_url was successfully published to $hub_url",0);
+            error_log("$query was successfully published to $hub_url",0);
             } else {
                 error_log("$topic_url was NOT successfully published to $hub_url",0);
                 error_log($p->last_response(),0);

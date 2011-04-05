@@ -25,6 +25,14 @@
 
 [] 8. Include Websockets
 
+[] 9. Change Publisher to send the graph instead of RSS:
+      The publisher topic could be:
+       * http://smob.domain.com/rdf (a URL that provides all RDF). It can't be "http://smob.domain.com/data/2011-03-31T22:55:46+02:00" because it changes for every new post, or 
+       * the new RDF to be LOADed in the subscribers, or
+       * directly the SPARQL query for the subscriber, i.e.: "LOAD ..."
+     [] Hub complains about "Could not find any record for topic URL: http://smob.domain.com/rdf" or "...<?xml version..."
+      Solution: parse and convert the RSS back to RDF in subscriber?  
+
 [] X. WebId...
 
 [] X. Include PPO...
