@@ -158,7 +158,6 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
 	} elseif($t == 'callback') {
-
         // Getting hub_challenge from hub after sending it post subscription
         if(isset($_GET["hub_challenge"])) {
                 // send confirmation to the hub
@@ -182,6 +181,14 @@ if(!SMOBTools::check_config()) {
                 if(count($xml) == 0)
                     return;
 
+                foreach($xml->item as $item) {
+                    error_log($item,0);
+                    $link = (string) $item->link;
+                    error_log($link,0);
+                    $link = str_replace("post", "data", $link);
+                    error_log($link,0);
+                    $result = SMOBStore::query("LOAD <$link>");
+                    error_log(join(' ', $result),0);
                 }
         }
 	} else {
