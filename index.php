@@ -170,6 +170,8 @@ if(!SMOBTools::check_config()) {
                 //error_log($HTTP_RAW_POST_DATA,0);
                 //error_log(join(' ', $_POST),0);
                 $post_data = file_get_contents("php://input");
+                //@FIXME: this solution is a bit hackish
+                $post_data = str_replace('dc:date', 'dc_date', $post_data);
                 error_log($post_data,0);
                 
                 // Parsing the new feeds to load in the triple store
@@ -180,12 +182,11 @@ if(!SMOBTools::check_config()) {
                 $xml = simplexml_load_string($post_data);
                 if(count($xml) == 0)
                     return;
-
                 foreach($xml->item as $item) {
                     error_log($item,0);
                     $link = (string) $item->link;
                     error_log($link,0);
-                    $date = (string) $item->date;
+                    $date = (string) $item->dc_date;
                     error_log($date,0);
                     $description = (string) $item->description;
                     error_log($description,0);
