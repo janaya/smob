@@ -185,7 +185,7 @@ if(!SMOBTools::check_config()) {
                     error_log($item,0);
                     $link = (string) $item->link;
                     error_log($link,0);
-                    $date = (string) $item->dc:date;
+                    $date = (string) $item->date;
                     error_log($date,0);
                     $description = (string) $item->description;
                     error_log($description,0);
