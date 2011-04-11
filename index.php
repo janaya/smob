@@ -149,6 +149,11 @@ if(!SMOBTools::check_config()) {
 		$tweet = new SMOBFeed();
 		$tweet->rss();
 	}
+	elseif($t == 'rssrdf_owner') {
+		header ("Content-type: text/xml");
+		$tweet = new SMOBFeed();
+		$tweet->rssrdf();
+	}
 	elseif($t == 'sparql') {
 		if($_POST) {
 			SMOBTools::checkAccess($_POST);
