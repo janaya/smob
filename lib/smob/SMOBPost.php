@@ -110,20 +110,18 @@ WHERE {
 	public function rssrdf() {
 		$uri = $this->uri;
 		error_log($uri, 0);
-		error_log($this->data,0);
-		$content = $this->data['content'];
-		$ocontent = strip_tags($content);
-		$date = $this->data['date'];
-		$name = $this->data['name'];
+                //foreach ($this->data as $header => $value) {
+                //    error_log("$header: $value <br />\n",0);
+                //}
+		$turtle = $this->turtle();
+		$query = "INSERT INTO <$uri> {$turtle}";
+		error_log($turtle,0);
+		error_log($query,0);
 		
 		$item = "	
 <item rdf:about=\"$uri\">
-	<title>$ocontent</title>
 	<link>$uri</link>
-	<description>$ocontent</description>
-	<dc:creator>$name</dc:creator>
-	<dc:date>$date</dc:date>
-	<content:encoded><![CDATA[$content]]></content:encoded>
+	<content:encoded><![CDATA[$turtle]]></content:encoded>
 </item>
 ";
 		return $item;
@@ -334,7 +332,7 @@ WHERE {
             $hub_url = HUB_URL.'publish';
 
             $p = new Publisher($hub_url);
-            $topic_url = SMOB_ROOT.'me/rss';
+            $topic_url = SMOB_ROOT.'me/rssrdf';
             // notify the hub that the specified topic_url (ATOM feed) has been updated  
             $result = $p->publish_update($topic_url);
             if ($result) {
@@ -407,5 +405,29 @@ WHERE {
 		}
 		exit();
 	}
-		
+
+	public function turtle() {
+		$turtle = "";
+		$uri = $this->graph();
+		$query = "
+SELECT *
+WHERE { 
+	GRAPH <$uri> {
+		?s ?p ?o
+	}
+}";
+
+		$data = SMOBStore::query($query);
+		foreach($data as $triple) {
+			$s = $triple['s'];
+			$p = $triple['p'];
+			$o = $triple['o'];	
+			$ot = $triple['o type'];	
+			$odt = in_array('o datatype', array_keys($triple)) ? '^^<'.$triple['o datatype'].'>' : '';
+			$turtle .= "<$s> <$p> ";
+			$turtle .= ($ot == 'uri') ? "<$o> " : "\"$o\"$odt ";
+			$turtle .= ".\n" ;
+		}
+		return $turtle;
+	}		
 }
