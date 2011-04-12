@@ -176,7 +176,7 @@ if(!SMOBTools::check_config()) {
                 //error_log(join(' ', $_POST),0);
                 $post_data = file_get_contents("php://input");
                 //@FIXME: this solution is a bit hackish
-                $post_data = str_replace('dc:date', 'dc_date', $post_data);
+                $post_data = str_replace('content:encoded', 'content_encoded', $post_data);
                 error_log($post_data,0);
                 
                 // Parsing the new feeds to load in the triple store
@@ -191,29 +191,10 @@ if(!SMOBTools::check_config()) {
                     error_log($item,0);
                     $link = (string) $item->link;
                     error_log($link,0);
-                    $date = (string) $item->dc_date;
-                    error_log($date,0);
-                    $description = (string) $item->description;
-                    error_log($description,0);
-                    $site = parse_url($link, PHP_URL_SCHEME) . "://" .  parse_url($link, PHP_URL_HOST) . "/";
-                    error_log($site,0);
-                    $author = $site . "me";
-                    error_log($author,0);
+                    $content = (string) $item->content_encoded;
+                    error_log($content,0);
 
-                    $query = " INSERT INTO <$link> {
-                    <$site> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://smob.me/ns#Hub> .
-                    <$link> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/types#MicroblogPost> .
-                    <$link> <http://rdfs.org/sioc/ns#has_container> <$site> .
-                    <$link> <http://rdfs.org/sioc/ns#has_creator> <$author> .
-                    <$link> <http://xmlns.com/foaf/0.1/maker> <$author#id> .
-                    <$link> <http://purl.org/dc/terms/created> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-                    <$link> <http://purl.org/dc/terms/title> \"Update - $date\"^^<http://www.w3.org/2001/XMLSchema#string> .
-                    <$link> <http://rdfs.org/sioc/ns#content> \"$description\"^^<http://www.w3.org/2001/XMLSchema#string> .
-                    <$link#presence> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://online-presence.net/opo/ns#OnlinePresence> .
-                    <$link#presence> <http://online-presence.net/opo/ns#declaredOn> <$author> .
-                    <$link#presence> <http://online-presence.net/opo/ns#declaredBy> <$author#id> .
-                    <$link#presence> <http://online-presence.net/opo/ns#StartTime> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-                    <$link#presence> <http://online-presence.net/opo/ns#customMessage> <$link> . }";
+                    $query = " INSERT INTO <$link> { $content }";
                     
                     SMOBStore::query($query);
                 }
