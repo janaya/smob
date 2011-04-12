@@ -154,6 +154,11 @@ if(!SMOBTools::check_config()) {
 		$tweet = new SMOBFeed();
 		$tweet->rssrdf();
 	}
+#	elseif($t == 'delete') {
+#		$u = str_replace('http:/', 'http://', $u);
+#		$post = new SMOBPost();
+#		$post->delete();
+#	}
 	elseif($t == 'sparql') {
 		if($_POST) {
 			SMOBTools::checkAccess($_POST);

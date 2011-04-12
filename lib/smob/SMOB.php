@@ -67,6 +67,10 @@ class SMOB {
 	// Delete a post
 	private function delete() {
 		if(!SMOBAuth::check()) die();
+		error_log("in delete",0);
+		$u = str_replace('http:/', 'http://', $u);
+		error_log($u,0);
+		error_log($this->uri);
 		$post = new SMOBPost(SMOBTools::get_post_uri($this->uri, 'post'));
 		$post->delete();
 		header("Location: ".SMOB_ROOT);

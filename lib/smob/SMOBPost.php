@@ -176,9 +176,16 @@ WHERE {
 		}
 		$ht .= " [<a href=\"$data\">RDF</a>]\n";
 		if(SMOBAuth::check()) {
+			error_log("in smobpost",0);
+			error_log($uri,0);
 			if(strpos($uri, SMOB_ROOT) !== FALSE) {
 				$ex = explode('/', $uri);
+				foreach ($ex as $header => $value) {
+                    			error_log("$header: $value <br />\n",0);
+                		}
 				$action = SMOB_ROOT.'delete/'.$ex[5];
+                                $action = str_replace('post', 'delete', $uri);
+				error_log($action,0);
 				$ht .= " [<a href=\"$action\" onclick=\"javascript:return confirm('Are you sure ? This cannot be undone.')\">Delete post</a>]";			
 			} 
 			$action = $this->get_publish_uri();
@@ -319,7 +326,12 @@ WHERE {
 	public function delete() {
 		$uri = $this->uri; 
 		$graph = str_replace('/post/', '/data/', $uri);
-		SMOBStore::query("DELETE FROM <$graph>");
+		error_log($this->graph(),0);
+		$result = SMOBStore::query("DELETE FROM <$graph>");
+		error_log($result,0);
+		foreach ($result as $header => $value) {
+                    error_log("$header: $value <br />\n",0);
+                }
 		$this->notify('DELETE FROM');
 	}
 	
