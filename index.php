@@ -43,7 +43,7 @@ if(!SMOBTools::check_config()) {
 			    // Subscribe to the hub
 
                 // Get the Publisher (following) Hub
-			    $remote_user_feed = $remote_user.'/rss';
+			    $remote_user_feed = $remote_user.'/rssrdf';
 			    $xml = simplexml_load_file($remote_user_feed);
                 if(count($xml) == 0)
                     return;
