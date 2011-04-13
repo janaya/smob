@@ -116,8 +116,8 @@ WHERE {
 	    //when user_agent is the Hub, delete the post marked to be deleted
 	    $user_agent = $_SERVER['HTTP_USER_AGENT'];
 	    error_log($user_agent,0);
-	    $server_name = $_SERVER['SERVER_NAME']; //'REMOTE HOST'
-	    error_log($server_name,0);
+	    $remote_host = $_SERVER['REMOTE HOST']
+	    error_log($remote_host,0);
 	    
 	    // Has the post been deleted?
 	    $query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
@@ -127,7 +127,7 @@ WHERE {
 		if ($res == 1) {
 		    $content = "DELETE FROM <$graph>";
 		    // If the Hub is getting the post to be deleted
-		    if ($server_name == HUB_URL) {
+		    if ($remote_host == HUB_URL) {
 		    
 		        // Real delete
 		        $res = SMOBStore::query($content);
@@ -135,7 +135,8 @@ WHERE {
 		    }
 		} else {
 		    $turtle = $this->turtle();
-		    $content = "INSERT INTO <$graph> {$turtle}";
+		    $content = "INSERT INTO <$graph> \{ $turtle \}";
+		    //$content = "INSERT INTO <$graph> &#123;$turtle&#125;";
 		    error_log($content,0);
 		}
 		
