@@ -106,22 +106,43 @@ WHERE {
 		return $item;
 	}
 	
-	// Render the post as RSS 1.0 item with RDF in content
+	// Render the post as RSS 1.0 item with RDF in content tag to be insterted in subscribers
 	public function rssrdf() {
 		$uri = $this->uri;
 		error_log($uri, 0);
-                //foreach ($this->data as $header => $value) {
-                //    error_log("$header: $value <br />\n",0);
-                //}
-		$turtle = $this->turtle();
-		$query = "INSERT INTO <$uri> {$turtle}";
-		error_log($turtle,0);
-		error_log($query,0);
+		$graph = $this->graph();
+		error_log($graph, 0);
+		
+	    //when user_agent is the Hub, delete the post marked to be deleted
+	    $user_agent = $_SERVER['HTTP_USER_AGENT']
+	    error_log($user_agent,0);
+	    $server_name = $_SERVER['SERVER_NAME'] //'REMOTE HOST'
+	    error_log($server_name,0);
+	    
+	    // Has the post been deleted?
+	    $query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> "DELETED"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
+		$res = SMOBStore::query($query, true);
+		error_log($res,0);
+		
+		if ($res == 1) {
+		    $content = "DELETE FROM <$graph>";
+		    // If the Hub is getting the post to be deleted
+		    if ($server_name == HUB_URL) {
+		    
+		        // Real delete
+		        $res = SMOBStore::query($content);
+		        error_log($res,0);
+		    }
+		} else {
+		    $turtle = $this->turtle();
+		    $content = "INSERT INTO <$graph> {$turtle}";
+		    error_log($content,0);
+		}
 		
 		$item = "	
 <item rdf:about=\"$uri\">
 	<link>$uri</link>
-	<content:encoded><![CDATA[$turtle]]></content:encoded>
+	<content:encoded><![CDATA[$content]]></content:encoded>
 </item>
 ";
 		return $item;
@@ -327,11 +348,13 @@ WHERE {
 		$uri = $this->uri; 
 		$graph = str_replace('/post/', '/data/', $uri);
 		error_log($this->graph(),0);
-		$result = SMOBStore::query("DELETE FROM <$graph>");
+		// Not to actually delete it now, but to mark it to be deleted when the Hub has been notified 
+//		$result = SMOBStore::query("DELETE FROM <$graph>");
+        $result = SMOBStore::query("INSERT INTO <$graph> {<$graph> <http://smob.me/ns#Status> "DELETED"^^<http://www.w3.org/2001/XMLSchema#string>.}");
 		error_log($result,0);
 		foreach ($result as $header => $value) {
                     error_log("$header: $value <br />\n",0);
-                }
+        }
 		$this->notify('DELETE FROM');
 	}
 	
@@ -339,7 +362,7 @@ WHERE {
 		$followers = SMOBTools::followers();
 		if($followers) {
 			// Publish new feed to the hub
-
+            // Publish action is the same for LOAD and for DELETE
             //$hub_url = 'http://pubsubhubbub.appspot.com/publish';
             $hub_url = HUB_URL.'publish';
 
@@ -356,6 +379,12 @@ WHERE {
             
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
+			} else {
+				return;
+			}
+            
+			if($action == 'DELETE FROM') {
+				print '<li>Delete notification sent to your followers !</li>';
 			} else {
 				return;
 			}
@@ -419,6 +448,7 @@ WHERE {
 	}
 
 	public function turtle() {
+	    // Function similar to raw, but it returns the turtle triples as text instead of a new page
 		$turtle = "";
 		$uri = $this->graph();
 		$query = "

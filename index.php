@@ -199,9 +199,10 @@ if(!SMOBTools::check_config()) {
                     $content = (string) $item->content_encoded;
                     error_log($content,0);
 
-                    $query = " INSERT INTO <$link> { $content }";
+                    //$query = " INSERT INTO <$link> { $content }";
                     
-                    SMOBStore::query($query);
+                    $res = SMOBStore::query($content);
+                    error_log($res,0);
                 }
         }
 	} else {
