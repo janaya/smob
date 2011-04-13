@@ -114,13 +114,13 @@ WHERE {
 		error_log($graph, 0);
 		
 	    //when user_agent is the Hub, delete the post marked to be deleted
-	    $user_agent = $_SERVER['HTTP_USER_AGENT']
+	    $user_agent = $_SERVER['HTTP_USER_AGENT'];
 	    error_log($user_agent,0);
-	    $server_name = $_SERVER['SERVER_NAME'] //'REMOTE HOST'
+	    $server_name = $_SERVER['SERVER_NAME']; //'REMOTE HOST'
 	    error_log($server_name,0);
 	    
 	    // Has the post been deleted?
-	    $query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> "DELETED"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
+	    $query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
 		$res = SMOBStore::query($query, true);
 		error_log($res,0);
 		
@@ -350,7 +350,7 @@ WHERE {
 		error_log($this->graph(),0);
 		// Not to actually delete it now, but to mark it to be deleted when the Hub has been notified 
 //		$result = SMOBStore::query("DELETE FROM <$graph>");
-        $result = SMOBStore::query("INSERT INTO <$graph> {<$graph> <http://smob.me/ns#Status> "DELETED"^^<http://www.w3.org/2001/XMLSchema#string>.}");
+        	$result = SMOBStore::query("INSERT INTO <$graph> {<$graph> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string>.}");
 		error_log($result,0);
 		foreach ($result as $header => $value) {
                     error_log("$header: $value <br />\n",0);
