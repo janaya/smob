@@ -113,39 +113,40 @@ WHERE {
 		$graph = $this->graph();
 		error_log($graph, 0);
 		
-	    //when user_agent is the Hub, delete the post marked to be deleted
-	    $user_agent = $_SERVER['HTTP_USER_AGENT'];
-	    error_log($user_agent,0);
-	    $remote_host = $_SERVER['REMOTE HOST']
-	    error_log($remote_host,0);
-	    
-	    // Has the post been deleted?
-	    $query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
-		$res = SMOBStore::query($query, true);
-		error_log($res,0);
-		
-		if ($res == 1) {
-		    $content = "DELETE FROM <$graph>";
-		    // If the Hub is getting the post to be deleted
-		    if ($remote_host == HUB_URL) {
-		    
-		        // Real delete
-		        $res = SMOBStore::query($content);
-		        error_log($res,0);
-		    }
-		} else {
-		    $turtle = $this->turtle();
-		    $content = "INSERT INTO <$graph> \{ $turtle \}";
-		    //$content = "INSERT INTO <$graph> &#123;$turtle&#125;";
-		    error_log($content,0);
-		}
-		
-		$item = "	
+            //when user_agent is the Hub, delete the post marked to be deleted
+            // Has the post been deleted?
+            $query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
+                $res = SMOBStore::query($query, true);
+                error_log($res,0);
+
+                if ($res == 1) {
+                    $content = "DELETE FROM <$graph>";
+                    // If the Hub is getting the post to be deleted
+                    if (isset($_SERVER['REMOTE_HOST']) && $_SERVER['REMOTE_HOST'] == HUB_URL) {
+
+                        // Real delete
+                        $res = SMOBStore::query($content);
+                        error_log($res,0);
+                    }
+                } else {
+                    $turtle = $this->turtle();
+                    $content = "INSERT INTO <$graph> { $turtle }";
+                    //$content = "INSERT INTO <$graph> &#123;$turtle&#125;";
+                    error_log($content,0);
+                }
+
+                $item = "       
 <item rdf:about=\"$uri\">
-	<link>$uri</link>
-	<content:encoded><![CDATA[$content]]></content:encoded>
+        <link>$uri</link>
+        <content:encoded><![CDATA[$content]]></content:encoded>
 </item>
 ";
+//$item = "       
+//<item rdf:about=\"$uri\">
+//        <link>$uri</link>
+//</item>
+//";
+
 		return $item;
 	}
 	
@@ -369,15 +370,28 @@ WHERE {
 
             $p = new Publisher($hub_url);
             $topic_url = SMOB_ROOT.'me/rssrdf';
+
             // notify the hub that the specified topic_url (ATOM feed) has been updated  
-            $result = $p->publish_update($topic_url);
-            if ($result) {
-                error_log("$topic_url was successfully published to $hub_url",0);
-            } else {
-                error_log("$topic_url was NOT successfully published to $hub_url",0);
-                error_log($p->last_response(),0);
+            //$result = $p->publish_update($topic_url);
+            //error_log($result,0);
+            //if ($result) {
+            //    error_log("$topic_url was successfully published to $hub_url",0);
+            //} else {
+            //    error_log("$topic_url was NOT successfully published to $hub_url",0);
+            //    error_log($p->last_response(),0);
+            //}
+
+            // Reusing do_curl function
+            $feed = urlencode($topic_url);
+            $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed");
+            foreach ($result as $header => $value) {
+                    error_log("$header: $value <br />\n",0);
             }
-            
+            // all good -- anything in the 200 range 
+            if (substr($result[2],0,1) == "2") {
+                error_log("$topic_url was succesfully published to $hub_url",0);
+            }
+
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
 			} else {
