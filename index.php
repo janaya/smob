@@ -54,7 +54,7 @@ if(!SMOBTools::check_config()) {
                     error_log($hub_url,0);
                 }
                 //$hub_url = "http://pubsubhubbub.appspot.com";
-                //$hub_url = HUB_URL;
+                //$hub_url = HUB_URL_SUBSCRIBE;
                 $callback_url = urlencode(SMOB_ROOT."callback");
                 $feed = urlencode($remote_user_feed);
                 error_log($callback_url,0);
@@ -129,7 +129,7 @@ if(!SMOBTools::check_config()) {
             //@TODO: following Hub should be stored?, 
             // otherwise, how we get it again?, getting feed directly from the following
             // what if it changed?
-            $hub_url = HUB_URL;
+            $hub_url = HUB_URL_SUBSCRIBE;
             $callback_url = urlencode(SMOB_ROOT."callback");
             $feed = urlencode($remote_user.'/rss');
             error_log($callback_url,0);

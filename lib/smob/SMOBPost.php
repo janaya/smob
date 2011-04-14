@@ -329,8 +329,8 @@ WHERE {
 			// Publish new feed to the hub
 
             //$hub_url = 'http://pubsubhubbub.appspot.com/publish';
-            $hub_url = HUB_URL.'publish';
-
+            //$hub_url = HUB_URL.'publish';
+            $hub_url = HUB_URL_PUBLISH;
             $p = new Publisher($hub_url);
             $topic_url = SMOB_ROOT.'me/rssrdf';
             // notify the hub that the specified topic_url (ATOM feed) has been updated  
