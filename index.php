@@ -155,7 +155,7 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
 	} elseif($t == 'callback') {
-	    if (array_key_exists('REMOTE_HOST',$_SERVER) {//&& ($_SERVER['REMOTE_HOST'] == HUB_URL_SUBSCRIBE)) {
+	    if (array_key_exists('REMOTE_HOST',$_SERVER)) {//&& ($_SERVER['REMOTE_HOST'] == HUB_URL_SUBSCRIBE)) {
 	        error_log($_SERVER['REMOTE_HOST']);
 	    }
         // Getting hub_challenge from hub after sending it post subscription
