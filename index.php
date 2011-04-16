@@ -155,6 +155,9 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
 	} elseif($t == 'callback') {
+	    if (array_key_exists('REMOTE_HOST',$_SERVER) {//&& ($_SERVER['REMOTE_HOST'] == HUB_URL_SUBSCRIBE)) {
+	        error_log($_SERVER['REMOTE_HOST']);
+	    }
         // Getting hub_challenge from hub after sending it post subscription
         if(isset($_GET["hub_challenge"])) {
                 // send confirmation to the hub
@@ -168,7 +171,7 @@ if(!SMOBTools::check_config()) {
                 //SMOBTools::rss2rdf($post_data);
                 SMOBTools::get_rdf_from_rss($post_data) ;
         }
-        else(isset($_DELETE)) {
+        elseif(isset($_DELETE)) {
             $post_data = file_get_contents("php://input");
             error_log($post_data,0);
         }
