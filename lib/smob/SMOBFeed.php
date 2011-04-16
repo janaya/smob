@@ -25,6 +25,18 @@ class SMOBFeed {
 		echo $rss;
 	}
 	
+	public function rssrdf() {
+		$rss = $this->rss_header();
+		foreach($this->posts as $post) {
+			$rss .= "\t\t\t<rdf:li rdf:resource=\"" . $post->uri . "\" />\n";
+			$items .= $post->rssrdf();
+		}
+		$rss .= "\t\t</rdf:Seq>\n\t</items>\n</channel>\n";
+		$rss .= $items;
+		$rss .= "\n</rdf:RDF>";
+		echo $rss;
+	}
+	
 	public function rss_header() {
 		$version = SMOBTools::version();
 		$owner = SMOBTools::ownername();
