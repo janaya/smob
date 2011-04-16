@@ -106,6 +106,51 @@ WHERE {
 		return $item;
 	}
 	
+	// Render the post as RSS 1.0 item with RDF in content tag to be insterted in subscribers
+	public function rssrdf() {
+		$uri = $this->uri;
+		error_log($uri, 0);
+		$graph = $this->graph();
+		error_log($graph, 0);
+		$content = $this->data['content'];
+		$ocontent = strip_tags($content);
+		$date = $this->data['date'];
+		$name = $this->data['name'];
+
+        ////when user_agent is the Hub, delete the post marked to be deleted
+        //// Has the post been deleted?
+        //$query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
+        //$res = SMOBStore::query($query, true);
+        //error_log($res,0);
+
+        //if ($res == 1) {
+        //    $content = "DELETE FROM <$graph>";
+        //    // If the Hub is getting the post to be deleted
+        //    if (isset($_SERVER['REMOTE_HOST']) && $_SERVER['REMOTE_HOST'] == HUB_URL) {
+
+        //        // Real delete
+        //        $res = SMOBStore::query($content);
+        //        error_log($res,0);
+        //    }
+        //} else {
+        $turtle = $this->turtle();
+        $content = "INSERT INTO <$graph> { $turtle }";
+        error_log($content,0);
+        //}
+
+		$item = "	
+<item rdf:about=\"$uri\">
+	<title>$ocontent</title>
+	<link>$uri</link>
+	<description>$ocontent</description>
+	<dc:creator>$name</dc:creator>
+	<dc:date>$date</dc:date>
+	<content:encoded><![CDATA[$content]]></content:encoded>
+</item>
+";
+		return $item;
+	}
+	
 	// Render the post in RDFa/XHTML
 	public function render() {
 		global $sioc_nick, $count;
@@ -307,18 +352,19 @@ WHERE {
 		if($followers) {
 			// Publish new feed to the hub
 
-            //$hub_url = 'http://pubsubhubbub.appspot.com/publish';
-            $hub_url = HUB_URL.'publish';
+            $hub_url = HUB_URL_PUBLISH;
+            $topic_url = SMOB_ROOT.'me'.FEED_PATH;
+            // Reusing do_curl function
+            $feed = urlencode($topic_url);
+            $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed");
+            // all good -- anything in the 200 range 
+            if (substr($result[2],0,1) == "2") {
+                error_log("$topic_url was succesfully published to $hub_url",0);
+            }
+            error_log(join(' ', $result),0);
 
-            $p = new Publisher($hub_url);
-            $topic_url = SMOB_ROOT.'me/rss';
-            // notify the hub that the specified topic_url (ATOM feed) has been updated  
-            $result = $p->publish_update($topic_url);
-            if ($result) {
-                error_log("$topic_url was successfully published to $hub_url",0);
-            } else {
-                error_log("$topic_url was NOT successfully published to $hub_url",0);
-                error_log($p->last_response(),0);
+            foreach ($result as $header => $value) {
+                    error_log("$header: $value <br />\n",0);
             }
             
 			if($action == 'LOAD') {
@@ -384,5 +430,31 @@ WHERE {
 		}
 		exit();
 	}
+	
+	public function turtle() {
+	    // Function similar to raw, but it returns the turtle triples as text instead of a new page
+		$turtle = "";
+		$uri = $this->graph();
+		$query = "
+SELECT *
+WHERE { 
+	GRAPH <$uri> {
+		?s ?p ?o
+	}
+}";
+
+		$data = SMOBStore::query($query);
+		foreach($data as $triple) {
+			$s = $triple['s'];
+			$p = $triple['p'];
+			$o = $triple['o'];	
+			$ot = $triple['o type'];	
+			$odt = in_array('o datatype', array_keys($triple)) ? '^^<'.$triple['o datatype'].'>' : '';
+			$turtle .= "<$s> <$p> ";
+			$turtle .= ($ot == 'uri') ? "<$o> " : "\"$o\"$odt ";
+			$turtle .= ".\n" ;
+		}
+		return $turtle;
+	}	
 		
 }
