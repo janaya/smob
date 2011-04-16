@@ -84,27 +84,59 @@ WHERE {
 		}
 		return;
 		}
-	
-	// Render the post as RSS 1.0 item
-	public function rss() {
-		$uri = $this->uri;
-		$content = $this->data['content'];
-		$ocontent = strip_tags($content);
-		$date = $this->data['date'];
-		$name = $this->data['name'];
-		
-		$item = "	
+
+        public function turtle() {
+            // Function similar to raw, but it returns the turtle triples as text instead of a new page
+                $turtle = "";
+                $uri = $this->graph();
+                $query = "
+SELECT *
+WHERE { 
+        GRAPH <$uri> {
+                ?s ?p ?o
+        }
+}";
+
+                $data = SMOBStore::query($query);
+                foreach($data as $triple) {
+                        $s = $triple['s'];
+                        $p = $triple['p'];
+                        $o = $triple['o'];
+                        $ot = $triple['o type'];
+                        $odt = in_array('o datatype', array_keys($triple)) ? '^^<'.$triple['o datatype'].'>' : '';
+                        $turtle .= "<$s> <$p> ";
+                        $turtle .= ($ot == 'uri') ? "<$o> " : "\"$o\"$odt ";
+                        $turtle .= ".\n" ;
+                }
+                return $turtle;
+        }
+
+        // Render the post as RSS 1.0 item
+        public function rss() {
+                $uri = $this->uri;
+                $content = $this->data['content'];
+                $ocontent = strip_tags($content);
+                $date = $this->data['date'];
+                $name = $this->data['name'];
+
+                $graph = $this->graph();
+                error_log($graph, 0);
+                $turtle = $this->turtle();
+                $content = "INSERT INTO <$graph> { $turtle }";
+                error_log($content,0);
+
+                $item = "       
 <item rdf:about=\"$uri\">
-	<title>$ocontent</title>
-	<link>$uri</link>
-	<description>$ocontent</description>
-	<dc:creator>$name</dc:creator>
-	<dc:date>$date</dc:date>
-	<content:encoded><![CDATA[$content]]></content:encoded>
+        <title>$ocontent</title>
+        <link>$uri</link>
+        <description>$ocontent</description>
+        <dc:creator>$name</dc:creator>
+        <dc:date>$date</dc:date>
+        <content:encoded><![CDATA[$content]]></content:encoded>
 </item>
 ";
-		return $item;
-	}
+                return $item;
+        }	
 	
 	// Render the post in RDFa/XHTML
 	public function render() {
@@ -308,8 +340,8 @@ WHERE {
 			// Publish new feed to the hub
 
             //$hub_url = 'http://pubsubhubbub.appspot.com/publish';
-            $hub_url = HUB_URL.'publish';
-
+            //$hub_url = HUB_URL.'publish';
+	    $hub_url = HUB_URL_PUBLISH;
             $p = new Publisher($hub_url);
             $topic_url = SMOB_ROOT.'me/rss';
             // notify the hub that the specified topic_url (ATOM feed) has been updated  

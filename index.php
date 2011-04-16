@@ -158,6 +158,7 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
 	} elseif($t == 'callback') {
+		error_log("in callback");
         // Getting hub_challenge from hub after sending it post subscription
         if(isset($_GET["hub_challenge"])) {
                 // send confirmation to the hub
@@ -166,7 +167,7 @@ if(!SMOBTools::check_config()) {
                 error_log($_GET["hub_challenge"],0);
         }
         // Getting feed updates from hub
-        if(isset($_POST)) {
+        elseif(isset($_POST)) {
                 //error_log($HTTP_RAW_POST_DATA,0);
                 //error_log(join(' ', $_POST),0);
                 $post_data = file_get_contents("php://input");
@@ -182,6 +183,7 @@ if(!SMOBTools::check_config()) {
                 $xml = simplexml_load_string($post_data);
                 if(count($xml) == 0)
                     return;
+		error_log($xml);
                 foreach($xml->item as $item) {
                     error_log($item,0);
                     $link = (string) $item->link;
@@ -212,7 +214,13 @@ if(!SMOBTools::check_config()) {
                     
                     SMOBStore::query($query);
                 }
-        }
+        } elseif(isset($_DELETE)) {
+		error_log("in delete");
+ 		$post_data = file_get_contents("php://input");
+                //@FIXME: this solution is a bit hackish
+                $post_data = str_replace('dc:date', 'dc_date', $post_data);
+                error_log($post_data,0);
+	}
 	} else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);
