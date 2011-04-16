@@ -331,9 +331,9 @@ LIMIT 1";
             error_log($date,0);
             $description = (string) $item->description;
             error_log($description,0);
-            $site = parse_url($link, PHP_URL_SCHEME) . "://" .  parse_url($link, PHP_URL_HOST) . "/";
+            $site = $this->host($link);
             error_log($site,0);
-            $author = $site . "me";
+            $author = $site . "/me";
             error_log($author,0);
 
             $query = "INSERT INTO <$link> {
@@ -373,6 +373,11 @@ LIMIT 1";
             error_log($query);
             SMOBStore::query($query);
         }
+	}
+	
+	function host($url) {
+	    $host = parse_url($url, PHP_URL_SCHEME) . "://" .  parse_url($url, PHP_URL_HOST) ;
+	    return $host;
 	}
 }
 

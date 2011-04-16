@@ -20,6 +20,7 @@ if(!SMOBTools::check_config()) {
 			$local_user = SMOBTools::user_uri();
 			$follow = "<$remote_user> sioc:follows <$local_user> . ";	
 			$local = "INSERT INTO <".SMOB_ROOT."data/followers> { $follow }";
+			error_log($local, 0);
 			SMOBStore::query($local);
 		} 
 		// Add a new following
@@ -74,7 +75,9 @@ if(!SMOBTools::check_config()) {
 			    
 			    // And ping to update the followers list remotely
 			    // @TODO: This will work only if $u doesn't have /me or something in the end
-			    $ping = "$u/add/follower/$local_user";
+			    //$ping = str_replace("me", "add", $ping)."/follower/$local_user";
+			    $ping = SMOBTools::host($remote_user)."/add/follower/$local_user";
+			    error_log($ping,0);
 			    $result = SMOBTools::do_curl($ping);
 			    error_log(join(' ', $result),0);
 			 }
@@ -92,6 +95,7 @@ if(!SMOBTools::check_config()) {
 			$follow = "<$remote_user> sioc:follows <$local_user> . ";	
 			$local = "DELETE FROM <".SMOB_ROOT."data/followers> { $follow }";
 			SMOBStore::query($local);
+			error_log($local, 0);
 		} 
 		// Remove a following
 		elseif($t == 'following') {
@@ -103,6 +107,10 @@ if(!SMOBTools::check_config()) {
 			
 			 // And ping to update the followers list remotely
 		    $ping = "$u/remove/follower/$local_user";
+		    error_log($ping,0);
+		    //$ping = str_replace("me","remove", $u)."/follower/$local_user";
+		    $ping = SMOBTools::host($u)."/remove/follower/$local_user";
+			error_log($ping,0);
 		    $result = SMOBTools::do_curl($ping);
 		    error_log(join(' ', $result),0);
 		    
