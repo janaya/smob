@@ -324,7 +324,7 @@ LIMIT 1";
         $xml = simplexml_load_string($post_data);
         if(count($xml) == 0)
             return;
-        error_log("DEBUG: xml received from publisher: "print_r($xml,1),0);
+        error_log("DEBUG: xml received from publisher: ".print_r($xml,1),0);
         foreach($xml->item as $item) {
             $link = (string) $item->link;
             $date = (string) $item->dc_date;
