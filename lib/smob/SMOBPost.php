@@ -148,7 +148,7 @@ WHERE {
 	//<content:encoded><![CDATA[$content]]></content:encoded>
 //</item>
 //";
-		return $item;
+//		return $item;
 		$item = "	
 <item rdf:about=\"$uri\">
 	<title>$ocontent</title>
