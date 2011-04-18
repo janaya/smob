@@ -360,7 +360,7 @@ LIMIT 1";
         $xml = simplexml_load_string($post_data);
         if(count($xml) == 0)
             return;
-        error_log("DEBUG: xml received from publisher: "print_r($xml,1),0);
+        error_log("DEBUG: xml received from publisher: ".print_r($xml,1),0);
         foreach($xml->item as $item) {
             $link = (string) $item->link;
             $content = html_entity_decode((string) $item->content_encoded, ENT_COMPAT, "UTF-8");
