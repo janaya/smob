@@ -362,8 +362,8 @@ LIMIT 1";
         
         // Parsing the new feeds to load in the triple store
         $xml = simplexml_load_string($post_data);
-        //if(count($xml) == 0)
-        //    return;
+        if(count($xml) == 0)
+            return;
         error_log("in getrdffromrss");
         error_log(print_r($xml,1),0);
         foreach($xml->item as $item) {

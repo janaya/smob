@@ -92,6 +92,11 @@ WHERE {
 		$ocontent = strip_tags($content);
 		$date = $this->data['date'];
 		$name = $this->data['name'];
+                error_log("uri: ".$uri, 0);
+                $graph = $this->graph();
+                error_log("graph: ".$graph, 0);
+        $turtle = $this->turtle();
+        $content = "INSERT INTO <$graph> { $turtle }";
 		
 		$item = "	
 <item rdf:about=\"$uri\">
@@ -202,9 +207,14 @@ WHERE {
 		}
 		$ht .= " [<a href=\"$data\">RDF</a>]\n";
 		if(SMOBAuth::check()) {
+			error_log("in smobpost",0);
+			error_log($uri,0);
 			if(strpos($uri, SMOB_ROOT) !== FALSE) {
 				$ex = explode('/', $uri);
+				error_log(join(' ', $ex),0);
 				$action = SMOB_ROOT.'delete/'.$ex[5];
+                                $action = str_replace('post', 'delete', $uri);
+				error_log($action,0);
 				$ht .= " [<a href=\"$action\" onclick=\"javascript:return confirm('Are you sure ? This cannot be undone.')\">Delete post</a>]";			
 			} 
 			$action = $this->get_publish_uri();
