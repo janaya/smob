@@ -106,8 +106,6 @@ if(!SMOBTools::check_config()) {
 			SMOBStore::query($local);
 			
 			 // And ping to update the followers list remotely
-		    $ping = "$u/remove/follower/$local_user";
-		    error_log($ping,0);
 		    //$ping = str_replace("me","remove", $u)."/follower/$local_user";
 		    $ping = SMOBTools::host($u)."/remove/follower/$local_user";
 			error_log($ping,0);
@@ -138,7 +136,7 @@ if(!SMOBTools::check_config()) {
             }
             error_log(join(' ', $result),0);
 
-	        print "<a href='$remote_user'>$remote_user</a> was deleted from your following list and your subscription was removed";
+	        //print "<a href='$remote_user'>$remote_user</a> was deleted from your following list and your subscription was removed";
 	        SMOBTemplate::footer();	
             
 		}

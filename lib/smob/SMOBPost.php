@@ -138,6 +138,17 @@ WHERE {
         error_log($content,0);
         //}
 
+		//$item = "	
+//<item rdf:about=\"$uri\">
+	//<title>$ocontent</title>
+	//<link>$uri</link>
+	//<description>$ocontent</description>
+	//<dc:creator>$name</dc:creator>
+	//<dc:date>$date</dc:date>
+	//<content:encoded><![CDATA[$content]]></content:encoded>
+//</item>
+//";
+		return $item;
 		$item = "	
 <item rdf:about=\"$uri\">
 	<title>$ocontent</title>
@@ -145,7 +156,6 @@ WHERE {
 	<description>$ocontent</description>
 	<dc:creator>$name</dc:creator>
 	<dc:date>$date</dc:date>
-	<content:encoded><![CDATA[$content]]></content:encoded>
 </item>
 ";
 		return $item;
