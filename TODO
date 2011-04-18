@@ -1,12 +1,14 @@
 [x] 1. svn to git migration
 [] 2. Update project page to inform about github code migration
 
-[] 3. Add publication and subscription to an external hub capability
+[x] 3. Add publication and subscription to an external hub capability
     * index.php
     [] Add new following : needed to check if the following already exists?
     [] Ping to update the followers list remotely: the URL will work only if $u
       doesn't have /me or /X in the end   
-    [x] Remove following: notify the the remote_user to remove local_user as follower?
+    [] Remove a follower: notify the remote_user to remove local_user as following?
+	  Should also make the follower to send unsubscribe request to the Hub?
+    [] Remove following: notify the the remote_user to remove local_user as follower?
     [] Remove following: how to know the Hub to remove subscription?, 
       whet again the publisher feed?, 
       should the Hub be stored as an RDF triple?, for instance:
@@ -48,4 +50,3 @@
 [] X. Sindice notifications/autodiscovery...
 
 [] X. Get list of Hubs
-

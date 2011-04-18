@@ -14,6 +14,9 @@ if(!SMOBTools::check_config()) {
 		$u = str_replace('http:/', 'http://', $u);
 		// Add a new follower
 		if($t == 'follower') {
+		    // @TODO: has it sense that the user add a follower?. Then the follower should also be notified to add the current user as following
+		    // When the request comes from another user adding a following, the action is ran as there authentication is not needed
+			
 			$remote_user = SMOBTools::remote_user($u);
 			if(!$remote_user) die();
 			$local_user = SMOBTools::user_uri();
@@ -59,7 +62,7 @@ if(!SMOBTools::check_config()) {
                 $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
                 // all good -- anything in the 200 range 
                 if (substr($result[2],0,1) == "2") {
-                    error_log("DEBUG: Successfully subscribed to hubsub $hub_url",0);
+                    error_log("DEBUG: Successfully subscribed to topic $remote_user_feed using hubsub $hub_url",0);
                 }
                 error_log("DEBUG: Server answer: ".join(' ', $result),0);
 
@@ -77,10 +80,13 @@ if(!SMOBTools::check_config()) {
 		}
 	}
 	elseif($a && $a == 'remove') {
+	    //
 		if(!SMOBAuth::check()) die();
 		$u = str_replace('http:/', 'http://', $u);
 		// Remove a follower
 		if($t == 'follower') {
+		    // @TODO: has it sense that the user remove a follower?. Then the follower should also be notified to remove the current user as following
+		    // Instead, when the request comes from another user removing a following, the action will not be run as there is not authentication
 			$remote_user = $u;
 			$local_user = SMOBTools::user_uri();
 			$follow = "<$remote_user> sioc:follows <$local_user> . ";	
@@ -120,7 +126,7 @@ if(!SMOBTools::check_config()) {
             $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=unsubscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
             // all good -- anything in the 200 range 
             if (substr($result[2],0,1) == "2") {
-                    error_log("DEBUG: Successfully unsubscribed from hubsub $hub_url",0);
+                    error_log("DEBUG: Successfully unsubscribed to topic $remote_user_feed using hubsub $hub_url",0);
             }
 			error_log("DEBUG: Server answer: ".join(' ', $result),0);
 
