@@ -367,7 +367,7 @@ LIMIT 1";
             error_log($item,0);
             $link = (string) $item->link;
             error_log($link,0);
-            $content = (string) $item->content_encoded;
+            $content = html_entity_decode((string) $item->content_encoded, ENT_COMPAT, "UTF-8");
             error_log($content,0);
             $query = $content;
             error_log($query);
