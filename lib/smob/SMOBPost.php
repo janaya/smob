@@ -93,12 +93,6 @@ WHERE {
 		$date = $this->data['date'];
 		$name = $this->data['name'];
 		
-		error_log($uri, 0);
-		$graph = $this->graph();
-		error_log($graph, 0);
-        $turtle = $this->turtle();
-        $content = "INSERT INTO <$graph> { $turtle }";
-		
 		$item = "	
 <item rdf:about=\"$uri\">
 	<title>$ocontent</title>
@@ -139,22 +133,13 @@ WHERE {
         //        error_log($res,0);
         //    }
         //} else {
+        
+		error_log("uri: ".$uri, 0);
+		$graph = $this->graph();
+		error_log("graph: ".$graph, 0);
         $turtle = $this->turtle();
         $content = "INSERT INTO <$graph> { $turtle }";
-        error_log($content,0);
-        //}
-
-		//$item = "	
-//<item rdf:about=\"$uri\">
-	//<title>$ocontent</title>
-	//<link>$uri</link>
-	//<description>$ocontent</description>
-	//<dc:creator>$name</dc:creator>
-	//<dc:date>$date</dc:date>
-	//<content:encoded><![CDATA[$content]]></content:encoded>
-//</item>
-//";
-//		return $item;
+		
 		$item = "	
 <item rdf:about=\"$uri\">
 	<title>$ocontent</title>
@@ -162,6 +147,7 @@ WHERE {
 	<description>$ocontent</description>
 	<dc:creator>$name</dc:creator>
 	<dc:date>$date</dc:date>
+	<content:encoded><![CDATA[$content]]></content:encoded>
 </item>
 ";
 		return $item;

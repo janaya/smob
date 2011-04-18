@@ -358,19 +358,24 @@ LIMIT 1";
 	function get_rdf_from_rss($post_data) {
         //@FIXME: this solution is a bit hackish
         $post_data = str_replace('dc:date', 'dc_date', $post_data);
+        $post_data = str_replace('content:encoded', 'content_encoded', $post_data);
         
         // Parsing the new feeds to load in the triple store
         $xml = simplexml_load_string($post_data);
         //if(count($xml) == 0)
         //    return;
+        error_log("in getrdffromrss");
+        error_log(print_r($xml,1),0);
         foreach($xml->item as $item) {
             error_log($item,0);
             $link = (string) $item->link;
             error_log($link,0);
+            $content_encoded = (string) $item->content_encoded;
+            error_log($content_encoded,0);
             $content = html_entity_decode((string) $item->content_encoded, ENT_COMPAT, "UTF-8");
             error_log($content,0);
             $query = $content;
-            error_log($query);
+            error_log("query: ".$query);
             SMOBStore::query($query);
         }
 	}

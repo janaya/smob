@@ -42,7 +42,6 @@ class SMOBStore {
 	PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 		$query";		
-		error_log($query, 0);
 		$rs = $store->query($query);
 		
 		if ($errors = $store->getErrors()) {
