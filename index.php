@@ -183,7 +183,7 @@ if(!SMOBTools::check_config()) {
             $post_data = file_get_contents("php://input");
             error_log($post_data,0);
         }
-        else(isset($_PUT)) {
+        elseif(isset($_PUT)) {
             $post_data = file_get_contents("php://input");
             error_log($post_data,0);
         }
