@@ -161,6 +161,7 @@ if(!SMOBTools::check_config()) {
 
 	// callback script to process the incoming hub POSTs
 	} elseif($t == 'callback') {
+	    error_log("in callback",0);
 	    if (array_key_exists('REMOTE_HOST',$_SERVER)) {//&& ($_SERVER['REMOTE_HOST'] == HUB_URL_SUBSCRIBE)) {
 	        error_log($_SERVER['REMOTE_HOST']);
 	    }
@@ -172,12 +173,17 @@ if(!SMOBTools::check_config()) {
         }
         // Getting feed updates from hub
         elseif(isset($_POST)) {
+	            error_log("in callback POST",0);
                 $post_data = file_get_contents("php://input");
                 error_log($post_data,0);
                 //SMOBTools::rss2rdf($post_data);
                 SMOBTools::get_rdf_from_rss($post_data) ;
         }
         elseif(isset($_DELETE)) {
+            $post_data = file_get_contents("php://input");
+            error_log($post_data,0);
+        }
+        else(isset($_PUT)) {
             $post_data = file_get_contents("php://input");
             error_log($post_data,0);
         }

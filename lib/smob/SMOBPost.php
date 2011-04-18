@@ -93,6 +93,12 @@ WHERE {
 		$date = $this->data['date'];
 		$name = $this->data['name'];
 		
+		error_log($uri, 0);
+		$graph = $this->graph();
+		error_log($graph, 0);
+        $turtle = $this->turtle();
+        $content = "INSERT INTO <$graph> { $turtle }";
+		
 		$item = "	
 <item rdf:about=\"$uri\">
 	<title>$ocontent</title>
