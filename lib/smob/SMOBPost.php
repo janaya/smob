@@ -3,7 +3,6 @@
 /*
 	Representing posts
 */
-include_once(dirname(__FILE__).'/../publisher.php');
 	
 class SMOBPost {
 	
@@ -88,13 +87,12 @@ WHERE {
 	// Render the post as RSS 1.0 item
 	public function rss() {
 		$uri = $this->uri;
+		$graph = $this->graph();
 		$content = $this->data['content'];
 		$ocontent = strip_tags($content);
 		$date = $this->data['date'];
 		$name = $this->data['name'];
-                error_log("uri: ".$uri, 0);
-                $graph = $this->graph();
-                error_log("graph: ".$graph, 0);
+		//Adding the RDF to content 
         $turtle = $this->turtle();
         $content = "INSERT INTO <$graph> { $turtle }";
 		
@@ -111,12 +109,11 @@ WHERE {
 		return $item;
 	}
 	
-	// Render the post as RSS 1.0 item with RDF in content tag to be insterted in subscribers
+	// Render the post as RSS 1.0 item with RDF in content tag 
+	// Function not used now, as rss is is adding the RDF
 	public function rssrdf() {
 		$uri = $this->uri;
-		error_log($uri, 0);
 		$graph = $this->graph();
-		error_log($graph, 0);
 		$content = $this->data['content'];
 		$ocontent = strip_tags($content);
 		$date = $this->data['date'];
@@ -138,10 +135,8 @@ WHERE {
         //        error_log($res,0);
         //    }
         //} else {
-        
-		error_log("uri: ".$uri, 0);
+		//Adding the RDF to content 
 		$graph = $this->graph();
-		error_log("graph: ".$graph, 0);
         $turtle = $this->turtle();
         $content = "INSERT INTO <$graph> { $turtle }";
 		
@@ -207,14 +202,14 @@ WHERE {
 		}
 		$ht .= " [<a href=\"$data\">RDF</a>]\n";
 		if(SMOBAuth::check()) {
-			error_log("in smobpost",0);
-			error_log($uri,0);
 			if(strpos($uri, SMOB_ROOT) !== FALSE) {
 				$ex = explode('/', $uri);
-				error_log(join(' ', $ex),0);
+				error_log("DEBUG: post delete path: ".join(' ', $ex),0);
+			    error_log("DEBUG: post uri: ".$uri,0);
 				$action = SMOB_ROOT.'delete/'.$ex[5];
-                                $action = str_replace('post', 'delete', $uri);
-				error_log($action,0);
+				// the previous line doesn't work as the post is in the position 4
+                $action = str_replace('post', 'delete', $uri);
+				error_log("DEBUG: is going to be run the action: ".$action,0);
 				$ht .= " [<a href=\"$action\" onclick=\"javascript:return confirm('Are you sure ? This cannot be undone.')\">Delete post</a>]";			
 			} 
 			$action = $this->get_publish_uri();
@@ -364,6 +359,7 @@ WHERE {
 		if($followers) {
 			// Publish new feed to the hub
 
+            //@TODO: should the hub_url be stored somewhere?
             $hub_url = HUB_URL_PUBLISH;
             $topic_url = SMOB_ROOT.'me'.FEED_PATH;
             // Reusing do_curl function
@@ -371,19 +367,20 @@ WHERE {
             $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed");
             // all good -- anything in the 200 range 
             if (substr($result[2],0,1) == "2") {
-                error_log("$topic_url was succesfully published to $hub_url",0);
+                error_log("DEBUG: $topic_url was successfully published to hubsub $hub_url",0);
             }
-            error_log(join(' ', $result),0);
-
-            foreach ($result as $header => $value) {
-                    error_log("$header: $value <br />\n",0);
-            }
+            error_log("DEBUG: Server answer: ".join(' ', $result),0);
             
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
 			} else {
 				return;
-			}
+			}      
+//			if($action == 'DELETE FROM') {
+//				print '<li>Delete notification sent to your followers !</li>';
+//			} else {
+//				return;
+//			}
 		}
 	}
 

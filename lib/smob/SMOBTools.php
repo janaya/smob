@@ -316,25 +316,21 @@ LIMIT 1";
 	}
 
 	function rss2rdf($post_data) {
+	    // Function to convert RSS to RDF, some elements as tags will be missing
         //@FIXME: this solution is a bit hackish
         $post_data = str_replace('dc:date', 'dc_date', $post_data);
         
         // Parsing the new feeds to load in the triple store
         $xml = simplexml_load_string($post_data);
-        //if(count($xml) == 0)
-        //    return;
+        if(count($xml) == 0)
+            return;
+        error_log("DEBUG: xml received from publisher: "print_r($xml,1),0);
         foreach($xml->item as $item) {
-            error_log($item,0);
             $link = (string) $item->link;
-            error_log($link,0);
             $date = (string) $item->dc_date;
-            error_log($date,0);
             $description = (string) $item->description;
-            error_log($description,0);
             $site = $this->host($link);
-            error_log($site,0);
             $author = $site . "/me";
-            error_log($author,0);
 
             $query = "INSERT INTO <$link> {
             <$site> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://smob.me/ns#Hub> .
@@ -350,8 +346,8 @@ LIMIT 1";
             <$link#presence> <http://online-presence.net/opo/ns#declaredBy> <$author#id> .
             <$link#presence> <http://online-presence.net/opo/ns#StartTime> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
             <$link#presence> <http://online-presence.net/opo/ns#customMessage> <$link> . }";
-            error_log($query);
             SMOBStore::query($query);
+			error_log("DEBUG: Added the triples: $query",0);
         }
 	}
 	
@@ -364,22 +360,16 @@ LIMIT 1";
         $xml = simplexml_load_string($post_data);
         if(count($xml) == 0)
             return;
-        error_log("in getrdffromrss");
-        error_log(print_r($xml,1),0);
+        error_log("DEBUG: xml received from publisher: "print_r($xml,1),0);
         foreach($xml->item as $item) {
-            error_log($item,0);
             $link = (string) $item->link;
-            error_log($link,0);
-            $content_encoded = (string) $item->content_encoded;
-            error_log($content_encoded,0);
             $content = html_entity_decode((string) $item->content_encoded, ENT_COMPAT, "UTF-8");
-            error_log($content,0);
             $query = $content;
-            error_log("query: ".$query);
             SMOBStore::query($query);
+			error_log("DEBUG: Added the triples: $query",0);
         }
 	}
-	
+	// Function to get the scheme and domain host URL
 	function host($url) {
 	    $host = parse_url($url, PHP_URL_SCHEME) . "://" .  parse_url($url, PHP_URL_HOST) ;
 	    return $host;
