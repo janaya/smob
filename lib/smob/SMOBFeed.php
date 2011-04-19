@@ -52,6 +52,7 @@ class SMOBFeed {
 	xmlns:cc='http://web.resource.org/cc/'
 	xmlns:content='http://purl.org/rss/1.0/modules/content/'
 	xmlns:admin='http://webns.net/mvcb/'
+	xmlns:atom='http://www.w3.org/2005/Atom'
 > 
 
 <channel rdf:about='".SMOB_ROOT."'>
