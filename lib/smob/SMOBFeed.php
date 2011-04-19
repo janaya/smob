@@ -56,7 +56,7 @@ class SMOBFeed {
 
 <channel rdf:about='".SMOB_ROOT."'>
 	<title>$title</title>
-	<link rel='hub' href='".HUB_URL_SUBSCRIBE."'>".SMOB_ROOT."</link>
+	<atom:link rel='hub' href='".HUB_URL_SUBSCRIBE."'>".SMOB_ROOT."</link>
 	<description>$title</description>
 	<dc:creator>$owner</dc:creator>
 	<dc:date>$ts</dc:date>
