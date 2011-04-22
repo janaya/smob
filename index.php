@@ -140,10 +140,9 @@ if(!SMOBTools::check_config()) {
 		header ("Content-type: text/xml");
 		//$tweet = new SMOBFeed();
 		//$tweet->rss();
-		$rssfilepath = FEED_FILE_PATH;
-		error_log("DEBUG: rssfilepath: $rssfilepath");
-        $rssfile = fopen($rssfilepath, 'r') or die("can't open file");
-        $rss = fread($rssfile, filesize($filename));
+		error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH);
+        $rssfile = fopen(FEED_FILE_PATH, 'r') or die("can't open file");
+        $rss = fread($rssfile, filesize(FEED_FILE_PATH));
         fclose($rssfile);
         echo($rss);
 	}
@@ -153,10 +152,9 @@ if(!SMOBTools::check_config()) {
 		header ("Content-type: text/xml");
 		//$tweet = new SMOBFeed();
 		//$tweet->rssrdf();
-		$rssfilepath = FEED_FILE_PATH;
-		error_log("DEBUG: rssfilepath: $rssfilepath");
-        $rssfile = fopen($rssfilepath, 'r') or die("can't open file");
-        $rss = fread($rssfile, filesize($filename));
+		error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH);
+        $rssfile = fopen(FEED_FILE_PATH, 'r') or die("can't open file");
+        $rss = fread($rssfile, filesize(FEED_FILE_PATH));
         fclose($rssfile);
         echo($rss);
 	}
