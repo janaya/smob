@@ -143,7 +143,7 @@ if(!SMOBTools::check_config()) {
 		$rssfilepath = FEED_FILE_PATH;
 		error_log("DEBUG: rssfilepath: $rssfilepath");
         $rssfile = fopen($rssfilepath, 'r') or die("can't open file");
-        $rss = fread($rssfile);
+        $rss = fread($rssfile, filesize($filename));
         fclose($rssfile);
         echo($rss);
 	}
@@ -156,7 +156,7 @@ if(!SMOBTools::check_config()) {
 		$rssfilepath = FEED_FILE_PATH;
 		error_log("DEBUG: rssfilepath: $rssfilepath");
         $rssfile = fopen($rssfilepath, 'r') or die("can't open file");
-        $rss = fread($rssfile);
+        $rss = fread($rssfile, filesize($filename));
         fclose($rssfile);
         echo($rss);
 	}

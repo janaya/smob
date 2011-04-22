@@ -381,7 +381,7 @@ LIMIT 1";
 		$owner = SMOBTools::ownername();
 		$title = "SMOB Hub of $owner";
 		$ts = date('c');
-		fopen(FEED_FILE_PATH,'w');
+		$rssfile = fopen(FEED_FILE_PATH,'w');
 		$rss = "<?xml version='1.0' encoding='utf-8'?>
 
 <rdf:RDF
@@ -410,8 +410,8 @@ LIMIT 1";
 </channel>
 </rdf:RDF>
 ";
-        fwrite(FEED_FILE_PATH, $rss);
-        fclose(FEED_FILE_PATH);
+        fwrite($rssfile, $rss);
+        fclose($rssfile);
 	}
 }
 
