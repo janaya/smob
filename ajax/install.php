@@ -118,7 +118,8 @@ define('PURGE', '$purge');
 //define('HUB_URL_SUBSCRIBE', 'http://smob.superfeedr.com/');
 define('HUB_URL_PUBLISH', 'http://pubsubhubbub.appspot.com/publish');
 define('HUB_URL_SUBSCRIBE', 'http://pubsubhubbub.appspot.com/subscribe');
-define('FEED_PATH', '/rss');
+define('FEED_FILE_PATH', dirname(__FILE__).'/../rss/rss.xml');
+define('FEED_URL_PATH', dirname(__FILE__).'/rss');
 
 ";
 
@@ -177,6 +178,8 @@ define('TWITTER_PASS', '$twitter_pass');
 define('AUTH', '$auth');
 		
 ?>";
+
+    SMOBTools::initial_rss_file();
 
 	$f = fopen(dirname(__FILE__).'/../config/config.php', 'a');
 	fwrite($f, $config);

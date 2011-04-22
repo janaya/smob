@@ -153,7 +153,77 @@ WHERE {
 ";
 		return $item;
 	}
-	
+
+
+    public function add2rssfile() {
+		$uri = $this->uri;
+		$content = $this->data['content'];
+		$ocontent = strip_tags($content);
+		$date = $this->data['date'];
+		$name = $this->data['name'];
+		//Adding the RDF to content 
+		$turtle = $this->turtle();
+
+        $xml = new DOMDocument();
+        $xml->load(FEED_FILE_PATH);
+
+        $item = $xml->createElement("item");
+
+        $title = $xml->createElement("title");
+        $title->appendChild($xml->createTextNode($content));
+        $item->appendChild($title);
+
+        $description = $xml->createElement("description");
+        $description->appendChild($xml->createTextNode($ocontent));
+        $item->appendChild($description);
+
+        $dc_creator = $xml->createElement("dc:creator");
+        $dc_creator->appendChild($xml->createTextNode($name));
+        $item->appendChild($dc_creator);
+
+        $dc_date = $xml->createElement("dc:date");
+        $dc_date->appendChild($xml->createTextNode($date));
+        $item->appendChild($dc_date);
+
+        $link = $xml->createElement("link");
+        $link->appendChild($xml->createTextNode($uri));
+        $item->appendChild($link);
+
+        $content_encoded = $xml->createElement("content:encoded");
+        $content_encoded->appendChild($xml->createTextNode($turtle));
+        $item->appendChild($content_encoded);
+
+        $xml->appendChild($item);
+        
+        error_log("DEBUG: new RSS file content: ".$xml->saveXML());
+	    $filesaved = $xml->save(FEED_FILE_PATH);
+    }
+
+    public function deletefromrssfile() {
+    
+        $xml = new DOMDocument();
+        $xml->load(FEED_FILE_PATH);
+
+        $links = $xml->getElementsByTagName("link");
+        foreach($links as $link) {
+            if ($link->nodeValue == $this->uri) {
+
+                $item = $link->parentNode;
+
+	            $content_encoded = $item->getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/","encoded")->item(0);
+
+	            $empty_content_encoded = $xml->createElementNS("content","encoded");
+                $empty_content_encoded->appendChild(
+                	$xml->createCDATASection("")
+                );
+	            $item->replaceChild($empty_content_encoded, $content_encoded);    
+
+	        }          
+        }
+        error_log("xml".$xml->saveXML());  
+	    $filesaved = $xml->save(FEED_FILE_PATH);
+    }
+
 	// Render the post in RDFa/XHTML
 	public function render() {
 		global $sioc_nick, $count;
@@ -350,8 +420,9 @@ WHERE {
 	
 	public function delete() {
 		$uri = $this->uri; 
-		$graph = str_replace('/post/', '/data/', $uri);
+		$graph = $this->graph(); 
 		SMOBStore::query("DELETE FROM <$graph>");
+		$this->deletefromrssfile();
 		$this->notify('DELETE FROM');
 	}
 	
@@ -362,7 +433,7 @@ WHERE {
 
             //@TODO: should the hub_url be stored somewhere?
             $hub_url = HUB_URL_PUBLISH;
-            $topic_url = SMOB_ROOT.'me'.FEED_PATH;
+            $topic_url = SMOB_ROOT.'me'.FEED_URL_PATH;
             // Reusing do_curl function
             $feed = urlencode($topic_url);
             $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed");
@@ -374,14 +445,11 @@ WHERE {
             
 			if($action == 'LOAD') {
 				print '<li>Notification sent to your followers !</li>';
+			} elseif($action == 'DELETE FROM') {
+				print '<li>Delete notification sent to your followers !</li>';
 			} else {
 				return;
-			}      
-//			if($action == 'DELETE FROM') {
-//				print '<li>Delete notification sent to your followers !</li>';
-//			} else {
-//				return;
-//			}
+			}
 		}
 	}
 
