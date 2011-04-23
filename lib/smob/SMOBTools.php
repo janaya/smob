@@ -364,9 +364,14 @@ LIMIT 1";
         foreach($xml->item as $item) {
             $link = (string) $item->link;
             $content = html_entity_decode((string) $item->content_encoded, ENT_COMPAT, "UTF-8");
-            $query = "INSERT INTO <$link> { $content }";
+            error_log("DEBUG: RSS item content: $content");
+            if (empty($content)) {
+                $query = "DELETE FROM <$link>";
+            } else {
+                $query = "INSERT INTO <$link> { $content }";
+            }
             SMOBStore::query($query);
-			error_log("DEBUG: Added the triples: $query",0);
+			error_log("DEBUG: Query executed: $query",0);
         }
 	}
 	
