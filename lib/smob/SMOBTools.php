@@ -415,6 +415,7 @@ LIMIT 1";
 </rdf:RDF>
 ";
         fwrite($rssfile, $rss);
+        error_log("DEBUG: Created initial RSS file",0);
         fclose($rssfile);
 	}
 }

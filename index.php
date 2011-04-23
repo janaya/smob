@@ -141,7 +141,8 @@ if(!SMOBTools::check_config()) {
 		//$tweet = new SMOBFeed();
 		//$tweet->rss();
 		error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH);
-		if !(file_exists(FEED_FILE_PATH)) {
+		if (!file_exists(FEED_FILE_PATH)) {
+		    error_log("DEBUG: initial RSS file does not exists", 0);
 		    SMOBTools::initial_rss_file();
 		}
         $rssfile = fopen(FEED_FILE_PATH, 'r'); 
@@ -156,7 +157,8 @@ if(!SMOBTools::check_config()) {
 		//$tweet = new SMOBFeed();
 		//$tweet->rssrdf();
 		error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH);
-		if !(file_exists(FEED_FILE_PATH)) {
+		if (!file_exists(FEED_FILE_PATH)) {
+		    error_log("DEBUG: initial RSS file does not exists", 0);
 		    SMOBTools::initial_rss_file();
 		}
         $rssfile = fopen(FEED_FILE_PATH, 'r'); 
