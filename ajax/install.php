@@ -179,8 +179,6 @@ define('AUTH', '$auth');
 		
 ?>";
 
-    SMOBTools::initial_rss_file();
-
 	$f = fopen(dirname(__FILE__).'/../config/config.php', 'a');
 	fwrite($f, $config);
 	fclose($f);
