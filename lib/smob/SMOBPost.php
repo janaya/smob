@@ -171,7 +171,7 @@ WHERE {
 		//Adding the RDF to content 
 		$turtle = $this->turtle();
 		
-		SMOBTools::add2rssfile($uri, $ocontent, $date, $name, $turtle);
+		SMOBTools::add2rssfile($uri, $ocontent, $ocontent, $date, $name, $turtle);
     }
 
     public function deletefromrssfile() {

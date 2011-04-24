@@ -315,7 +315,7 @@ LIMIT 1";
 		return '"' . addslashes($date) . '"^^xsd:dateTime';
 	}
 
-    function add2rssfile($uri, $ocontent, $date, $name, $turtle) {
+    function add2rssfile($uri, $content, $ocontent, $date, $name, $turtle) {
 
         error_log("DEBUG: add2rssfile($uri, $ocontent, $date, $name, $turtle)",0);
         $xml = new DOMDocument();
@@ -355,12 +355,13 @@ LIMIT 1";
     
     function additem2rssfile($item) {
 
-        error_log("DEBUG: additem2rssfile($item)",0);
+        error_log("DEBUG: additem2rssfile",0);
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
         
         $item = $xml->importNode($item, true);
         $xml->appendChild($item);
+        $xml->formatOutput = true;
         error_log("DEBUG: ".$item->saveXML(),0);
         
         error_log("DEBUG: new RSS file content: ".$xml->saveXML());
