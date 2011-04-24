@@ -362,7 +362,7 @@ LIMIT 1";
         $item = $xml->importNode($item, true);
         $xml->appendChild($item);
         $xml->formatOutput = true;
-        error_log("DEBUG: ".$item->saveXML(),0);
+        error_log("DEBUG: ".$xml->saveXML($item),0);
         
         error_log("DEBUG: new RSS file content: ".$xml->saveXML());
 	    $filesaved = $xml->save(FEED_FILE_PATH); 

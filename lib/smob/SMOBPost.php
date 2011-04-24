@@ -163,7 +163,7 @@ WHERE {
 		//$name = $this->data['name'];
 		
 		$date = date($this->ts);
-		$content = "Update - ".$this->ts;
+		$content = "Update - ".$this->content;
 		$ocontent = strip_tags($content);
 		$name = SMOBTools::uri(SMOBTools::user_uri());
 		
