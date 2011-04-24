@@ -347,7 +347,9 @@ LIMIT 1";
         $item->appendChild($content_encoded);
         
         $xml->appendChild($item);
-        error_log("DEBUG: ".$item->saveXML(),0);
+        
+        $xml->formatOutput = true;
+        error_log("DEBUG: ".$xml->saveXML($item),0);
         SMOBTools::additem2rssfile($item);
     }
     

@@ -157,10 +157,17 @@ WHERE {
 
     public function add2rssfile() {
 		$uri = $this->uri;
-		$content = $this->data['content'];
+		//$content = $this->data['content'];
+		//$ocontent = strip_tags($content);
+		//$date = $this->data['date'];
+		//$name = $this->data['name'];
+		
+		$date = date($this->ts);
+		$content = "Update - ".$this->ts));
 		$ocontent = strip_tags($content);
-		$date = $this->data['date'];
-		$name = $this->data['name'];
+		$name = SMOBTools::uri(SMOBTools::user_uri());
+		
+		
 		//Adding the RDF to content 
 		$turtle = $this->turtle();
 		
