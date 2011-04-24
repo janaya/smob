@@ -315,42 +315,6 @@ LIMIT 1";
 		return '"' . addslashes($date) . '"^^xsd:dateTime';
 	}
 
-	function rss2rdf($post_data) {
-	    // Function to convert RSS to RDF, some elements as tags will be missing
-        //@FIXME: this solution is a bit hackish
-        $post_data = str_replace('dc:date', 'dc_date', $post_data);
-        
-        // Parsing the new feeds to load in the triple store
-        $xml = simplexml_load_string($post_data);
-        if(count($xml) == 0)
-            return;
-        error_log("DEBUG: xml received from publisher: ".print_r($xml,1),0);
-        foreach($xml->item as $item) {
-            $link = (string) $item->link;
-            $date = (string) $item->dc_date;
-            $description = (string) $item->description;
-            $site = $this->host($link);
-            $author = $site . "/me";
-
-            $query = "INSERT INTO <$link> {
-            <$site> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://smob.me/ns#Hub> .
-            <$link> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/types#MicroblogPost> .
-            <$link> <http://rdfs.org/sioc/ns#has_container> <$site> .
-            <$link> <http://rdfs.org/sioc/ns#has_creator> <$author> .
-            <$link> <http://xmlns.com/foaf/0.1/maker> <$author#id> .
-            <$link> <http://purl.org/dc/terms/created> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-            <$link> <http://purl.org/dc/terms/title> \"Update - $date\"^^<http://www.w3.org/2001/XMLSchema#string> .
-            <$link> <http://rdfs.org/sioc/ns#content> \"$description\"^^<http://www.w3.org/2001/XMLSchema#string> .
-            <$link#presence> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://online-presence.net/opo/ns#OnlinePresence> .
-            <$link#presence> <http://online-presence.net/opo/ns#declaredOn> <$author> .
-            <$link#presence> <http://online-presence.net/opo/ns#declaredBy> <$author#id> .
-            <$link#presence> <http://online-presence.net/opo/ns#StartTime> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-            <$link#presence> <http://online-presence.net/opo/ns#customMessage> <$link> . }";
-            SMOBStore::query($query);
-			error_log("DEBUG: Added the triples: $query",0);
-        }
-	}
-
     public add2rssfile($uri, $ocontent, $date, $name, $turtle) {
 
         $xml = new DOMDocument();
@@ -448,10 +412,10 @@ LIMIT 1";
             } else {
                 $query = "INSERT INTO <$link> { $content }";
                 $this->additem2rssfile($item);
-            }      
+            }   
+            SMOBStore::query($query);
+		    error_log("DEBUG: Query executed: $query",0);   
         }
-        SMOBStore::query($query);
-		error_log("DEBUG: Query executed: $query",0);
 	}
 	
 	// Function to get the scheme and domain host URL
@@ -496,6 +460,42 @@ LIMIT 1";
         fwrite($rssfile, $rss);
         error_log("DEBUG: Created initial RSS file",0);
         fclose($rssfile);
+	}
+
+	function rss2rdf($post_data) {
+	    // Function to convert RSS to RDF, some elements as tags will be missing
+        //@FIXME: this solution is a bit hackish
+        $post_data = str_replace('dc:date', 'dc_date', $post_data);
+        
+        // Parsing the new feeds to load in the triple store
+        $xml = simplexml_load_string($post_data);
+        if(count($xml) == 0)
+            return;
+        error_log("DEBUG: xml received from publisher: ".print_r($xml,1),0);
+        foreach($xml->item as $item) {
+            $link = (string) $item->link;
+            $date = (string) $item->dc_date;
+            $description = (string) $item->description;
+            $site = $this->host($link);
+            $author = $site . "/me";
+
+            $query = "INSERT INTO <$link> {
+            <$site> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://smob.me/ns#Hub> .
+            <$link> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/types#MicroblogPost> .
+            <$link> <http://rdfs.org/sioc/ns#has_container> <$site> .
+            <$link> <http://rdfs.org/sioc/ns#has_creator> <$author> .
+            <$link> <http://xmlns.com/foaf/0.1/maker> <$author#id> .
+            <$link> <http://purl.org/dc/terms/created> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+            <$link> <http://purl.org/dc/terms/title> \"Update - $date\"^^<http://www.w3.org/2001/XMLSchema#string> .
+            <$link> <http://rdfs.org/sioc/ns#content> \"$description\"^^<http://www.w3.org/2001/XMLSchema#string> .
+            <$link#presence> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://online-presence.net/opo/ns#OnlinePresence> .
+            <$link#presence> <http://online-presence.net/opo/ns#declaredOn> <$author> .
+            <$link#presence> <http://online-presence.net/opo/ns#declaredBy> <$author#id> .
+            <$link#presence> <http://online-presence.net/opo/ns#StartTime> \"$date\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+            <$link#presence> <http://online-presence.net/opo/ns#customMessage> <$link> . }";
+            SMOBStore::query($query);
+			error_log("DEBUG: Added the triples: $query",0);
+        }
 	}
 }
 
