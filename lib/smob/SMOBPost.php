@@ -163,65 +163,13 @@ WHERE {
 		$name = $this->data['name'];
 		//Adding the RDF to content 
 		$turtle = $this->turtle();
-
-        $xml = new DOMDocument();
-        $xml->load(FEED_FILE_PATH);
-
-        $item = $xml->createElement("item");
-
-        $title = $xml->createElement("title");
-        $title->appendChild($xml->createTextNode($content));
-        $item->appendChild($title);
-
-        $description = $xml->createElement("description");
-        $description->appendChild($xml->createTextNode($ocontent));
-        $item->appendChild($description);
-
-        $dc_creator = $xml->createElement("dc:creator");
-        $dc_creator->appendChild($xml->createTextNode($name));
-        $item->appendChild($dc_creator);
-
-        $dc_date = $xml->createElement("dc:date");
-        $dc_date->appendChild($xml->createTextNode($date));
-        $item->appendChild($dc_date);
-
-        $link = $xml->createElement("link");
-        $link->appendChild($xml->createTextNode($uri));
-        $item->appendChild($link);
-
-        $content_encoded = $xml->createElement("content:encoded");
-        $content_encoded->appendChild($xml->createTextNode($turtle));
-        $item->appendChild($content_encoded);
-
-        $xml->appendChild($item);
-        
-        error_log("DEBUG: new RSS file content: ".$xml->saveXML());
-	    $filesaved = $xml->save(FEED_FILE_PATH);
+		
+		SMOBTools::add2rssfile($uri, $ocontent, $date, $name, $turtle);
     }
 
     public function deletefromrssfile() {
-    
-        $xml = new DOMDocument();
-        $xml->load(FEED_FILE_PATH);
-
-        $links = $xml->getElementsByTagName("link");
-        foreach($links as $link) {
-            if ($link->nodeValue == $this->uri) {
-
-                $item = $link->parentNode;
-
-	            $content_encoded = $item->getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/","encoded")->item(0);
-
-	            $empty_content_encoded = $xml->createElementNS("content","encoded");
-                $empty_content_encoded->appendChild(
-                	$xml->createCDATASection("")
-                );
-	            $item->replaceChild($empty_content_encoded, $content_encoded);    
-
-	        }          
-        }
-        error_log("xml".$xml->saveXML());  
-	    $filesaved = $xml->save(FEED_FILE_PATH);
+        $uri = $this->uri;
+        SMOBTools::deletefromrssfile($uri);
     }
 
 	// Render the post in RDFa/XHTML
