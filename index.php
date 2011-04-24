@@ -154,17 +154,8 @@ if(!SMOBTools::check_config()) {
 	// is not being used for now
 	elseif($t == 'rssrdf_owner') {
 		header ("Content-type: text/xml");
-		//$tweet = new SMOBFeed();
-		//$tweet->rssrdf();
-		error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH);
-		if (!file_exists(FEED_FILE_PATH)) {
-		    error_log("DEBUG: initial RSS file does not exists", 0);
-		    SMOBTools::initial_rss_file();
-		}
-        $rssfile = fopen(FEED_FILE_PATH, 'r'); 
-        $rss = fread($rssfile, filesize(FEED_FILE_PATH));
-        fclose($rssfile);
-        echo($rss);
+		$tweet = new SMOBFeed();
+		$tweet->rssrdf();
 	}
 	elseif($t == 'sparql') {
 		if($_POST) {

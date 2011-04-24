@@ -317,6 +317,7 @@ LIMIT 1";
 
     function add2rssfile($uri, $ocontent, $date, $name, $turtle) {
 
+        error_log("DEBUG: add2rssfile($uri, $ocontent, $date, $name, $turtle)",0);
         $xml = new DOMDocument();
         
         $item = $xml->createElement("item");
@@ -345,16 +346,20 @@ LIMIT 1";
         $content_encoded->appendChild($xml->createTextNode($turtle));
         $item->appendChild($content_encoded);
         
+        $xml->appendChild($item);
+        error_log("DEBUG: ".$item->saveXML(),0);
         SMOBTools::additem2rssfile($item);
     }
     
     function additem2rssfile($item) {
 
+        error_log("DEBUG: additem2rssfile($item)",0);
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
         
         $item = $xml->importNode($item, true);
         $xml->appendChild($item);
+        error_log("DEBUG: ".$item->saveXML(),0);
         
         error_log("DEBUG: new RSS file content: ".$xml->saveXML());
 	    $filesaved = $xml->save(FEED_FILE_PATH); 
