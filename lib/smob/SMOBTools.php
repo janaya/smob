@@ -345,7 +345,7 @@ LIMIT 1";
         $content_encoded->appendChild($xml->createTextNode($turtle));
         $item->appendChild($content_encoded);
         
-        $this->additem2rssfile($item);
+        SMOBTools::additem2rssfile($item);
     }
     
     function additem2rssfile($item) {
@@ -366,7 +366,7 @@ LIMIT 1";
         $newitem = $newxml->getElementsByTagName("item")->item(0);
         error_log("DEBUG: new item to add to RSS file: ".$newitem->nodeValue);
         
-        $this->additem2rssfile($newitem);
+        SMOBTools::additem2rssfile($newitem);
     }
 
     function deletefromrssfile($uri) {
@@ -408,10 +408,10 @@ LIMIT 1";
             $link = $item->getElementsByTagName("link")->item(0)->nodeValue;
             if (empty($content)) {
                 $query = "DELETE FROM <$link>";
-                $this->deletefromrssfile($uri);
+                SMOBTools::deletefromrssfile($uri);
             } else {
                 $query = "INSERT INTO <$link> { $content }";
-                $this->additem2rssfile($item);
+                SMOBTools::additem2rssfile($item);
             }   
             SMOBStore::query($query);
 		    error_log("DEBUG: Query executed: $query",0);   
@@ -476,7 +476,7 @@ LIMIT 1";
             $link = (string) $item->link;
             $date = (string) $item->dc_date;
             $description = (string) $item->description;
-            $site = $this->host($link);
+            $site = SMOBTools::host($link);
             $author = $site . "/me";
 
             $query = "INSERT INTO <$link> {
