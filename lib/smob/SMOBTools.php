@@ -315,7 +315,7 @@ LIMIT 1";
 		return '"' . addslashes($date) . '"^^xsd:dateTime';
 	}
 
-    public add2rssfile($uri, $ocontent, $date, $name, $turtle) {
+    function add2rssfile($uri, $ocontent, $date, $name, $turtle) {
 
         $xml = new DOMDocument();
         
@@ -348,7 +348,7 @@ LIMIT 1";
         $this->additem2rssfile($item);
     }
     
-    public additem2rssfile($item) {
+    function additem2rssfile($item) {
 
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
@@ -359,7 +359,7 @@ LIMIT 1";
 	    $filesaved = $xml->save(FEED_FILE_PATH); 
     }
     
-    public additemstring2rssfile($itemstring) {
+    function additemstring2rssfile($itemstring) {
 
         $newxml = new DOMDocument();
         $newxml->loadXML($itemstring);
@@ -369,7 +369,7 @@ LIMIT 1";
         $this->additem2rssfile($newitem);
     }
 
-    public deletefromrssfile($uri) {
+    function deletefromrssfile($uri) {
     
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
