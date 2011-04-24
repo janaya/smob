@@ -353,6 +353,7 @@ LIMIT 1";
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
         
+        $item = $xml->importNode($item, true);
         $xml->appendChild($item);
         
         error_log("DEBUG: new RSS file content: ".$xml->saveXML());
