@@ -362,6 +362,15 @@ LIMIT 1";
         
         $item = $root->importNode($item, true);
         $root->appendChild($item);
+
+        $seq = $xml->getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","Seq")->item(0);
+        
+        $li = $xml->createElementNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","li");
+        $li.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf:resource"); 
+        $seq->appendChild($li);
+
+        <rdf:li rdf:resource="http://smob.rhizomatik.net/post/2011-04-24T22:55:55+02:00" />
+
         $xml->formatOutput = true;
         error_log("DEBUG: ".$xml->saveXML($item),0);
         
