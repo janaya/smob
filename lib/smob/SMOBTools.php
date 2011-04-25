@@ -432,10 +432,10 @@ LIMIT 1";
             $link = $item->getElementsByTagName("link")->item(0)->nodeValue;
             if (empty($content)) {
                 $query = "DELETE FROM <$link>";
-                SMOBTools::deletefromrssfile($link);
+                //SMOBTools::deletefromrssfile($link);
             } else {
                 $query = "INSERT INTO <$link> { $content }";
-                SMOBTools::additem2rssfile($item);
+                //SMOBTools::additem2rssfile($item);
             }   
             SMOBStore::query($query);
 		    error_log("DEBUG: Query executed: $query",0);   
