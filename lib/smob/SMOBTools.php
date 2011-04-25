@@ -362,8 +362,9 @@ LIMIT 1";
         $seq = $xml->getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","Seq")->item(0);
         //$lastli = $xml->getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","li")->item(0);
         
+        $link = $item->getElementsByTagName("link")->item(0)->nodeValue;
         $li = $xml->createElementNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","li");
-        $li->setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf:resource"); 
+        $li->setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf:resource", $link); 
         //$seq->appendChild($li);
         //$lastli->parentNode->insertBefore($li, $lastli);
         $seq->lastChild->parentNode->insertBefore($li, $seq->lastChild);
