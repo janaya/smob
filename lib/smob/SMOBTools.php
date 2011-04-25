@@ -369,8 +369,6 @@ LIMIT 1";
         $li.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf:resource"); 
         $seq->appendChild($li);
 
-        <rdf:li rdf:resource="http://smob.rhizomatik.net/post/2011-04-24T22:55:55+02:00" />
-
         $xml->formatOutput = true;
         error_log("DEBUG: ".$xml->saveXML($item),0);
         
