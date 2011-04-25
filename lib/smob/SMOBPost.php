@@ -163,15 +163,17 @@ WHERE {
 		//$name = $this->data['name'];
 		
 		$date = date($this->ts);
-		$content = "Update - ".$this->content;
+		//$content = "Update - ".$this->content;
+		$content = $this->content;
 		$ocontent = strip_tags($content);
-		$name = SMOBTools::uri(SMOBTools::user_uri());
+		//$name = SMOBTools::uri(SMOBTools::user_uri());
+		$name = "";
 		
 		
 		//Adding the RDF to content 
 		$turtle = $this->turtle();
 		
-		SMOBTools::add2rssfile($uri, $ocontent, $ocontent, $date, $name, $turtle);
+		SMOBTools::add2rssfile($uri, $ocontent, $date, $name, $turtle);
     }
 
     public function deletefromrssfile() {

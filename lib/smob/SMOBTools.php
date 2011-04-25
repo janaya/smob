@@ -315,7 +315,7 @@ LIMIT 1";
 		return '"' . addslashes($date) . '"^^xsd:dateTime';
 	}
 
-    function add2rssfile($uri, $content, $ocontent, $date, $name, $turtle) {
+    function add2rssfile($uri, $ocontent, $date, $name, $turtle) {
 
         error_log("DEBUG: add2rssfile($uri, $ocontent, $date, $name, $turtle)",0);
         $xml = new DOMDocument();
@@ -323,7 +323,7 @@ LIMIT 1";
         $item = $xml->createElement("item");
 
         $title = $xml->createElement("title");
-        $title->appendChild($xml->createTextNode($content));
+        $title->appendChild($xml->createTextNode($ocontent));
         $item->appendChild($title);
 
         $description = $xml->createElement("description");
@@ -343,7 +343,7 @@ LIMIT 1";
         $item->appendChild($link);
 
         $content_encoded = $xml->createElement("content:encoded");
-        $content_encoded->appendChild($xml->createTextNode($turtle));
+        $content_encoded->appendChild($xml->createCDATASection($turtle));
         $item->appendChild($content_encoded);
         
         $xml->appendChild($item);
@@ -358,16 +358,20 @@ LIMIT 1";
         error_log("DEBUG: additem2rssfile",0);
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
-        $root->documentElement;
-        
-        $item = $root->importNode($item, true);
-        $root->appendChild($item);
 
         $seq = $xml->getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","Seq")->item(0);
+        //$lastli = $xml->getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","li")->item(0);
         
         $li = $xml->createElementNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","li");
         $li.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf:resource"); 
-        $seq->appendChild($li);
+        //$seq->appendChild($li);
+        //$lastli->parentNode->insertBefore($li, $lastli);
+        $seq->lastChild->parentNode->insertBefore($li, $seq->lastChild);
+        
+        $root->documentElement;
+        $item = $root->importNode($item, true);
+        //$root->appendChild($item);
+        $root->lastChild->parentNode->insertBefore($item, $root->lastChild);
 
         $xml->formatOutput = true;
         error_log("DEBUG: ".$xml->saveXML($item),0);
