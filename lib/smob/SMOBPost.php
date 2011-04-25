@@ -157,15 +157,18 @@ WHERE {
 
     public function add2rssfile() {
 		$uri = $this->uri;
+		// the data array is only generated when the post is loaded from the triple store
+		// but it is not generated when the post is generated from user interface
+		// it has no sense to get it from the triple store if it is still in memory
 		//$content = $this->data['content'];
 		//$ocontent = strip_tags($content);
 		//$date = $this->data['date'];
 		//$name = $this->data['name'];
 		
 		$date = date($this->ts);
-		//$content = "Update - ".$this->content;
 		$content = $this->content;
 		$ocontent = strip_tags($content);
+		// @FIXME: can not get the name from new post data model, although it is stored in the triples
 		//$name = SMOBTools::uri(SMOBTools::user_uri());
 		$name = "";
 		
