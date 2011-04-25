@@ -358,9 +358,10 @@ LIMIT 1";
         error_log("DEBUG: additem2rssfile",0);
         $xml = new DOMDocument();
         $xml->load(FEED_FILE_PATH);
+        $root->documentElement;
         
-        $item = $xml->importNode($item, true);
-        $xml->appendChild($item);
+        $item = $root->importNode($item, true);
+        $root->appendChild($item);
         $xml->formatOutput = true;
         error_log("DEBUG: ".$xml->saveXML($item),0);
         
