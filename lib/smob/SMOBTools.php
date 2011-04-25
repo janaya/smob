@@ -370,7 +370,7 @@ LIMIT 1";
         $seq->lastChild->parentNode->insertBefore($li, $seq->lastChild);
         
         $root = $xml->documentElement;
-        $item = $root->importNode($item, true);
+        $item = $xml->importNode($item, true);
         //$root->appendChild($item);
         $root->lastChild->parentNode->insertBefore($item, $root->lastChild);
 
