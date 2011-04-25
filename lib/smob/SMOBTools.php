@@ -424,15 +424,15 @@ LIMIT 1";
         
         $items = $xml->getElementsByTagName("item");
         foreach( $items as $item )   {
-            $contents_encoded = $item->getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/","encoded")->item(0);
+            $content_encoded = $item->getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/","encoded")->item(0);
             //utf8_decode
-            $content = html_entity_decode(htmlentities($content->nodeValue, ENT_COMPAT, 'UTF-8'), 
+            $content = html_entity_decode(htmlentities($content_encoded->nodeValue, ENT_COMPAT, 'UTF-8'), 
                                      ENT_COMPAT,'ISO-8859-15');
 	        error_log("DEBUG: RSS item content".$content_encoded->nodeValue);
             $link = $item->getElementsByTagName("link")->item(0)->nodeValue;
             if (empty($content)) {
                 $query = "DELETE FROM <$link>";
-                SMOBTools::deletefromrssfile($uri);
+                SMOBTools::deletefromrssfile($link);
             } else {
                 $query = "INSERT INTO <$link> { $content }";
                 SMOBTools::additem2rssfile($item);
