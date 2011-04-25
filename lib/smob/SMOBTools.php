@@ -357,6 +357,7 @@ LIMIT 1";
 
         error_log("DEBUG: additem2rssfile",0);
         $xml = new DOMDocument();
+        $xml->formatOutput = true;
         $xml->load(FEED_FILE_PATH);
 
         $seq = $xml->getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","Seq")->item(0);
@@ -367,14 +368,14 @@ LIMIT 1";
         $li->setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf:resource", $link); 
         //$seq->appendChild($li);
         //$lastli->parentNode->insertBefore($li, $lastli);
-        $seq->lastChild->parentNode->insertBefore($li, $seq->lastChild);
+        $seq->insertBefore($li, $seq->firstChild);
         
         $root = $xml->documentElement;
         $item = $xml->importNode($item, true);
         //$root->appendChild($item);
-        $root->lastChild->parentNode->insertBefore($item, $root->lastChild);
+        $lastitem = $item->getElementsByTagName("item")->firstChild;
+        $root->insertBefore($item, $lastitem);
 
-        $xml->formatOutput = true;
         error_log("DEBUG: ".$xml->saveXML($item),0);
         
         error_log("DEBUG: new RSS file content: ".$xml->saveXML());
