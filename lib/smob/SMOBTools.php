@@ -369,7 +369,7 @@ LIMIT 1";
         //$lastli->parentNode->insertBefore($li, $lastli);
         $seq->lastChild->parentNode->insertBefore($li, $seq->lastChild);
         
-        $root->documentElement;
+        $root = $xml->documentElement;
         $item = $root->importNode($item, true);
         //$root->appendChild($item);
         $root->lastChild->parentNode->insertBefore($item, $root->lastChild);
