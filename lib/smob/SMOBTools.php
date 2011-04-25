@@ -373,7 +373,7 @@ LIMIT 1";
         $root = $xml->documentElement;
         $item = $xml->importNode($item, true);
         //$root->appendChild($item);
-        $lastitem = $item->getElementsByTagName("item")->firstChild;
+        $lastitem = $item->getElementsByTagName("item")->lastChild;
         $root->insertBefore($item, $lastitem);
 
         error_log("DEBUG: ".$xml->saveXML($item),0);
@@ -402,12 +402,13 @@ LIMIT 1";
             if ($link->nodeValue == $uri) {
 
                 $item = $link->parentNode;
-
 	            $content_encoded = $item->getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/","encoded")->item(0);
+                error_log("DEBUG: deleting content: ".$content_encoded->nodeValue, 0);
 
-	            $empty_content_encoded = $xml->createElementNS("content","encoded");
+	            $empty_content_encoded = $xml->createElement("content:encoded");
                 $empty_content_encoded->appendChild(
-                	$xml->createCDATASection("")
+                	//$xml->createCDATASection("")
+                	$xml->createTextNode("")
                 );
 	            $item->replaceChild($empty_content_encoded, $content_encoded);    
 
