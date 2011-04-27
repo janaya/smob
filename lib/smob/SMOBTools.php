@@ -372,7 +372,7 @@ LIMIT 1";
         $root = $xml->documentElement;
         $item = $xml->importNode($item, true);
         //$root->appendChild($item);
-        $lastitem = $item->getElementsByTagName("item")->lastChild;
+        $lastitem = $item->getElementsByTagName("item")->last_child;
         $root->insertBefore($item, $lastitem);
 
         error_log("DEBUG: ".$xml->saveXML($item),0);
