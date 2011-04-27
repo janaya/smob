@@ -375,10 +375,15 @@ LIMIT 1";
         $lastitem = $item->getElementsByTagName("item")->last_child;
         $root->insertBefore($item, $lastitem);
 
-        error_log("DEBUG: ".$xml->saveXML($item),0);
+        error_log("DEBUG: new RSS item: ".$xml->saveXML($item),0);
         
         error_log("DEBUG: new RSS file content: ".$xml->saveXML());
-	    $filesaved = $xml->save(FEED_FILE_PATH); 
+	    //$filesaved = $xml->save(FEED_FILE_PATH); 
+	    // save the file formated
+        $rss = $xml->saveXML();
+        $rssfile = fopen(FEED_FILE_PATH,'w');
+        fwrite($rssfile, $rss);
+        fclose($rssfile);
     }
     
     function additemstring2rssfile($itemstring) {
