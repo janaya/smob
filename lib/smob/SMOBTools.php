@@ -321,6 +321,7 @@ LIMIT 1";
         $xml = new DOMDocument();
         
         $item = $xml->createElement("item");
+        $item->setAttribute("rdf:about", $uri);
 
         $title = $xml->createElement("title");
         $title->appendChild($xml->createTextNode($ocontent));
@@ -337,7 +338,7 @@ LIMIT 1";
         $dc_date = $xml->createElement("dc:date");
         $dc_date->appendChild($xml->createTextNode($date));
         $item->appendChild($dc_date);
-
+        
         $link = $xml->createElement("link");
         $link->appendChild($xml->createTextNode($uri));
         $item->appendChild($link);
