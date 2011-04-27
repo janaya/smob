@@ -377,7 +377,7 @@ LIMIT 1";
 	    //$filesaved = $xml->save(FEED_FILE_PATH); 
 	    // save the file formated
         $rssfile = fopen(FEED_FILE_PATH,'w');
-        fwrite(print_r($xml->saveXML(),1), $rss);
+        fwrite($rssfile, print_r($xml->saveXML(),1));
         fclose($rssfile);
         
         error_log("DEBUG: saved RSS file : ".$xml->saveXML(),0);
