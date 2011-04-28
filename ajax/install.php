@@ -120,6 +120,8 @@ define('HUB_URL_PUBLISH', 'http://pubsubhubbub.appspot.com/publish');
 define('HUB_URL_SUBSCRIBE', 'http://pubsubhubbub.appspot.com/subscribe');
 define('FEED_FILE_PATH', dirname(__FILE__).'/../rss/rss.xml');
 define('FEED_URL_PATH', '/rss');
+define('WSSERVER_HOST', 'FIXME');
+define('WSSERVER_PORT', '27261');
 
 ";
 

@@ -41,41 +41,44 @@ if(!SMOBTools::check_config()) {
 			    $local = "INSERT INTO <".SMOB_ROOT."data/followings> { $follow }";
 			    SMOBStore::query($local);
 			    error_log("DEBUG: Added following $remote_user with the query: $local",0);
-			    SMOBTemplate::header('');
 
 			    // Subscribe to the hub
 
                 // Get the Publisher (following) Hub
 			    $remote_user_feed = $remote_user.FEED_URL_PATH;
-			    $xml = simplexml_load_file($remote_user_feed);
-                if(count($xml) == 0)
-                    return;
-                $link_attributes = $xml->channel->link->attributes();
-                if($link_attributes['rel'] == 'hub') {
-                    $hub_url = $link_attributes['href'];
-                }
-                $callback_url = urlencode(SMOB_ROOT."callback");
-                $feed = urlencode($remote_user_feed);
+			    
+			    SMOBTemplateWebsocket::header('', null, null, $remote_user_feed, HUB_URL_SUBSCRIBE);
+			    
+			    //$xml = simplexml_load_file($remote_user_feed);
+                //if(count($xml) == 0)
+                //    return;
+                //$link_attributes = $xml->channel->link->attributes();
+                //if($link_attributes['rel'] == 'hub') {
+                //    $hub_url = $link_attributes['href'];
+                //}
+			    
+                //$callback_url = urlencode(SMOB_ROOT."callback");
+                //$feed = urlencode($remote_user_feed);
                 
                 // Not using subscriber library as it does not allow async verify
                 // Reusing do_curl function
-                $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+                //$result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
                 // all good -- anything in the 200 range 
-                if (substr($result[2],0,1) == "2") {
-                    error_log("DEBUG: Successfully subscribed to topic $remote_user_feed using hubsub $hub_url",0);
-                }
-                error_log("DEBUG: Server answer: ".join(' ', $result),0);
+                //if (substr($result[2],0,1) == "2") {
+                //    error_log("DEBUG: Successfully subscribed to topic $remote_user_feed using hubsub $hub_url",0);
+                //}
+                //error_log("DEBUG: Server answer: ".join(' ', $result),0);
 
-			    print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
+			    //print "<a href='$remote_user'>$remote_user</a> was added to your following list and was notified about your subscription";
 			    SMOBTemplate::footer();	
 			    
 			    // And ping to update the followers list remotely
 			    // @TODO: This will work only if $u doesn't have /me or something in the end
 			    //$ping = str_replace("me", "add", $ping)."/follower/$local_user";
-			    $ping = SMOBTools::host($remote_user)."/add/follower/$local_user";
-			    $result = SMOBTools::do_curl($ping);
-			    error_log("DEBUG: Sent $ping",0);
-			    error_log("DEBUG: Server answer: ".join(' ', $result),0);
+			    //$ping = SMOBTools::host($remote_user)."/add/follower/$local_user";
+			    //$result = SMOBTools::do_curl($ping);
+			    //error_log("DEBUG: Sent $ping",0);
+			    //error_log("DEBUG: Server answer: ".join(' ', $result),0);
 			 }
 		}
 	}
