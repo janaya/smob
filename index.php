@@ -47,8 +47,8 @@ if(!SMOBTools::check_config()) {
                 // Get the Publisher (following) Hub
 			    $remote_user_feed = $remote_user.FEED_URL_PATH;
 			    
+			    error_log("rendering header",0);
 			    SMOBTemplateWebsocket::header('', null, null, $remote_user_feed, HUB_URL_SUBSCRIBE);
-			    
 			    //$xml = simplexml_load_file($remote_user_feed);
                 //if(count($xml) == 0)
                 //    return;

@@ -188,7 +188,7 @@ xml:lang="fr">
                 conn.onopen = function () {
                     //state.innerHTML = "Socket opened";
                     //state.className = "open";
-                    log("Socket opened");
+                    console.debug("Socket opened");
                 };
 
                 conn.onmessage = function( event ) {
@@ -199,12 +199,13 @@ xml:lang="fr">
                     //if($('#messages').children().size() > 5) {
                     //    $('#messages pre:last-child').remove();
                     //}
+                    console.debug(string);
                 };
 
                 conn.onclose = function( event ) {
                     //state.innerHTML = "x";
                     //state.className = "closed";
-                    log("socket closed");
+                    console.debug("socket closed");
                 };
             }
         }        		
@@ -214,9 +215,9 @@ xml:lang="fr">
             //state.className = "failed";
 			//$("#news").show("normal");
 			//$('#news').html("Sockets not supported");	
-			log("sockets not supported");
+			console.debug("sockets not supported");
         } else {
-			log("sockets supported");
+			console.debug("sockets supported");
             form.addEventListener("submit", function (e) {
                 e.preventDefault();
 
