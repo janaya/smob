@@ -223,7 +223,7 @@ xml:lang="fr">
 
                 // if web socket connected
                 if (conn.readyState === 1) {
-                    var connection = {"feed_url": "<?php echo $topic_url; ?>", "hub_url": "http://pubsubhubbub.appspot.com/subscribe"};
+                    var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
                     conn.send(JSON.stringify(connection));
                 }
             }, false);
