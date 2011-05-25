@@ -1,129 +1,129 @@
-<?php	
+<?php  
 
 /*
-	Deals with all the rendering aspect, from the complete application to individual posts
+  Deals with all the rendering aspect, from the complete application to individual posts
 */
 
 class SMOBTemplateWebsocket {
-		
-	public function publisher_header($reply_of = null) {
-		
-		$contentblock = $reply_of ? "$('.content-details').show();" : "
-		$('#content').focus(function() {
-			$('.content-details').show();
-		});";
-	
-		$form_js = <<<__END__
-		<script type="text/javascript">
-		$(document).ready(function() {
-			$("#publish").click(function () {
-				publish();
-			});
-			$contentblock
-			numwords = 0;
-			// XXX form.blur doesn't work :-/
-			$('#content-form').blur(function() {
-				if ($('#content').val().length == 0) {
-					$('.content-details').hide();
-				}
-			});
-			$('#content').keyup(function(){
-				interlink();
-				charsleft();
-			});
-		});
-		</script>
+    
+  public function publisher_header($reply_of = null) {
+    
+    $contentblock = $reply_of ? "$('.content-details').show();" : "
+    $('#content').focus(function() {
+      $('.content-details').show();
+    });";
+  
+    $form_js = <<<__END__
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $("#publish").click(function () {
+        publish();
+      });
+      $contentblock
+      numwords = 0;
+      // XXX form.blur doesn't work :-/
+      $('#content-form').blur(function() {
+        if ($('#content').val().length == 0) {
+          $('.content-details').hide();
+        }
+      });
+      $('#content').keyup(function(){
+        interlink();
+        charsleft();
+      });
+    });
+    </script>
 __END__;
-		$form = '<h2>What&apos;s on your mind?</h2>';
-		if($reply_of) {
-				$r = explode('/', $reply_of);
-				if($r[2] == 'twitter.com') {
-					$reply = '@'.$r[3].' ';
-				}
-				$len = 140 - strlen($reply);
-				$form .= "<p>You are replying to post <a href='$reply_of'>$reply_of</a></p>";
-				$form .= "<input type='hidden' name='reply_of' id='reply_of' value='$reply_of' />";
-		} else {
-				$len = 140;
-				$form .= "<input type='hidden' name='reply_of' id='reply_of'/>";
-		}
-		$form .= '
-			<span class="content-details" style="display: none;">
-			(You have <span id="charsleft">' . $len . '</span> characters left)
-			</span>
-			<form id="content-form">
-			<textarea name="content" id="content" rows="5" cols="82">' . $reply. '</textarea>
-			<div class="content-details" style="display: none;">
-';		
-		if($loc = SMOBTools::location()) {
-			$location_uri = 'value ="'.$loc[0].'"';
-			$location = 'value ="'.$loc[1].'"';
-		}
+    $form = '<h2>What&apos;s on your mind?</h2>';
+    if($reply_of) {
+        $r = explode('/', $reply_of);
+        if($r[2] == 'twitter.com') {
+          $reply = '@'.$r[3].' ';
+        }
+        $len = 140 - strlen($reply);
+        $form .= "<p>You are replying to post <a href='$reply_of'>$reply_of</a></p>";
+        $form .= "<input type='hidden' name='reply_of' id='reply_of' value='$reply_of' />";
+    } else {
+        $len = 140;
+        $form .= "<input type='hidden' name='reply_of' id='reply_of'/>";
+    }
+    $form .= '
+      <span class="content-details" style="display: none;">
+      (You have <span id="charsleft">' . $len . '</span> characters left)
+      </span>
+      <form id="content-form">
+      <textarea name="content" id="content" rows="5" cols="82">' . $reply. '</textarea>
+      <div class="content-details" style="display: none;">
+';    
+    if($loc = SMOBTools::location()) {
+      $location_uri = 'value ="'.$loc[0].'"';
+      $location = 'value ="'.$loc[1].'"';
+    }
 $form .= '
-			<fieldset><legend>Current location</legend>
-			<input type="text" name="location" id="location" class="autocomplete" '.$location.'/>
-			<input type="hidden" name="location_uri" id="location_uri" '.$location_uri.'/>
-			</fieldset>
-';		
-$form .= '	
-			<fieldset><legend>Interlinking</legend>
-			<div id="lod-form">Links will be suggested while typing ... (space required after each #tag)
-				<div id="tabs"><ul></ul></div>
-			</div>
-			</fieldset>
+      <fieldset><legend>Current location</legend>
+      <input type="text" name="location" id="location" class="autocomplete" '.$location.'/>
+      <input type="hidden" name="location_uri" id="location_uri" '.$location_uri.'/>
+      </fieldset>
+';    
+$form .= '  
+      <fieldset><legend>Interlinking</legend>
+      <div id="lod-form">Links will be suggested while typing ... (space required after each #tag)
+        <div id="tabs"><ul></ul></div>
+      </div>
+      </fieldset>
 ';
-	
-		$form .= '<fieldset><legend>Broadcast</legend>';
-		if(TWITTER_POST) {
-			$form .= "<input type='checkbox' name='twitter' id='twitter' checked='true'/>Twitter as ".TWITTER_USER."<br/>";
-		}
-		$form .= "<input type='checkbox' name='sindice' id='sindice' checked='true'/>Ping Sindice<br/>";
-		$form .= '</fieldset>'; 
+  
+    $form .= '<fieldset><legend>Broadcast</legend>';
+    if(TWITTER_POST) {
+      $form .= "<input type='checkbox' name='twitter' id='twitter' checked='true'/>Twitter as ".TWITTER_USER."<br/>";
+    }
+    $form .= "<input type='checkbox' name='sindice' id='sindice' checked='true'/>Ping Sindice<br/>";
+    $form .= '</fieldset>'; 
 
-		$form .= '
-			</div>
-			</form>
+    $form .= '
+      </div>
+      </form>
 
-			<button id="publish" class="content-details" style="display: none;">SMOB it!</button>
+      <button id="publish" class="content-details" style="display: none;">SMOB it!</button>
 
-			<div id="smob-publish" style="display: none;">
-				<br/><em>Publishing content ...</em>
-			</div>
+      <div id="smob-publish" style="display: none;">
+        <br/><em>Publishing content ...</em>
+      </div>
 ';
-		return array($form_js, $form);
-	}
-			
-	public function header($publisher, $reply_of = null, $ismap = null, $topic_url = null, $hub_url = null) {
-		global $type;
-		//if(!defined('SMOB_ROOT')) {
-		if(!defined(SMOB_ROOT)) {
-			define('SMOB_ROOT', '');
-		}
-		if($publisher) {
-			list($form_js, $form) = SMOBTemplate::publisher_header($reply_of);
-		}
-		if($ismap) {
-			// GMap hack - FIXME !!
-			echo '<br/>';
-		}
+    return array($form_js, $form);
+  }
+      
+  public function header($publisher, $reply_of = null, $ismap = null, $topic_url = null, $hub_url = null) {
+    global $type;
+    //if(!defined('SMOB_ROOT')) {
+    if(!defined(SMOB_ROOT)) {
+      define('SMOB_ROOT', '');
+    }
+    if($publisher) {
+      list($form_js, $form) = SMOBTemplate::publisher_header($reply_of);
+    }
+    if($ismap) {
+      // GMap hack - FIXME !!
+      echo '<br/>';
+    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" 
- 	"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+   "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
 <html
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:v="urn:schemas-microsoft-com:vml"
-	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:dcterms="http://purl.org/dc/terms/"
-	xmlns:foaf="http://xmlns.com/foaf/0.1/" 
-	xmlns:sioc="http://rdfs.org/sioc/ns#"
-	xmlns:sioct="http://rdfs.org/sioc/types#"
-	xmlns:ctag="http://commontag.org/ns#"
-	xmlns:opo="http://online-presence.net/opo/ns#"
-	xmlns:smob="http://smob.me/ns#"
-	xmlns:moat="http://moat-project.org/ns#"
-	xmlns:content="http://purl.org/rss/1.0/modules/content/"
-	xmlns:rev="http://purl.org/stuff/rev#"
+  xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/" 
+  xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:sioct="http://rdfs.org/sioc/types#"
+  xmlns:ctag="http://commontag.org/ns#"
+  xmlns:opo="http://online-presence.net/opo/ns#"
+  xmlns:smob="http://smob.me/ns#"
+  xmlns:moat="http://moat-project.org/ns#"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:rev="http://purl.org/stuff/rev#"
 xml:lang="fr">
 
 <head profile="http://ns.inria.fr/grddl/rdfa/">
@@ -134,8 +134,8 @@ xml:lang="fr">
 
   <link type="text/css" href="http://jqueryui.com/latest/themes/base/jquery.ui.all.css" rel="stylesheet" />
 
-  <script type="text/javascript" src="http://www.google.com/jsapi"></script>	
-  <script type="text/javascript">	
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>  
+  <script type="text/javascript">  
     google.load("jquery", "1.4.1");
     google.load("jqueryui", "1.7.2");
   </script>
@@ -148,63 +148,72 @@ xml:lang="fr">
 
   <base href="<?php echo $root; ?>" />
   <script type="text/javascript">
-	var state = 0;
-	var maxstate = 6;
-	$(function() {
-		$("#step").click(function () {
-			process();
-		});
-	});
-	$(function() { 
-		$("#np").everyTime(10000,function(i) {
-			getnews();
-		});
-	});
-	$(document).ready(function(){
-		$("#tabs").tabs();
-		<?php if($ismap) { echo "\n\nmap();"; } ?>
-		
-		//var state       = document.getElementById("news");
-		//var state = document.createElement('div');
-		//var conn = 0;
-		var conn = {};
-		var host = "<?php echo WSSERVER_HOST; ?>",
-            port = <?php echo WSSERVER_PORT; ?>;
-        var serverUri = "ws://"+host+":"+port;
-        var feed        = document.getElementById('feed'),
-            form        = feed.form;
-		// Outputs to console and list
-		function log(message) {
-			var state = document.createElement('div');
-			state.innerHTML = message;
-			document.getElementById('main').appendChild(state);
-		}
-		function html_entity_decode(s) {
-      var t=document.createElement('textarea');
-      t.innerHTML = s;
-      var v = t.value;
-      t.parentNode.removeChild(t);
-      return v;
-    }
-    function openConnection() {
-      if ( !conn.readyState || conn.readyState > 1 ) {
-        conn = new WebSocket( serverUri );
+    var state = 0;
+    var maxstate = 6;
+    $(function() {
+      $("#step").click(function () {
+        process();
+      });
+    });
+    
+    $(function() { 
+      $("#np").everyTime(10000,function(i) {
+        getnews();
+      });
+    });
+    
+    $(document).ready(function(){
+      $("#tabs").tabs();
+      <?php if($ismap) { echo "\n\nmap();"; } ?>
 
-        conn.onopen = function () {
-            //state.innerHTML = "Socket opened";
-            //state.className = "open";
+      var conn = {};
+      var host = "<?php echo WSSERVER_HOST; ?>",
+          port = <?php echo WSSERVER_PORT; ?>;
+      var serverUri = "ws://"+host+":"+port;
+      var feed        = document.getElementById('feed'),
+          form        = feed.form;
+          
+      // Outputs to console and list
+      function log(message) {
+        var state = document.createElement('div');
+        state.innerHTML = message;
+        document.getElementById('main').appendChild(state);
+      }
+
+      function html_entity_decode(s) {
+        var t=document.createElement('textarea');
+        t.innerHTML = s;
+        var v = t.value;
+        t.parentNode.removeChild(t);
+        return v;
+      }
+      
+      function openConnection() {
+        if ( !conn.readyState || conn.readyState > 1 ) {
+
+          conn = new WebSocket( serverUri );
+
+          conn.onopen = function () {
             console.debug("Socket opened");
-        };
+            // while not solved that real hub subscription is done per socket:
+            //   subscribe again followings:
+            //   $followings = SMOBTools::followings();
+            //   foreach($followings as $following) {
+            //     var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $following['uri']; ?>"};
+            //     conn.send(JSON.stringify(connection));
+            //     $.get("add/following/$following['uri']", string, function(data){
+            //       console.debug("adding following...");
+            //     });
+          };
 
-        conn.onmessage = function( event ) {
+          conn.onmessage = function( event ) {
             var string = event.data;
-            //var code = format_xml(string).replace(/></,'').replace(/\&/g,'&'+'amp;').replace(/</g,'&'+'lt;').replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;')
             //$('#messages').prepend("<pre class='sh_xml'><code>"+ code + "</code></pre>");
             //sh_highlightDocument(); 
             //if($('#messages').children().size() > 5) {
             //    $('#messages pre:last-child').remove();
             //}
-            console.debug(string);
+            console.debug(string); 
             
             // received a feed update
             if (string.indexOf("xml")==2) {
@@ -212,50 +221,43 @@ xml:lang="fr">
               // send the data to the php callback
               $.post("callback/", string, function(data){
                 console.debug("sent feed update to the php callback");
-		            if(data) {
-		              console.debug("post callback/ result:"+data);
-		            }
-			        });
-            }
-        };
-
-        conn.onclose = function( event ) {
-            //state.innerHTML = "x";
-            //state.className = "closed";
-            console.debug("socket closed");
-        };
-      }
-    }        		
-        
-		if (!window.WebSocket) {
-            //state.innerHTML = "Sockets not supported";
-            //state.className = "failed";
-			//$("#news").show("normal");
-			//$('#news').html("Sockets not supported");	
-			console.debug("sockets not supported");
-        } else {
-			console.debug("sockets supported");
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-
-                // if web socket connected
-                if (conn.readyState === 1) {
-                    var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
-                    conn.send(JSON.stringify(connection));
+                if(data) {
                 }
-            }, false);
-            openConnection();
-            // if web socket connected
-            //if (conn.readyState === 1) {
-            //if (conn.readyState === 0) {
-            //    var connection = {"feed_url": "<?php echo $topic_url; ?>", "hub_url": "<?php echo $hub_url; ?>"};
-            //    conn.send(JSON.stringify(connection));
-            //}
+              });
+            }
+            
+          };
+
+          conn.onclose = function( event ) {
+            console.debug("socket closed");
+          };
         }
-		
-		
-	});
+      }            
+          
+      if (!window.WebSocket) {
+        console.debug("sockets not supported");
+        // TODO: advice sockets not supported
+        // if behind a firewall:
+        //   advice can not subscribe nor get updates
+        // else:
+        //   if want to subscribe:
+      } else {
+        console.debug("sockets supported");
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // if web socket connected
+            if (conn.readyState === 1) {
+                var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
+                conn.send(JSON.stringify(connection));
+            }
+        }, false);
+        openConnection();
+      }
+      
+    });
   </script>
+  
   <?php echo $form_js; ?>
 </head>
 
@@ -270,20 +272,20 @@ xml:lang="fr">
 
 <div id="main">
 
-<div class="left">	
-	
-<?php echo $form; ?>	
+<div class="left">  
+  
+<?php echo $form; ?>  
 
     <form>
     Are you sure you want to follow?
     <input type="submit" id="feed" value="Yes" />
     </form>
 
-<?php		
-	}
-	
-	public function footer() {
-		$version = SMOBTools::version();
+<?php    
+  }
+  
+  public function footer() {
+    $version = SMOBTools::version();
 ?>
 </div>
 
@@ -308,7 +310,7 @@ xml:lang="fr">
 <ul>
 <li><a href='<?php echo SMOB_ROOT; ?>auth'>Authenticate</a></li>
 </ul>
-	
+  
 </div>
 
 <div style="clear: both;"> </div>
@@ -325,14 +327,14 @@ This page is valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
 <script type='text/javascript'>
 var options, a;
 jQuery(function(){
-	options = { 
-		serviceUrl:'<?php echo SMOB_ROOT; ?>ajax/geonames.php', 
-		minChars:2, 
-		onSelect: function(value, data) { 
-			$('#location_uri').val(data);
-		}, 
-	};
-	a = $('#location').autocomplete(options);
+  options = { 
+    serviceUrl:'<?php echo SMOB_ROOT; ?>ajax/geonames.php', 
+    minChars:2, 
+    onSelect: function(value, data) { 
+      $('#location_uri').val(data);
+    }, 
+  };
+  a = $('#location').autocomplete(options);
 });
 </script>
 
@@ -340,60 +342,60 @@ jQuery(function(){
 
 </html>
 
-<?php		
-	}
-	
-	public function users($type, $users) {
-		$ht = '<h2>'.ucfirst($type).'</h2>';
-		if($users) {
-			$ht .= '<ul>';
-			foreach($users as $u) {
-				$user = $u['uri'];
-				$ht .= "<li><a href='$user'>$user</a>";
-				if (SMOBAuth::check()) {
-					$t = substr($type, 0, -1);
-					$remove = SMOB_ROOT."remove/$t/$user";
-					$ht .= " [<a href=\"$remove\" onclick=\"javascript:return confirm('Are you sure ? This cannot be undone.')\">remove</a>]";
-				}
-				$ht .= "</li>";
-			}
-			$ht .= '</ul>';
-		} else {
-			$ht .= 'No one at the moment';
-		}
-		if($type == 'followings' && SMOBAuth::check()) {
-			$ht .= "<p>If you want to follow new people, use the <a href=\"javascript:window.location='".SMOB_ROOT."add/following/'+window.location\">Follow in my SMOB!</a> bookmarklet.</p>";
-		}
-		return $ht;
-	}
-	
-	public function person($person, $uri) {
-		$names = SMOBTools::either($person['names'], array("Anonymous"));
-		$imgs = SMOBTools::either($person['images'], array(SMOB_ROOT.'../img/avatar-blank.jpg'));
-		$homepage = $person['homepage'];
-		$weblog = $person['weblog'];
-		$knows = $person['knows'];
+<?php    
+  }
+  
+  public function users($type, $users) {
+    $ht = '<h2>'.ucfirst($type).'</h2>';
+    if($users) {
+      $ht .= '<ul>';
+      foreach($users as $u) {
+        $user = $u['uri'];
+        $ht .= "<li><a href='$user'>$user</a>";
+        if (SMOBAuth::check()) {
+          $t = substr($type, 0, -1);
+          $remove = SMOB_ROOT."remove/$t/$user";
+          $ht .= " [<a href=\"$remove\" onclick=\"javascript:return confirm('Are you sure ? This cannot be undone.')\">remove</a>]";
+        }
+        $ht .= "</li>";
+      }
+      $ht .= '</ul>';
+    } else {
+      $ht .= 'No one at the moment';
+    }
+    if($type == 'followings' && SMOBAuth::check()) {
+      $ht .= "<p>If you want to follow new people, use the <a href=\"javascript:window.location='".SMOB_ROOT."add/following/'+window.location\">Follow in my SMOB!</a> bookmarklet.</p>";
+    }
+    return $ht;
+  }
+  
+  public function person($person, $uri) {
+    $names = SMOBTools::either($person['names'], array("Anonymous"));
+    $imgs = SMOBTools::either($person['images'], array(SMOB_ROOT.'../img/avatar-blank.jpg'));
+    $homepage = $person['homepage'];
+    $weblog = $person['weblog'];
+    $knows = $person['knows'];
 
-		$name = $names[0];
-		$pic = $imgs[0];
+    $name = $names[0];
+    $pic = $imgs[0];
 
-		$ht = "<div class=\"person\">\n";
-		$ht .= "<img src=\"$pic\" class=\"depiction\" alt=\"Depiction\" />";
-		$ht .= "$name\n";
+    $ht = "<div class=\"person\">\n";
+    $ht .= "<img src=\"$pic\" class=\"depiction\" alt=\"Depiction\" />";
+    $ht .= "$name\n";
 
-		foreach ($homepage as $h) {
-			$ht .= " [<a href=\"$h\">Website</a>]\n";
-		}
-		foreach ($weblog as $w) {
-			$ht .= " [<a href=\"$w\">Blog</a>]\n";
-		}
-		foreach ($knows as $k) {
-			$enc = get_uri($k, 'user');
-			$ht .= " [<a href=\"$enc\">Friend</a>]\n";
-		}
+    foreach ($homepage as $h) {
+      $ht .= " [<a href=\"$h\">Website</a>]\n";
+    }
+    foreach ($weblog as $w) {
+      $ht .= " [<a href=\"$w\">Blog</a>]\n";
+    }
+    foreach ($knows as $k) {
+      $enc = get_uri($k, 'user');
+      $ht .= " [<a href=\"$enc\">Friend</a>]\n";
+    }
 
-		$ht .= "</div>\n\n";
-		return $ht;
-	}
-	
+    $ht .= "</div>\n\n";
+    return $ht;
+  }
+  
 }
