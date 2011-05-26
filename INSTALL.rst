@@ -6,47 +6,50 @@ Getting and installing all the software
 ========================================
 
 #. Install required software
-   Install the following packages (required dependencies will also be installed) :
+   Install the following packages (required dependencies will also be installed) ::
 
-   $ sudo aptitude install libapache2-mod-php5 libapache2-mod-proxy-html php-mysql php5-curl mysql-server git
+    $ sudo aptitude install libapache2-mod-php5 libapache2-mod-proxy-html php-mysql php5-curl mysql-server git
 
-#. Download SMOB code from github:
+#. Download SMOB code from github::
 
-   $ git clone https://github.com/smob/smob.git
+    $ git clone https://github.com/smob/smob.git
    
-   If you plan to contribute, you will a github account and clone the project with write permission: 
+   If you plan to contribute, you will a github account and clone the project with write permission: :
    
-   $ git clone git@github.com:smob/smob.git
+    $ git clone git@github.com:smob/smob.git
 
 #. Download the required PHP libraries
-   Download arc2:
+   Download arc2:"
    
-   $ git clone https://github.com/semsol/arc2.git
+    $ git clone https://github.com/semsol/arc2.git
    
    Download xmlrpc from http://sourceforge.net/projects/phpxmlrpc/files/phpxmlrpc/3.0.0beta/xmlrpc-3.0.0.beta.tar.gz/download
    
 #. Move the libraries to SMOB folder
-   Move arc2 into lib/arc:
+   Move arc2 into lib/arc::
 
-   $ mv /your/path/to/arc2 /your/path/to/smob/lib/arc
+    $ mv /your/path/to/arc2 /your/path/to/smob/lib/arc
 
-   Extract xmlrpc into lib/xmlrpc:
+   Extract xmlrpc into lib/xmlrpc::
 
-   $ unzip xmlrpc-3.0.0.beta.tar.gz
-   $ mv /your/path/to/xmlrpc-3.0.0.beta /your/path/to/smob/lib/xmlrpc
+    $ unzip xmlrpc-3.0.0.beta.tar.gz
+    $ mv /your/path/to/xmlrpc-3.0.0.beta /your/path/to/smob/lib/xmlrpc
    
-#. Make the config directory writable by your web server:
+#. Make the config directory writable by your web server::
 
-   $ sudo chown www-data /your/path/to/smob/config
+    $ sudo chown www-data /your/path/to/smob/config
+    $ sudo chown www-data /your/path/to/smob/rss
 
 Configuring apache2
 ===================
 
-#. Make sure that you have the required apache2 modules installed and enabled. If you run:
+#. Make sure that you have the required apache2 modules installed and enabled. 
 
-   $ sudo ls -l /etc/apache2/mods-enabled
+   If you run::
+
+    $ sudo ls -l /etc/apache2/mods-enabled
    
-   You will see at least:
+   You will see at least::
 
     lrwxrwxrwx 1 root root 30 Feb 22 16:51 rewrite.load -> ../mods-available/rewrite.load
     lrwxrwxrwx 1 root root 27 Nov 25 11:22 php5.conf -> ../mods-available/php5.conf
@@ -54,22 +57,41 @@ Configuring apache2
     lrwxrwxrwx 1 root root 33 Feb 22 16:38 proxy_html.conf -> ../mods-available/proxy_html.conf
     lrwxrwxrwx 1 root root 33 Feb 22 16:38 proxy_html.load -> ../mods-available/proxy_html.load
     
-   If you don't have those files, you will have to enable or install the modules. To enable the modules:
+   If you don't have those files, you will have to enable or install the modules. To enable the modules::
    
-   $ sudo a2enmod rewrite php5
+    $ sudo a2enmod rewrite php5
    
-   To install the modules:
+   To install the modules::
    
-   $ sudo aptitude install libapache2-mod-php5 libapache2-mod-proxy-html
+    $ sudo aptitude install libapache2-mod-php5 libapache2-mod-proxy-html
    
+#. To enable HTTPS (recommended).
+   
+   You need the ssl module enabled::
+   
+    lrwxrwxrwx 1 root root 26 Mar  6 16:36 ssl.conf -> ../mods-available/ssl.conf
+    lrwxrwxrwx 1 root root 26 Mar  6 16:36 ssl.load -> ../mods-available/ssl.load
+    
+   To enable the module::
+   
+    $ sudo a2enmod ssl
+  
+  Make sure you also have a line like this in /etc/apache2/ports.conf::
+  
+     Listen 443
 
+#. Reload apache2::
+   
+     $ sudo /etc/init.d/apache2 reload
 
 Configure SMOB to use HTTP basic authentication
 ------------------------------------------------
 
-#. You can use the example file in auth/.htpasswd for user admin and password admin or create your custom .htpasswd file using http://www.htaccesstools.com/htpasswd-generator/ and pasting the result in a .htpasswd file.
+#. You can use the example file in /your/path/to/smob/auth/.htpasswd for user admin and password admin or create your custom .htpasswd file using http://www.htaccesstools.com/htpasswd-generator/ and pasting the result in a .htpasswd file.
 
-#. Edit the file /your/path/to/smob/smob/auth/.htaccess and replace the .htpasswd file path with your own . It will look like:
+#. Edit the file /your/path/to/smob/smob/auth/.htaccess and replace the .htpasswd file path with your own (and comment the WebID authentication section). 
+
+   It will look like::
 
     AuthUserFile /your/path/to/smob/.htpasswd
     AuthGroupFile /dev/null
@@ -78,6 +100,22 @@ Configure SMOB to use HTTP basic authentication
     <Limit GET>
     require valid-user
     </Limit>
+
+
+Configure SMOB to use WebID authentication
+------------------------------------------------
+
+#. You will need to have a WebID certificate installed in your browser and a WebID URI. You can find more information about WebID in http://www.w3.org/wiki/WebID and a list of WebID providers in http://www.w3.org/wiki/Foaf%2Bssl/IDP
+
+#. Edit the file /your/path/to/smob/auth/.htaccess and uncomment the WebID section (and comment the HTTP basic authentication one). 
+
+   It will look like::
+
+    SSLVerifyClient optional_no_ca
+    SSLVerifyDepth 1
+    SSLOptions +StdEnvVars
+    SSLOptions +ExportCertData
+
 
 Configure the domain
 ---------------------
@@ -93,13 +131,13 @@ Warning: this configuration is not recommended for production servers.
 
   $ mv /your/path/to/smob /var/www/
   
-#. Open http://localhost/smob in your browser. If everthing went ok, you should be able to install SMOB from your browser.
+#. Open http(s)://localhost/smob in your browser. If everthing went ok, you should be able to install SMOB from your browser.
 
 
 Using a custom virtual domain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. If you prefer to serve SMOB from a URL like http://example.com/ instead of http://example.com/smob/, comment the following line in /your/path/to/smob/.htaccess
+#. If you prefer to serve SMOB from a URL like http://example.com/ instead of http://localhost/smob/, comment the following line in /your/path/to/smob/.htaccess
 
    #RewriteBase /smob/
 
@@ -124,11 +162,11 @@ Troubleshooting
 #. The MySQL database is created but the tables aren't
    Check if you have arc library inside SMOB folder under lib/arc 
 
-#. When you try to access any other page except the index.php (Example: Deleting a post, RSS, Other, RDF), you will get an File not found error in the apache logs
+#. When you try to access any other page except the index.php (Example: Deleting a post, RSS, Other, RDF), you will get an File not found error in the apache logs.
    Check whether you have enabled the rewrite module
    Check the line "RewriteBase /smob/" in the  /your/path/to/smob/.htaccess file
 
 #. Authentication not working. (Internal Server Error: 500)
-Check whether the file /your/path/to/smob/auth/.htaccess is edited properly 
+   Check whether the file /your/path/to/smob/auth/.htaccess is edited properly 
 
 
