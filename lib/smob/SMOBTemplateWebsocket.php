@@ -92,15 +92,46 @@ $form .= '
 ';
     return array($form_js, $form);
   }
-      
-  public function header($publisher, $reply_of = null, $ismap = null, $topic_url = null, $hub_url = null) {
+  
+  public function subscribe_header($topic_url) {
+    $form_js = <<<__END__
+    <script type="text/javascript">
+    $(document).ready(function() {
+    
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // if web socket connected
+            if (conn.readyState === 1) {
+                var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
+                conn.send(JSON.stringify(connection));
+            }
+        }, false);
+
+    });
+    </script>
+__END__;
+    $form = '
+    <form>
+    Are you sure you want to follow?
+    <input type="submit" id="feed" value="Yes" />
+    </form>
+';
+    return array($form_js, $form);
+  }      
+  
+  
+  public function header($publisher, $reply_of = null, $ismap = null, $topic_url = null, $hub_url = null, $subscribe=null) {
     global $type;
     //if(!defined('SMOB_ROOT')) {
     if(!defined(SMOB_ROOT)) {
       define('SMOB_ROOT', '');
     }
     if($publisher) {
-      list($form_js, $form) = SMOBTemplate::publisher_header($reply_of);
+      list($form_js, $form) = SMOBTemplateWebsocket::publisher_header($reply_of);
+    }
+    if($subscribe) {
+      list($form_js, $form) = SMOBTemplateWebsocket::subscribe_header($topic_url);
     }
     if($ismap) {
       // GMap hack - FIXME !!
@@ -165,30 +196,16 @@ xml:lang="fr">
     $(document).ready(function(){
       $("#tabs").tabs();
       <?php if($ismap) { echo "\n\nmap();"; } ?>
-
+    });
+    
+    $(document).ready(function(){
       var conn = {};
-      var host = "<?php echo WSSERVER_HOST; ?>",
-          port = <?php echo WSSERVER_PORT; ?>;
+      var host = "vmuss11.deri.ie",
+          port = 8081;
       var serverUri = "ws://"+host+":"+port;
-      var feed        = document.getElementById('feed'),
-          form        = feed.form;
-          
-      // Outputs to console and list
-      function log(message) {
-        var state = document.createElement('div');
-        state.innerHTML = message;
-        document.getElementById('main').appendChild(state);
-      }
-
-      function html_entity_decode(s) {
-        var t=document.createElement('textarea');
-        t.innerHTML = s;
-        var v = t.value;
-        t.parentNode.removeChild(t);
-        return v;
-      }
-      
-      function openConnection() {
+      //var feed        = document.getElementById('feed'),
+      //    form        = feed.form;
+      function openConnection(conn, serverUri) {
         if ( !conn.readyState || conn.readyState > 1 ) {
 
           conn = new WebSocket( serverUri );
@@ -232,7 +249,7 @@ xml:lang="fr">
             console.debug("socket closed");
           };
         }
-      }            
+      }           
           
       if (!window.WebSocket) {
         console.debug("sockets not supported");
@@ -240,29 +257,33 @@ xml:lang="fr">
         // if behind a firewall:
         //   advice can not subscribe nor get updates
         // else:
-        //   if want to subscribe:
+        //   if want to subscribe (in add/following/x):
+        //     call php function
       } else {
         console.debug("sockets supported");
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
+        //form.addEventListener("submit", function (e) {
+        //    e.preventDefault();
 
             // if web socket connected
-            if (conn.readyState === 1) {
-                var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
-                conn.send(JSON.stringify(connection));
-            }
-        }, false);
-        openConnection();
+        //    if (conn.readyState === 1) {
+        //        var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
+        //        conn.send(JSON.stringify(connection));
+        //    }
+        //}, false);
+        openConnection(conn, serverUri);
       }
-      
     });
+    
   </script>
   
   <?php echo $form_js; ?>
 </head>
 
 <body about="<?php echo SMOB_ROOT; ?>" typeof="smob:Hub sioct:Microblog">
-
+<!--<script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/websocket.js"></script>-->
+<!--<iframe style="display:none;" type="text/html"
+      src=""> 
+</iframe>--> 
 <div id="full">
 
 <div id="header">
@@ -275,11 +296,6 @@ xml:lang="fr">
 <div class="left">  
   
 <?php echo $form; ?>  
-
-    <form>
-    Are you sure you want to follow?
-    <input type="submit" id="feed" value="Yes" />
-    </form>
 
 <?php    
   }

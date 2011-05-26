@@ -342,3 +342,19 @@ function getCacheBusterParam(){
 	// http://mousewhisperer.co.uk/js_page.html
 	return  "&rcb=" + parseInt(Math.random()*99999999); 
 }
+
+
+// Outputs to console and list
+function log(message) {
+  var state = document.createElement('div');
+  state.innerHTML = message;
+  document.getElementById('main').appendChild(state);
+}
+
+function html_entity_decode(s) {
+  var t=document.createElement('textarea');
+  t.innerHTML = s;
+  var v = t.value;
+  t.parentNode.removeChild(t);
+  return v;
+}
