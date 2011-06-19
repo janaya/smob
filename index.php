@@ -4,6 +4,10 @@ parse_str($_SERVER['QUERY_STRING']);
 
 require_once(dirname(__FILE__).'/lib/smob/SMOB.php'); 
 
+		error_log("DEBUG session: ".session_id(),0); 
+error_log("DEBUG session: ".SID,0);
+error_log("DEBUG session: ".PHPSESSID,0);
+
 if(!SMOBTools::check_config()) {
   $installer = new SMOBInstaller();
   $installer->go();

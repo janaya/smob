@@ -8,13 +8,19 @@
 class SMOBAuth {
 	
 	function check() {
+	  error_log("DEBUG: in check",0);
 		session_start();
+		error_log("DEBUG session: ".session_id(),0); 
+error_log("DEBUG session: ".SID	,0);
+error_log("DEBUG session: ".PHPSESSID,0);
 		return $_SESSION['grant'];
 	}
 	
 	function grant() {
+	  error_log("DEBUG: in grant",0);
 		session_start();
 		if(AUTH == 'foafssl') {
+	    error_log("DEBUG: auth is foafssl",0);
 			$foafssl  = SMOBAuth::getAuth();
 			if($foafssl['isAuthenticated']) {
 				$_SESSION['grant'] = true;				
@@ -29,6 +35,7 @@ class SMOBAuth {
 	/* Function to return the modulus and exponent of the supplied Client SSL Page */
 	function openssl_pkey_get_public_hex()
 	{
+	  error_log("DEBUG: in openssl_pkey_get_public_hex",0);
 		if ($_SERVER[SSL_CLIENT_CERT])
 		{
 			$pub_key = openssl_pkey_get_public($_SERVER[SSL_CLIENT_CERT]);
@@ -50,6 +57,7 @@ class SMOBAuth {
 			$rsa_keys = split("\n", $rsa_key);
 			$modulus  = split(":", $rsa_keys[1]);
 			$exponent = split(":", $rsa_keys[2]);
+	    error_log("DEBUG: modulus: $modulus",0);
 
 			return( array( 'modulus'=>$modulus[3], 'exponent'=>$exponent[3] ) );
 		}
@@ -58,6 +66,7 @@ class SMOBAuth {
 	/* Returns an array holding the subjectAltName of the supplied SSL Client Certificate */
 	function openssl_get_subjectAltName()
 	{
+	  error_log("DEBUG: in openssl_get_subjectAltName",0);
 		if ($_SERVER[SSL_CLIENT_CERT])
 		{
 			$cert = openssl_x509_parse($_SERVER[SSL_CLIENT_CERT]);
@@ -93,9 +102,11 @@ class SMOBAuth {
 	/* Returns an array of the modulus and exponent in the supplied RDF */
 	function get_foaf_rsakey($uri)
 	{
+	  error_log("DEBUG: in get_foaf_rsakey",0);
 		if ($uri)
 		{
 			SMOBStore::query('LOAD <'.$uri.'>');
+	    error_log("DEBUG: LOAD <'.$uri.'>",0);
 
 			/* list names */
 			$q = '
@@ -126,6 +137,7 @@ class SMOBAuth {
 	/* Function to compare two supplied RSA keys */
 	function equal_rsa_keys($key1, $key2)
 	{
+	  error_log("DEBUG: in equal_rsa_keys",0);
 		if ( $key1 && $key2 && ($key1[modulus] == $key2[modulus]) && ($key1[exponent] == $key2[exponent]) )
 			return TRUE;
 
@@ -134,6 +146,7 @@ class SMOBAuth {
 
 	function getAuth($foafuri = NULL)
 	{
+	  error_log("DEBUG: in getAuth",0);
 		if (!$_SERVER[HTTPS])
 			return ( array( 'isAuthenticated'=>0 , 'authDiagnostic'=>'No client certificate supplied on an unsecure connection') );
 
@@ -149,6 +162,7 @@ class SMOBAuth {
 
 		$san     = openssl_get_subjectAltName();
 		$foafuri = $san[URI];
+	  error_log("DEBUG: foafuri: $foafuri",0);
 
 		$result = array_merge($result, array('subjectAltName'=>$foafuri));
 
@@ -156,11 +170,12 @@ class SMOBAuth {
 
 		$result = array_merge($result, array('subjectAltNameRSAKey'=>$foafrsakey));
 
-		if ( equal_rsa_keys($certrsakey, $foafrsakey) )
+		if ( equal_rsa_keys($certrsakey, $foafrsakey) ) {
 			$result = array_merge($result, array( 'isAuthenticated'=>1,  'authDiagnostic'=>'Client Certificate RSAkey matches SAN RSAkey'));
-		else
+	    error_log("DEBUG: the RSA key in certificate match the RSA key in WebID URI",0);
+		} else {
 			$result = array_merge($result, array( 'isAuthenticated'=>0,  'authDiagnostic'=>'Client Certificate RSAkey does not match SAN RSAkey'));
-
+    }
 		return $result;
 	}
 

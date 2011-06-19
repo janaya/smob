@@ -94,23 +94,7 @@ $form .= '
   }
   
   public function subscribe_header($topic_url) {
-    $form_js = <<<__END__
-    <script type="text/javascript">
-    $(document).ready(function() {
-    
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            // if web socket connected
-            if (conn.readyState === 1) {
-                var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
-                conn.send(JSON.stringify(connection));
-            }
-        }, false);
-
-    });
-    </script>
-__END__;
+    $form_js = "";
     $form = '
     <form>
     Are you sure you want to follow?
@@ -175,7 +159,7 @@ xml:lang="fr">
   <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.rating.js"></script>
 
   <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/smob.js"></script>
-  <!-- <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/websocket.js"></script> -->
+  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/socket.io.js"></script>
 
   <base href="<?php echo $root; ?>" />
   <script type="text/javascript">
@@ -198,89 +182,16 @@ xml:lang="fr">
       <?php if($ismap) { echo "\n\nmap();"; } ?>
     });
     
-    $(document).ready(function(){
-      var conn = {};
-      var host = "vmuss11.deri.ie",
-          port = 8081;
-      var serverUri = "ws://"+host+":"+port;
-      //var feed        = document.getElementById('feed'),
-      //    form        = feed.form;
-      function openConnection(conn, serverUri) {
-        if ( !conn.readyState || conn.readyState > 1 ) {
-
-          conn = new WebSocket( serverUri );
-
-          conn.onopen = function () {
-            console.debug("Socket opened");
-            // while not solved that real hub subscription is done per socket:
-            //   subscribe again followings:
-            //   $followings = SMOBTools::followings();
-            //   foreach($followings as $following) {
-            //     var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $following['uri']; ?>"};
-            //     conn.send(JSON.stringify(connection));
-            //     $.get("add/following/$following['uri']", string, function(data){
-            //       console.debug("adding following...");
-            //     });
-          };
-
-          conn.onmessage = function( event ) {
-            var string = event.data;
-            //$('#messages').prepend("<pre class='sh_xml'><code>"+ code + "</code></pre>");
-            //sh_highlightDocument(); 
-            //if($('#messages').children().size() > 5) {
-            //    $('#messages pre:last-child').remove();
-            //}
-            console.debug(string); 
-            
-            // received a feed update
-            if (string.indexOf("xml")==2) {
-              console.debug("received xml");
-              // send the data to the php callback
-              $.post("callback/", string, function(data){
-                console.debug("sent feed update to the php callback");
-                if(data) {
-                }
-              });
-            }
-            
-          };
-
-          conn.onclose = function( event ) {
-            console.debug("socket closed");
-          };
-        }
-      }           
-          
-      if (!window.WebSocket) {
-        console.debug("sockets not supported");
-        // TODO: advice sockets not supported
-        // if behind a firewall:
-        //   advice can not subscribe nor get updates
-        // else:
-        //   if want to subscribe (in add/following/x):
-        //     call php function
-      } else {
-        console.debug("sockets supported");
-        //form.addEventListener("submit", function (e) {
-        //    e.preventDefault();
-
-            // if web socket connected
-        //    if (conn.readyState === 1) {
-        //        var connection = {"hub.mode":"subscribe","hub.verify":"async","hub.callback":"<?php echo SMOB_ROOT.'callback'; ?>","hub.topic": "<?php echo $topic_url; ?>"};
-        //        conn.send(JSON.stringify(connection));
-        //    }
-        //}, false);
-        openConnection(conn, serverUri);
-      }
-    });
-    
   </script>
   
   <?php echo $form_js; ?>
 </head>
 
 <body about="<?php echo SMOB_ROOT; ?>" typeof="smob:Hub sioct:Microblog">
-<!--<script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/websocket.js"></script>-->
+    <script type="text/javascript">
+        var socket = new io.Socket("vmuss11.deri.ie", {port: 8080, rememberTransport: false});
+    </script>
+    <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/websocket.js"></script>
 <!--<iframe style="display:none;" type="text/html"
       src=""> 
 </iframe>--> 
