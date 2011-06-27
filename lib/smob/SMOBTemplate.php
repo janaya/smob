@@ -93,7 +93,7 @@ $form .= '
 		return array($form_js, $form);
 	}
 			
-	public function header($publisher, $reply_of = null, $ismap = null) {
+	public function header($publisher, $reply_of = null, $ismap = null, $form_js=null, $form=null) {
 		global $type;
 		//if(!defined('SMOB_ROOT')) {
 		if(!defined(SMOB_ROOT)) {
@@ -210,6 +210,7 @@ xml:lang="fr">
 <h2>Hub owner</h2>
 <ul>
 <li><a href='<?php echo SMOB_ROOT; ?>auth'>Authenticate</a></li>
+<li><a href='<?php echo SMOB_ROOT; ?>pp'>Privacy Settings</a></li>
 </ul>
 	
 </div>

@@ -220,6 +220,15 @@ if(!SMOBTools::check_config()) {
             $post_data = file_get_contents("php://input");
 	            error_log("DEBUG: received PUT with content: $post_data",0);
         }
+  } elseif($t == 'pp') {
+		//$pp = new SMOBPP();
+		//$content = $pp->ppform();
+		//$extraheader = $pp->ppjs();
+		$content = SMOBPP::ppform();
+		$extraheader = SMOBPP::ppjs();
+		SMOBTemplate::header('',null,null,$extraheader,$content);
+		SMOBTemplate::footer();
+    
 	} else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);
