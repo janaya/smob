@@ -188,9 +188,6 @@ xml:lang="fr">
 </head>
 
 <body about="<?php echo SMOB_ROOT; ?>" typeof="smob:Hub sioct:Microblog">
-    <script type="text/javascript">
-        var socket = new io.Socket("vmuss11.deri.ie", {port: 8080, rememberTransport: false});
-    </script>
     <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/websocket.js"></script>
 <!--<iframe style="display:none;" type="text/html"
       src=""> 
