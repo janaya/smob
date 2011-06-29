@@ -32,6 +32,8 @@ class SMOBPP {
 			<div id="generating-pp" style="display: none;">
 				<br/><em>Generating Privacy Preferences ...</em>
 			</div>
+			<div id="generated-pp" style="display: none;">
+			</div>
 __END__;
     return $form_pp;
   }
@@ -46,15 +48,36 @@ __END__;
                     'rel': $("#relationships").val(),
                    };    
             
-      $.get("ajax/pub.php?" + $.param(params)+getCacheBusterParam(), function(data){
-        $("#generating-pp").show("normal");
-        $("#generating-pp").html(data);
-      });
+      var pp = "
+<pre> <http://localhost/smob/pp/1> a ppo:PrivacyPreference;
+        ppo:appliesToResource 
+         <http://rdfs.org/sioc/ns#MicroblogPost>;
+        ppo:hasCondition [
+          ppo:hasProperty tag:Tag;
+          ppo:resourceAsObject 
+           "+params['hashtag']+"
+        ];
+       ppo:assignAccess acl:Read;
+       ppo:hasAccessSpace [
+         ppo:hasAccessQuery 'SELECT ?user WHERE { 
+      ?user foaf:topic_interest "+params['interest']+"' .}
+      ] .
+</pre>";
+      //$.get("ajax/pub.php?" + $.param(params)+getCacheBusterParam(), function(data){
+      //  $("#generating-pp").show("normal");
+      //  $("#generating-pp").html(data);
+      //});
+      
+      $("#generating-pp").show("normal");
+      $("#generating-pp").html(data);
+      
+      $("#generated-pp").show("normal");
+      $("#generated-pp").html(pp);
     }
 
    
     $(document).ready(function() {
-      $.getJSON('/smob_pp/relationship.json', function ( data ) { 
+      $.getJSON('/smob/relationship.json', function ( data ) { 
         console.debug( data ); 
         for (rel in data) {
           if (rel.indexOf("http://purl.org/vocab/relationship/") === 0) {
@@ -71,7 +94,8 @@ __END__;
         }
       });
       $("#generate-pp").click(function () {
-        generate_pp();
+        //generate_pp();
+        alert("boo");
       });
     });
   </script>
@@ -80,23 +104,21 @@ __END__;
   }
   
   public function generate_pp($hashtag, $interest, $rel) {
-    $pp = <<<__END__ 
-http://mysite.org/preference/rdf a ppo:PrivacyPreference;
+    $pp = "<".SMOB_ROOT."pp/1> a ppo:PrivacyPreference;
     ppo:appliesToResource 
-     http://rdfs.org/sioc/ns#MicroblogPost;
+     <http://rdfs.org/sioc/ns#MicroblogPost>;
     ppo:hasCondition [
       ppo:hasProperty tag:Tag;
       ppo:resourceAsObject 
-       $hastag
+       "+$hastag+"
     ];
    ppo:assignAccess acl:Read;
    ppo:hasAccessSpace [
-     ppo:hasAccessQuery "SELECT ?user WHERE { 
+     ppo:hasAccessQuery 'SELECT ?user WHERE { 
   ?user foaf:topic_interest ?topic .
-  ?topic dcterms:subject category:$interest .}"
-  ] .
-__END__;
-		$graph = $this->graph();
+  ?topic dcterms:subject category:"+$interest+"' .}
+  ] .";
+		$graph = "<".SMOB_ROOT."pp/1>";
 		$rdf = SMOBTools::render_sparql_triples($pp);	
 		$query = "INSERT INTO <$graph> { $rdf }";
 		SMOBStore::query($query);
