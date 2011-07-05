@@ -32,6 +32,8 @@ RewriteRule ^sparql(.*)$ index.php?t=sparql [L,QSA]
 RewriteRule ^callback(.*)$ index.php?t=callback [L,QSA]
 RewriteRule ^callbackrdf(.*)$ index.php?t=callbackrdf [L,QSA]
 
+RewriteRule ^pp(.*)$ lib/smob/SMOBPPTemplate.php [L,QSA]
+
 RewriteRule ^feedrdf$ sparql?query=CONSTRUCT\%20\%7B\%20?s\%20?p\%20?o\%20.\%20\%7D\%20WHERE\%20\%7B\%20GRAPH\%20?g\%20\%7B\%20?s\%20?p\%20?o\%20.\%20\%7D\%7D
 
 #RewriteRule ^select$ sparql?query=SELECT\%20*\%20WHERE\%20\%7BGRAPH\%20?g\%20\%7B\%20?s\%20?p\%20?o\%20.\%20\%7D\%7D
