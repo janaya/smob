@@ -220,6 +220,18 @@ if(!SMOBTools::check_config()) {
             $post_data = file_get_contents("php://input");
 	            error_log("DEBUG: received PUT with content: $post_data",0);
         }
+  } elseif($t == 'private') {
+			if(!SMOBAuth::check()) {
+			  error_log("not authenticated");
+			  header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
+			} else {
+			  error_log("authenticated");
+			  SMOBTools::private_profile();
+			}; 
+	} elseif($t == 'logout'){
+	  session_start();
+    session_destroy();
+    echo 'bye';
 	} else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);

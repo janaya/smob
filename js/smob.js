@@ -1,3 +1,54 @@
+function post_private_profile(user_uri) {
+  var persons = [];
+  var rel_types = [];
+  $.each($('#private_form').serializeArray(), function(i, field) {
+      var p = field.name.replace( "person", "");
+      if (p.length < 3) {
+        persons[parseInt(p)] = field.value;    
+      } else {
+        var t = field.name.replace( "rel_type", "");
+        if (t.length < 3) {
+          rel_types[parseInt(t)] = field.value;    
+        }  
+      }
+  });
+  console.debug(persons);
+  console.debug(rel_types);
+  
+  var triples = "";
+  for(i=0; i<persons.length; i++) {
+    triples = triples + "<" + user_uri + "> <" + rel_types[i] + "> <" + persons[i] + "> . ";
+  }
+  console.debug(triples);
+  
+  $("#lod_interest :checked").each(function() {
+    lod_uri = $(this).val().split('--')[1];
+    lod_label = $(this).val().split('--')[2];
+    triples = triples + "<" + user_uri + ">  <http://xmlns.com/foaf/0.1/topic_interest> <" + lod_uri + "> . ";
+    triples = triples + "<" + lod_uri + "> <http://www.w3.org/2000/01/rdf-schema#label> <" + lod_label + "> . ";
+  })
+  console.debug(triples);
+  
+  $("#privacy_result").text(triples).html();
+  var loc = document.location.href;
+  loc = loc.replace("me/private","");
+  console.debug(loc + "ajax/private.php?" + $.param({"triples":triples}));
+  $.post(loc + "ajax/private.php?", {triples:triples}, function(data){
+    $("#result").append(data);
+  });
+}
+
+function delRel(id) {
+  $(id).remove();
+}
+function addRel() {
+  var counter = parseInt(document.getElementById("counter").value);
+  $("#rel_block").append("<fieldset id='rel_fieldset" + counter + "'><legend>Relationship</legend>           <select id='rel_type" + counter + "' name='rel_type" + counter + "'>           </select>           <input name='person" + counter + "' id='person" + counter + "' type='text'/>           <a id='del_rel" + counter + "' href='' onClick='delRel(\"#rel_fieldset" + counter + "\"); return false;'>[-]</a>        </fieldset>");
+  $('#rel_type0').children().clone().appendTo('#rel_type' + counter);
+  counter = counter + 1;
+  document.getElementById("counter").value = counter;
+}
+
 // Publishing functions
 function publish() {
 	var lod = '';
@@ -37,16 +88,16 @@ function charsleft() {
 }
 
 // Tab generation for the interlinking
-function addTab(data) {
+function addTab(formid, tabid, data) {
 	var obj = JSON.parse(data);
-	$("#lod-form").append("<div id='" + obj.id + "'>" + obj.html + "</div>");
-	$("#tabs").tabs("add", '#'+obj.id, obj.term);
-	size = $('#tabs').tabs("length");
+	$(formid).append("<div id='" + obj.id + "'>" + obj.html + "</div>");
+	$(tabid).tabs("add", '#'+obj.id, obj.term);
+	size = $(tabid).tabs("length");
 }
 
 // LOD links suggestion
-function interlink() {
-	var text = $('#content').val() + '#'; 
+function interlink(domid, formid, tabid) {
+	var text = $(domid).val() + '#'; 
 	var words = jQuery.trim(text).split(' ');	
 	var current_words = words.length - 1;
 	
@@ -57,7 +108,7 @@ function interlink() {
 		first = current.charAt(0);
 		if(first == '#') {
 			$.get("ajax/interlink.php?type=tag&term="+urlencode(current)+getCacheBusterParam(), function(data){
-				addTab(data);
+				addTab(formid, tabid, data);
 			});
 		}
 		else if(first == 'L') {
@@ -77,6 +128,43 @@ function interlink() {
 	}
 }
 
+function interlink_interest(domid, formid, tabid) {
+  // to eliminate me in /smob/me/ajax...
+  path = "";
+  if (location.pathname.split("/").length > 3) {
+    path = "/"+location.pathname.split("/")[1]+"/";
+  }
+	var text = $(domid).val() + '#'; 
+	var words = jQuery.trim(text).split(' ');	
+	var current_words_interest = words.length - 1;
+	
+	if(current_words_interest > numwords_interest) {		
+		numwords_interest = current_words_interest;
+		words.pop();
+		current = words.pop();
+		first = current.charAt(0);
+		if(first == '#') {
+			$.get(path+"ajax/interlink.php?type=tag&term="+urlencode(current)+getCacheBusterParam(), function(data){
+				addTab(formid, tabid, data);
+			});
+		}
+		else if(first == 'L') {
+			if(current.length > 1) {
+				second = current.charAt(1);
+				if(second == ':') {
+					$.get(path+"ajax/interlink.php?type=location&term="+urlencode(current)+getCacheBusterParam(), function(data){
+						addTab(data);
+					});
+				}
+			}
+		} else if(first == '@') {	
+			$.get(path+"ajax/interlink.php?type=user&term="+urlencode(current)+getCacheBusterParam(), function(data){
+				addTab(data);
+			});
+		
+		}
+	}
+}
 // Get news ?
 function getnews() {
 	var np = $('#np').html(); 
