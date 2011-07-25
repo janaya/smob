@@ -1,7 +1,7 @@
 <?php
 
 
-require_once(dirname(__FILE__)."/../lib/smob/SMOB.php");
+require_once(dirname(__FILE__)."/../lib/smob/SMOBStore.php");
 require_once(dirname(__FILE__)."/../config/config.php");
 
 $triples = $_POST['triples'];
