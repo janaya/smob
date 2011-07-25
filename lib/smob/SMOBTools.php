@@ -566,7 +566,7 @@ WHERE {
   }
 
   function get_rel_types() {
-    $rels = {};
+    $rels = array();
     $jsonfile = fopen('../../relationship.json');
     $jsontext = fread($jsonfile);
     fclose($jsonfile);
@@ -574,7 +574,7 @@ WHERE {
     foreach ($json as $rel) {
       error_log(var_dump($rel, 1), 0);
       if (strpos($rel, "http://purl.org/vocab/relationship/") === 0) {
-        if (array_key_exists('http://www.w3.org/2000/01/rdf-schema#label', $rel) {
+        if (array_key_exists('http://www.w3.org/2000/01/rdf-schema#label', $rel)) {
           $label = $json[$rel]['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
           error_log($label);
           $rels[$label] = $rel;
@@ -595,7 +595,7 @@ WHERE {
   }
 
   function get_initial_private_form_data() {
-    $graph = SMOB_ROOT."me/private"
+    $graph = SMOB_ROOT."me/private";
     $query = "
 SELECT *
 WHERE { 
@@ -604,15 +604,16 @@ WHERE {
   }
 }";
     $data = SMOBStore::query($query);
-    $fieldset_rels    = '<fieldset id="rel_fieldset0"><legend>Relationship</legend> 
+    $fieldset_rels    = '
+      <fieldset id="rel_fieldset0"><legend>Relationship</legend> 
         <select id="rel_type0" name="rel_type0"> 
         <option value=""></option> 
         </select> 
-        <input id="person0" name="person0" type="text" cols='10' />
-      </fieldset>'
+        <input id="person0" name="person0" type="text" />
+      </fieldset>';
     $lod = "";
-    $rels = {};
-    $persons = {};
+    $rels = array();
+    $persons = array();
     $i = 0;
     foreach($data as $triple) {
       $s = $triple['s'];
@@ -620,7 +621,7 @@ WHERE {
       $o = $triple['o']; 
       if ($p == "<http://xmlns.com/foaf/0.1/topic_interest>") {
         $lod = $lod + " " + $o;
-      } elseif (strpos($p, "http://purl.org/vocab/relationship/") === 0) ) {
+      } elseif (strpos($p, "http://purl.org/vocab/relationship/") === 0) {
         $rels['rel_type'+$i] = $p;
         $persons['person'+$i] = $o;
       }

@@ -37,11 +37,15 @@ xml:lang="fr">
   <script type="text/javascript" src="http://localhost/smob/js/smob.js"></script> 
   
   <script type="text/javascript" src="http://localhost/smob/js/jquery-dynamic-form.js"></script>  
-    <script type="text/javascript" src="http://localhost/smob/js/jquery.form.js"></script> 
+  <script type="text/javascript" src="http://localhost/smob/js/jquery.form.js"></script> 
+  <script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/validate/jquery.validate.js"></script>
  
  
   <base href="" /> 
   <script type="text/javascript"> 
+    //var rel_types = get_rel_types();
+    //console.debug(rel_types);
+
     $(document).ready(function(){
       $("#tabs_interest").tabs();
       $('#interest').focus(function() {
@@ -51,23 +55,8 @@ xml:lang="fr">
       $('#interest').keyup(function(){
         interlink_interest('#interest', '#lod_interest', '#tabs_interest');
       });
-    });
-  </script>
-  <script type="text/javascript"> 
-    
-    $(document).ready(function() {
-      $.getJSON('/smob/relationship.json', function ( data ) { 
-        console.debug( data ); 
-        for (rel in data) {
-          if (rel.indexOf("http://purl.org/vocab/relationship/") === 0) {
-            if (data[rel].hasOwnProperty("http://www.w3.org/2000/01/rdf-schema#label")) {
-              var label = data[rel]['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
-              var option_data =  "<option value='"+rel+"' >"+label+ "</option>";
-              $('#rel_type0').append(option_data);           
-            }
-          }
-        }
-      });
+
+      set_rel_types('#rel_type');
 
       $('#add_rel').click(function(e) {
         e.preventDefault();
@@ -81,14 +70,22 @@ xml:lang="fr">
 
       $('#private_submit').click(function(e) {
         e.preventDefault();
+        //$("#private_form").validate({
+        // submitHandler: function(form) {
+           //form.submit();
+        //    var user_uri = document.location.href;
+        //    user_uri.replace("/private","");
+        //    post_private_profile(user_uri);
+        // }
+        //});
+        $("#private_form").validate();
         var user_uri = document.location.href;
         user_uri.replace("/private","");
         post_private_profile(user_uri);
       });
-      
-      
-      
+
     });
+    
   </script>
 </head> 
  
@@ -119,20 +116,14 @@ xml:lang="fr">
       
       </br><b>relationships</b>
       
+      <select id="rel_type" name="rel_type" style="visibility:hidden;"></select>
+      
       <div id="rel_block">
-      
-      <fieldset id="rel_fieldset0"><legend>Relationship</legend> 
-        <select id="rel_type0" name="rel_type0"> 
-        <option value=""></option> 
-        </select> 
-        <input id="person0" name="person0" type="text" cols='10' />
-      </fieldset> 
-      
       </div> 
 
       <p><a id="add_rel" href="">[+]</a></p>
        
-      <input type="hidden" id="counter" value="1">
+      <input type="hidden" id="counter" value="0">
        
       <button id="private_submit" class="content-details">Save</button>
     </form> 
