@@ -221,18 +221,27 @@ if(!SMOBTools::check_config()) {
 	            error_log("DEBUG: received PUT with content: $post_data",0);
         }
   } elseif($t == 'private') {
-			if(!SMOBAuth::check()) {
-			  error_log("not authenticated");
-			  header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
-			} else {
-			  error_log("authenticated");
-			  SMOBTools::private_profile();
-			}; 
-	} elseif($t == 'logout'){
-	  session_start();
+    if(!SMOBAuth::check()) {
+      error_log("not authenticated");
+      if($a && $a == 'edit'){
+        header( 'Location: '.SMOB_ROOT.'auth?redirect=private/edit' ) ;
+      } else {
+        header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
+      }; 
+    } else {
+      error_log("authenticated");
+      if($a && $a == 'edit'){
+        echo PrivateProfile::view_private_profile_form();
+      } else {
+        echo PrivateProfile::private_profile();
+        exit();
+      }; 
+    }; 
+  } elseif($t == 'logout'){
+    session_start();
     session_destroy();
     echo 'bye';
-	} else {
+  } else {
 		$smob = new SMOB($t, $u, $p);
 		$smob->reply_of($r);
 		$smob->go();

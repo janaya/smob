@@ -66,6 +66,9 @@
       <select id="rel_type" name="rel_type" style="visibility:hidden;"></select>
       
       <div id="rel_block">
+        <?php foreach($fieldsets as $fieldset): ?>
+          <?=$fieldset;?>
+        <?php endforeach; ?>
       </div> 
 
       <p><a id="add_rel" href="">[+]</a></p>

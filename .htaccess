@@ -32,6 +32,7 @@ RewriteRule ^sparql(.*)$ index.php?t=sparql [L,QSA]
 RewriteRule ^callback(.*)$ index.php?t=callback [L,QSA]
 RewriteRule ^callbackrdf(.*)$ index.php?t=callbackrdf [L,QSA]
 RewriteRule ^me/private(.*)$ lib/smob/SMOBPrivacyTemplate.php [L,QSA]
+RewriteRule ^private/edit(.*)$ index.php?t=private&a=edit [L,QSA]
 RewriteRule ^private(.*)$ index.php?t=private [L,QSA]
 RewriteRule ^logout(.*)$ index.php?t=logout [L,QSA]
 
