@@ -54,29 +54,29 @@ WHERE {
     $lod = "";
     $rels = array();
     $persons = array();
-    $i = 0;
-    foreach($data as $triple) {
+    foreach($data as $i=>$triple) {
       error_log(print_r($triple, 1), 0);
       $s = $triple['s'];
       $p = $triple['p'];
       $o = $triple['o']; 
       if ($p == "http://xmlns.com/foaf/0.1/topic_interest") {
-        $lod = $lod + " " + $o;
+        $lod .= " " . $o;
       } elseif (strpos($p, "http://purl.org/vocab/relationship/") === 0) {
         $rels[$i] = $p;
         $persons[$i] = $o;
       }
-      $i++;
     }
     error_log(print_r($persons, 1), 0);
     error_log(print_r($rels, 1), 0);
+    $fieldsets = array();
+    if(count($persons) < 1) {
+      return $fieldsets;
+    };
+    
     $rel_types = PrivateProfile::get_rel_types();
     error_log(print_r($rel_types, 1), 0);
-    $fieldsets = array();
     $fieldset = '';
     foreach($persons as $index=>$person) {
-      error_log($person,0);
-      error_log($index, 0);
       $fieldset = '
       <fieldset id="rel_fieldset'.$index.'"><legend>Relationship</legend> 
         <select id="rel_type'.$index.'" name="rel_type'.$index.'">';
@@ -87,25 +87,28 @@ WHERE {
         } else {
           $option = '<option value="'.$rel.'">'.$label.'</option>';
         }
-        $fieldset = $fieldset.$option;
+        $fieldset .= $option;
       };
-      error_log($fieldset, 0);
-      $fieldset = $fieldset.'
+      $fieldset .= '
         </select> 
         <input id="person'.$index.'" name="person'.$index.'" type="text" value="'.$person.'"/>
       </fieldset>';
-      error_log($fieldset, 0);
       $fieldsets[$index] = $fieldset;
     }
     error_log(print_r($fieldsets, 1), 0);
+    error_log($index);
 //    return array('fieldsets'=>$fieldsets);
-    return $fieldsets;
+    $params = array("fieldsets"=>$fieldsets,
+                    "fieldsetcounter"=>$index+1,
+                    "lod"=>$lod
+                    );
+    return $params;
   }
   
   function view_private_profile_form() {
     $file = 'private_profile_template.php';
-    $fieldsets = PrivateProfile::get_initial_private_form_data();
-    extract($fieldsets);
+    $params = PrivateProfile::get_initial_private_form_data();
+    extract($params);
     ob_start();
     include($file);
     $contents = ob_get_contents();

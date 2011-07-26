@@ -223,17 +223,18 @@ if(!SMOBTools::check_config()) {
   } elseif($t == 'private') {
     if(!SMOBAuth::check()) {
       error_log("not authenticated");
-      if($a && $a == 'edit'){
-        header( 'Location: '.SMOB_ROOT.'auth?redirect=private/edit' ) ;
-      } else {
-        header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
-      }; 
+      //if($a && $a == 'edit'){
+      //  header( 'Location: '.SMOB_ROOT.'auth?redirect=private/edit' ) ;
+      //} else {
+      //  header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
+      //}; 
+      header( 'Location: '.SMOB_ROOT.'auth' ) ;
     } else {
       error_log("authenticated");
       if($a && $a == 'edit'){
         echo PrivateProfile::view_private_profile_form();
       } else {
-        echo PrivateProfile::private_profile();
+        echo PrivateProfile::view_private_profile();
         exit();
       }; 
     }; 
