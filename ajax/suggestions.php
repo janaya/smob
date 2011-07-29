@@ -36,16 +36,18 @@ function find_uris($wrapper, $term, $type) {
 $type = $_GET['type'];
 $term = $_GET['term'];
 
+
 // URIs from wrappers
 $wrappers = get_wrappers($type);
-$ht = "<div id='suggestions'>";
+//$ht = "<div id='suggestions'>";
+$ht = "";
+$i = 0;
 foreach($wrappers as $wrapper) {
   $ht .= "<fieldset><legend>Via $wrapper</legend>";
   $uris = find_uris($wrapper, $term, $type);
   if($uris) {
-    $i = 0;
     foreach($uris as $name=>$uri) {
-      $ht .= "<input id='suggestion$i' type='checkbox' name='$name' value='$uri'/>$name ($uri)<br/>";
+      $ht .= "<label for='suggestion$i'><input id='suggestion$i' type='radio' name='suggestion' value='$uri'/>$name</label> ($uri)<br/>";
       $i++;
     }
   } else {
@@ -53,5 +55,5 @@ foreach($wrappers as $wrapper) {
   }
   $ht .= "</fieldset>";
 }
-$ht .= "</div>";
+//$ht .= "</div>";
 print $ht;

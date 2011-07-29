@@ -62,7 +62,8 @@
         var user_uri = document.location.href;
         //user_uri.replace("/private","");
         //post_private_profile("https://localhost/smob/me/private");
-        post_private_profile("https://localhost/smob/me");
+        //post_private_profile("https://localhost/smob/me");
+        post_data2triples("https://localhost/smob/me");
       });
 
     });

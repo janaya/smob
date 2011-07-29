@@ -1,18 +1,7 @@
-function suggestion(domform, domterm, domuri) {
-  var term = $(domterm).val();
-  var loc = document.location.href;
-  loc = loc.replace("private/edit","");
-  console.debug(loc + "ajax/suggestions.php?");
-  $.get(loc+"ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
-    console.debug(data);
-    var obj = JSON.parse(data);
-    $(domform).append(data);
-    $(domform).append(obj.html);
-  });
-}
 
 function set_suggestion_popup(domterm, domform, dombutton, domformbutton) {
   var term = $(domterm).val();
+  console.debug(term);
   var loc = document.location.href;
   loc = loc.replace("private/edit","");
   console.debug(loc + "ajax/suggestions.php?");
@@ -65,6 +54,7 @@ function set_rel_types(domid) {
 function post_data2triples(user_uri) {
   //var rel_names = [];
  // var rel_persons = [];
+  var triples = "";
   var rel_counter = parseInt($('#rel_counter').val());
   for(i=0; i<rel_counter; i++) {
     var person = $('#person'+i).val();
@@ -73,7 +63,7 @@ function post_data2triples(user_uri) {
     //rel_persons[rel_type] = person;
     //rel_names[rel_type] = rel_label;
     triples = triples + "<" + user_uri + "> <" + rel_type + "> <" + person + "> . ";
-    triples = triples + "<" + rel_type + "> <http://www.w3.org/2000/01/rdf-schema#label> <" + rel_label + "> . ";
+    triples = triples + "<" + rel_type + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + rel_label + "' . ";
   }
   //$.each(rel_persons, function(rel_type, person) { 
   var interest_counter = parseInt($('#interest_counter').val());
@@ -81,8 +71,9 @@ function post_data2triples(user_uri) {
     var interest = $('#interest'+i).val();
     var interest_label = $('#interest'+i).attr('name');
     triples = triples + "<" + user_uri + "> <http://xmlns.com/foaf/0.1/topic_interest> <" + interest + "> . ";
-    triples = triples + "<" + interest + "> <http://www.w3.org/2000/01/rdf-schema#label> <" + interest_label + "> . ";
+    triples = triples + "<" + interest + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + interest_label + "' . ";
   }
+  console.debug(triples);
   
   $("#privacy_result").text(triples).html();
   var loc = document.location.href;
@@ -122,7 +113,7 @@ function post_private_profile(user_uri) {
     lod_uri = $(this).val().split('--')[2];
     lod_label = $(this).val().split('--')[1];
     triples = triples + "<" + user_uri + ">  <http://xmlns.com/foaf/0.1/topic_interest> <" + lod_uri + "> . ";
-    triples = triples + "<" + lod_uri + "> <http://www.w3.org/2000/01/rdf-schema#label> <" + lod_label + "> . ";
+    triples = triples + "<" + lod_uri + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + lod_label + "' . ";
   })
   console.debug(triples);
   
@@ -144,14 +135,45 @@ function addRel() {
   $("#rel_block").append("<fieldset id='rel_fieldset" + counter + "'><legend>Relationship</legend>           <select id='rel_type" + counter + "' name='rel_type" + counter + "' class='required'>           </select>           <input name='person" + counter + "' id='person" + counter + "' type='text' class='url required' size='30' />           <a id='del_rel" + counter + "' href='' onClick='del(\"#rel_fieldset" + counter + "\"); return false;'>[-]</a>        </fieldset>");
   $('#rel_type').children().clone().appendTo('#rel_type' + counter);
   counter = counter + 1;
-  $('#rel_counter').val() = counter;
-}
-function addInterest() {
-  var counter = parseInt($('#interest_counter').val());
-  $("#interest_block").append("<fieldset id='interest_fieldset" + counter + "'><legend>interest</legend>          <input type='text' id='interes_label" + counter + "' name='interest_label" + counter + "' class='required' size='30' />           <a id='interest_suggestion" + counter + "' href='' onClick='suggestion(\"#interest_form" + counter + "\", \"#interest_label" + counter + "\", \"#interest" + counter + "\"); return false;'>Validate!</a>                      (<input name='interest" + counter + "' id='interest" + counter + "' type='text' class='url required' size='30' readonly />)           <a id='del_interest" + counter + "' href='' onClick='del(\"#interest_fieldset" + counter + "\"); return false;'>[-]</a>           <div id='interest_form" + counter + "' style='display: none;'></div>        </fieldset>");
-  counter = counter + 1;
-  parseInt($('#interest_counter').val());
+  $('#rel_counter').val(counter);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+function addInterest() {
+  var i = parseInt($('#interest_counter').val());
+  var interest_block = "        <fieldset id='interest_fieldset" + i + "'><legend>interest</legend>";
+  interest_block = interest_block + "          <input type='text' id='interest_label" + i + "' name='interest_label" + i + "' class='required' size='30' />";
+  interest_block = interest_block + "          <a id='interest_suggestion" + i + "' href='' onClick='suggestion(\"#interest_form" + i + "\", \"#suggestions" + i + "\", \"#interest_label" + i + "\"); return false;'>Validate!</a>";
+  interest_block = interest_block + "          (<input name='interest" + i + "' id='interest" + i + "' type='text' class='url required' size='30' readonly />)";
+  interest_block = interest_block + "          <a id='del_interest" + i + "' href='' onClick='del(\"#interest_fieldset" + i + "\"); return false;'>[-]</a>";
+  interest_block = interest_block + "          <div id='interest_form" + i + "' style='display: none;'>";
+  interest_block = interest_block + "            <div id='suggestions" + i + "'></div>";
+  interest_block = interest_block + "            <a id='suggestion_submit" + i + "' href='' onClick='suggestion_submit(\"#interest_form" + i + "\", \"#interest" + i + "\", \"#interest_label" + i + "\); return false;'>Done!</a>";
+  interest_block = interest_block + "          </div>";
+  interest_block = interest_block + "        </fieldset>";
+  $("#interest_block").append(interest_block);
+  i = i + 1;
+ $('#interest_counter').val(i);
+}
+
+function suggestion_submit(domform, domuri, domlabel) {
+  //var suggestion = $('suggestion option:selected').text();
+  var suggestion = $('input:radio[name=suggestion]:checked').val();
+  var suggestion_label = $('input:radio[name=suggestion]:checked + label').text();
+  console.debug(suggestion);
+  $(domuri).val(suggestion);
+  $(domlabel).val(suggestion_label);
+  $(domform).hide();
+}
+
+function suggestion(domform, domsuggestions, domterm) {
+  var term = $(domterm).val();
+  var loc = document.location.href;
+  loc = loc.replace("private/edit","");
+  console.debug(loc + "ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam());
+  $.get(loc+"ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
+    console.debug(data);
+    $(domsuggestions).append(data);
+    $(domform).show();
+  });
+}
 

@@ -36,7 +36,7 @@ class PrivateProfile {
   function set_rel_type_options($rels) {
     $options = "";
     foreach($rels as $label=>$rel) {
-      $options .=  "        <option value='$label' value='$rel' >$label</option>\n";
+      $options .=  "        <option name='$label' value='$rel' >$label</option>\n";
     };
     return $options;
   }
@@ -70,6 +70,8 @@ class PrivateProfile {
        OPTIONAL { ?rel_type rdfs:label ?rel_label  } 
        }";
     $data = SMOBStore::query($query);
+    error_log("rels",0);
+    error_log(print_r($data, 1), 0);
     if($data) {
       foreach($data as $i=>$t) {
         $rel_persons[$t['rel_type']]=$t['person'];
@@ -95,7 +97,7 @@ class PrivateProfile {
         if($rel_type==$rel) {
           $option = "             <option name='$label' value='$rel' selected='$rel'>$label</option>";
         } else {
-          $option = "             <option value='$label' value='$rel' >$label</option>";
+          $option = "             <option name='$label' value='$rel' >$label</option>";
         }
         $rel_fieldset .= $option;
       };
@@ -127,7 +129,7 @@ class PrivateProfile {
     $params = array("rel_type_options"=>$rel_type_options,
                     "rel_fieldsets"=>$rel_fieldsets,
                     "rel_counter"=>$rel_counter,
-                    "interest_fieldset"=>$interest_fieldset,
+                    "interest_fieldsets"=>$interest_fieldsets,
                     "interest_counter"=>$interest_counter
                     );
     return $params;
