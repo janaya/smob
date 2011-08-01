@@ -96,7 +96,7 @@
        	    }    
        
        	    return this.each(function() {            
-       	      var params = {'text': $.quoteString($(this).text()), 'confidence': settings.confidence, 'support': settings.support };      
+       	      var params = {'text': $(this).val(), 'confidence': settings.confidence, 'support': settings.support };      
        	      $.ajax({ 'url': settings.endpoint+"/candidates", 
        		       'data': params,
        		       'context': this,

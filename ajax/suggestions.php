@@ -47,7 +47,7 @@ foreach($wrappers as $wrapper) {
   $uris = find_uris($wrapper, $term, $type);
   if($uris) {
     foreach($uris as $name=>$uri) {
-      $ht .= "<label for='suggestion$i'><input id='suggestion$i' type='radio' name='suggestion' value='$uri'/>$name</label> ($uri)<br/>";
+      $ht .= "<input id='suggestion$i' type='radio' name='suggestion' value='$uri'/><label for='suggestion$i'>$name</label> ($uri)<br/>";
       $i++;
     }
   } else {

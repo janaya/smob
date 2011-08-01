@@ -221,6 +221,8 @@ if(!SMOBTools::check_config()) {
 	            error_log("DEBUG: received PUT with content: $post_data",0);
         }
   } elseif($t == 'private') {
+    // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
+    // TODO: Authorize depending on the WebID URI
     if(!SMOBAuth::check()) {
       error_log("not authenticated");
       //if($a && $a == 'edit'){
