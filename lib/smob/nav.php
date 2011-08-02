@@ -18,9 +18,11 @@
  
 <h2>Hub owner</h2> 
 <ul> 
-<li><a href='<?php echo SMOB_ROOT; ?>auth'>Authenticate</a></li> 
+<!--> TODO: Login and logout should be shown depending on the authentication state<-->
+<li><a href='<?php echo SMOB_ROOT; ?>auth'>Login</a></li> 
+<li><a href='<?php echo SMOB_ROOT; ?>logout'>Logout</a></li>
 <li><a href='<?php echo SMOB_ROOT; ?>pp'>Privacy Settings</a></li> 
-<li><a href='<?php echo SMOB_ROOT; ?>pp'>Private Profile</a></li> 
+<li><a href='<?php echo SMOB_ROOT; ?>private/edit'>Private Profile Editor</a></li> 
 </ul> 
   
 </div> 

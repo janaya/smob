@@ -225,12 +225,12 @@ if(!SMOBTools::check_config()) {
     // TODO: Authorize depending on the WebID URI
     if(!SMOBAuth::check()) {
       error_log("not authenticated");
-      //if($a && $a == 'edit'){
-      //  header( 'Location: '.SMOB_ROOT.'auth?redirect=private/edit' ) ;
-      //} else {
-      //  header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
-      //}; 
-      header( 'Location: '.SMOB_ROOT.'auth' ) ;
+      if($a && $a == 'edit'){
+        header( 'Location: '.SMOB_ROOT.'auth?redirect=private/edit' ) ;
+      } else {
+        header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
+      }; 
+      //header( 'Location: '.SMOB_ROOT.'auth' ) ;
     } else {
       error_log("authenticated");
       if($a && $a == 'edit'){

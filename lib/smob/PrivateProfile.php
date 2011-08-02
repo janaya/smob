@@ -59,12 +59,13 @@ class PrivateProfile {
     //  <http://localhost:443/smob/ajax/undefined> rdfs:label 'null' . 
     //}";
     $data = SMOBStore::query($query);
-    error_log(print_r($data, 1),0);
     $interests = array();
     $query = "SELECT ?interest ?interest_label FROM <$user_uri> WHERE {
       <$user_uri> foaf:topic_interest ?interest .
       ?interest rdfs:label ?interest_label . }";
     $data = SMOBStore::query($query);
+    error_log("interests queried",0);
+    error_log(print_r($data, 1),0);
     if($data) {
       foreach($data as $t) {
         $interests[$t['interest_label']] = $t['interest'];

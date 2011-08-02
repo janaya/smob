@@ -1,17 +1,16 @@
-
-function set_suggestion_popup(domterm, domform, dombutton, domformbutton) {
-  var term = $(domterm).val();
-  console.debug(term);
-  var loc = document.location.href;
-  loc = loc.replace("private/edit","");
-  console.debug(loc + "ajax/suggestions.php?");
-  $.get(loc+"ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
-    console.debug(data);
-    $(domform).append(data);
-  });
-  $(dombutton).remove();
-  $(domformbutton).show();
-}
+//function set_suggestion_popup(domterm, domform, dombutton, domformbutton) {
+//  var term = $(domterm).val();
+//  console.debug(term);
+//  var loc = document.location.href;
+//  loc = loc.replace("private/edit","");
+//  console.debug(loc + "ajax/suggestions.php?");
+//  $.get(loc+"ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
+//    console.debug(data);
+//    $(domform).append(data);
+//  });
+//  $(dombutton).remove();
+//  $(domformbutton).show();
+//}
 
 function set_rel_types(domid) {
   var option_data =  "<option value='' selected=''></option>";
@@ -72,7 +71,7 @@ function addInterest() {
   var i = parseInt($('#interest_counter').val());
   var interest_block = "        <div id='interest_fieldset" + i + "'>";
   interest_block = interest_block + "          <input type='text' id='interest_label" + i + "' name='interest_label" + i + "' class='required' size='20' />";
-  interest_block = interest_block + "          <a id='interest_suggestion" + i + "' href='' onClick='suggestion(\"#interest_form" + i + "\", \"#suggestions" + i + "\", \"#interest_label" + i + "\"); return false;'>Validate!</a>";
+  interest_block = interest_block + "          <a id='interest_suggestion" + i + "' href='' onClick='suggestion(\"#interest_form" + i + "\", \"#suggestions" + i + "\", \"#interest_label" + i + "\"); return false;'>Interlink!</a>";
   interest_block = interest_block + "          (<input name='interest" + i + "' id='interest" + i + "' type='text' class='url required' size='40' readonly />)";
   interest_block = interest_block + "          <a id='del_interest" + i + "' href='' onClick='del(\"#interest_fieldset" + i + "\"); return false;'>[-]</a>";
   interest_block = interest_block + "          <div id='interest_form" + i + "' style='display: none;'>";
