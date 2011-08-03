@@ -18,7 +18,7 @@
  
 <h2>Hub owner</h2> 
 <ul> 
-<!--> TODO: Login and logout should be shown depending on the authentication state<-->
+<!-- TODO: Login and logout should be shown depending on the authentication state -->
 <li><a href='<?php echo SMOB_ROOT; ?>auth'>Login</a></li> 
 <li><a href='<?php echo SMOB_ROOT; ?>logout'>Logout</a></li>
 <li><a href='<?php echo SMOB_ROOT; ?>pp'>Privacy Settings</a></li> 
