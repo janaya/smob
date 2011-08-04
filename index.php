@@ -240,6 +240,26 @@ if(!SMOBTools::check_config()) {
         exit();
       }; 
     }; 
+  } elseif($t == 'privacy') {
+    // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
+    // TODO: Authorize depending on the WebID URI
+    if(!SMOBAuth::check()) {
+      error_log("not authenticated");
+      if($a && $a == 'edit'){
+        header( 'Location: '.SMOB_ROOT.'auth?redirect=privacy/edit' ) ;
+      } else {
+        header( 'Location: '.SMOB_ROOT.'auth?redirect=privacy' ) ;
+      }; 
+      //header( 'Location: '.SMOB_ROOT.'auth' ) ;
+    } else {
+      error_log("authenticated");
+      if($a && $a == 'edit'){
+        echo PrivacyPreferences::view_privacy_preferences_form();
+      } else {
+        echo PrivacyPreferences::view_privacy_preferences();
+        exit();
+      }; 
+    }; 
   } elseif($t == 'logout'){
     session_start();
     session_destroy();
