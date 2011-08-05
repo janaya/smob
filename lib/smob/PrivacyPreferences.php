@@ -161,6 +161,58 @@ class PrivacyPreferences {
     return $params;
   }
   
+  function get_privacy_preferences() {
+  $graph = SMOB_ROOT."ppo";
+  $ppo = SMOB_ROOT."preferences";
+  $resource = "http://dbpedia.org/resource/Resource\_Description\_Framework";
+  $interest = "http://dbpedia.org/resource/Semantic_Web";
+  $accessspace = "?user foaf:topic_interest <$interest>";
+  // ?topic dcterms:subject category:Semantic_Web
+  $accessquery = "SELECT ?user WHERE { $accessspace .}";
+  $triples = "
+  <$ppo> a ppo:PrivacyPreference;
+          ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost>;
+          ppo:hasCondition [
+                            ppo:hasProperty tag:Tag;
+                            ppo:resourceAsObject <$resource>
+                          ];
+          ppo:assignAccess acl:Read;
+          ppo:hasAccessSpace [
+                            ppo:hasAccessQuery \"$accessquery\"
+                              ] . ";
+
+
+    $query = "INSERT INTO <$graph> { $triples }";
+    $query = "SELECT * FROM <$graph> WHERE {
+      <$ppo> ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
+    }";
+    //FILTER(REGEX(?rel_type, 'http://purl.org/vocab/relationship/', 'i')).
+
+    $data = SMOBStore::query($query);
+    $interests = array();
+    error_log("interests queried",0);
+    error_log(print_r($data, 1),0);
+    if($data) {
+      foreach($data as $t) {
+        //$interests[$t['interest_label']] = $t['accessquery'];
+        $accessquery = 
+      }
+    };
+    //return $interests;
+  }
+
+  function get_initial_private_form_data() {
+    $rel_types = PrivateProfile::get_rel_types();
+    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
+    $params = array("rel_type_options"=>$rel_type_options,
+                    "rel_fieldsets"=>$rel_fieldsets,
+                    "rel_counter"=>$rel_counter,
+                    "interest_fieldsets"=>$interest_fieldsets,
+                    "interest_counter"=>0
+                    );
+    return $params;
+  }
+
   function view_privacy_preferences_form() {
     $file = 'privacy_preferences_template.php';
     // if(IS_AJAX) {

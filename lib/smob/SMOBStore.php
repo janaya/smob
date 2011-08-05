@@ -40,7 +40,8 @@ class SMOBStore {
 	PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 	PREFIX rev: <http://purl.org/stuff/rev#>
 	PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-	PREFIX rel: <http://purl.org/vocab/relationship/>
+	PREFIX rel: <http://purl.org/vocab/relationship>
+	PREFIX ppo: <http://vocab.deri.ie/ppo>
 
 		$query";		
 		$rs = $store->query($query);
