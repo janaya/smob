@@ -1,8 +1,23 @@
 <?php include('header.php'); ?>  
-
+  <script type="text/javascript"> 
+    var smob_root = "<?php echo SMOB_ROOT; ?>";
+        var interest_domids = {
+          "topics_block" : "interest_block",
+          "topic_block" : "interest_fieldset",
+          "topic_label" : "interest_label",
+          "topic_interlink" : "interest_suggestion",
+          "topic_uri" : "interest",
+          "topic_interlink_form" : "interest_form",
+          "topic_interlink_block" : "suggestions",
+          "topic_interlink_submit" : "suggestion_submit",
+          "topic_add" : "add_interest",
+          "topic_del" : "del_interest",
+          "topic_counter" : "interest_counter"
+        }
+  </script> 
   <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/private_profile.js"></script> 
   <script type="text/javascript"> 
-
+    var smob_root = "<?php echo SMOB_ROOT; ?>";
 
     $(document).ready(function(){
       // TODO: add validation
@@ -15,7 +30,7 @@
       });
       $('#add_interest').click(function(e) {
         e.preventDefault();
-        addInterest();
+        addInterest(smob_root, interest_domids);
       });
 
       $('#private_submit').click(function(e) {
@@ -30,7 +45,7 @@
         //});
         //$("#private_form").validate();
         var user_uri = document.location.href;
-        post_data2triples("https://localhost/smob/me");
+        post_data2triples(smob_root+"me");
       });
 
     });

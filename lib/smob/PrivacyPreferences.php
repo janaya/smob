@@ -72,66 +72,112 @@ class PrivacyPreferences {
   }
 
   function get_interests() {
-  $graph = SMOB_ROOT."ppo";
-  $ppo = SMOB_ROOT."preferences";
-  $resource = "http://dbpedia.org/resource/Resource\_Description\_Framework";
-  $interest = "http://dbpedia.org/resource/Semantic_Web";
-  $accessspace = "?user foaf:topic_interest <$interest>.
-  foaf:knows
-  foaf:intent
-  filter
-  ";
-  // ?topic dcterms:subject category:Semantic_Web
-  $accessquery = "SELECT ?user WHERE { $accessspace .}";
-  
-  
-  $triples = " INSERT
-  <$ppo> a ppo:PrivacyPreference;
+    $graph = SMOB_ROOT."ppo";
+    $ppo = SMOB_ROOT."preferences";
+    
+    $query = "DELETE FROM <$graph>";
+    $data = SMOBStore::query($query);
+    error_log("interests deleted",0);
+    error_log(print_r($data, 1),0);
+    
+    $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
+    $conditions = " ppo:hasProperty tag:Tag;
+                    ppo:resourceAsObject <$resource_object>";
+                    //ppo:resourceAsObject <RDF>
+                    //ppo:resourceAsObject <db./semweb>
+                    //filter?
+    $interest = "http://dbpedia.org/resource/Semantic_Web";
+    $accessspace = "?user foaf:topic_interest <$interest>.";
+                  //foaf:knows
+                  //filter
+                  // ?topic dcterms:subject category:Semantic_Web
+    $accessquery = "SELECT ?user WHERE { $accessspace .}";
+    
+    
+    $triples = "
+      <$ppo> a ppo:PrivacyPreference;
           ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost>;
-          ppo:hasCondition [
-                            ppo:hasProperty tag:Tag;
-                            ppo:resourceAsObject <$resource>
-                            ppo:resourceAsObject <RDF>
-                            ppo:resourceAsObject <db./semweb>
-                            filter?
-                          ];
+          ppo:hasCondition [ $conditions ];
           ppo:assignAccess acl:Read;
           ppo:hasAccessSpace [
-                            ppo:hasAccessQuery \"$accessquery\"
-                              ] . ";
-
-
-
-
+                             ppo:hasAccessQuery \"$accessquery\"
+                             ] . ";
     $query = "INSERT INTO <$graph> { $triples }";
-    $query = "SELECT ?accessquery FROM <$graph> WHERE {
-      <$ppo> ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
+    $data = SMOBStore::query($query);
+    error_log("interests inserted",0);
+    error_log(print_r($data, 1),0);
+
+
+    $query = "SELECT * FROM <$graph> WHERE {
+      <$ppo> a ppo:PrivacyPreference;
+          ppo:appliesToResource ?resource;
+          ppo:hasCondition [
+                    ppo:hasProperty tag:Tag;
+                    ppo:resourceAsObject ?hashtag; 
+                    ];
+          ppo:assignAccess acl:Read;
+          ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
     }";
-    //FILTER(REGEX(?rel_type, 'http://purl.org/vocab/relationship/', 'i')).
+//  FILTER(REGEX(?accessquery, 'topic_interest', 'i')).
 
     $data = SMOBStore::query($query);
-    $interests = array();
     error_log("interests queried",0);
     error_log(print_r($data, 1),0);
+
+    $hashtags = array();
+    $accessqueries = array();
     if($data) {
-      foreach($data as $t) {
+      foreach($data as $i=>$t) {
         //$interests[$t['interest_label']] = $t['accessquery'];
-        $accessquery = $t['accessquery'];
+        //$preferences[$t['resource']] = 
+        $accessqueries[$i] = $t['accessquery'];
+        $hashtags[$i] = $t['hashtag'];
       }
     };
-    //return $interests;
-    return array($accessquery);
+    error_log(print_r($accessqueries, 1),0);
+    $interests = array();
+    if($accessqueries) {
+      foreach($accessqueries as $i=>$t) {
+        $interests[$i] = substr(stristr($t, "topic_interest <"), 1, strpos(">"));
+      }
+    }
+    error_log(print_r($interests, 1),0);
+    return $interests;
+    //return array($accessquery);
   }
 
   function get_initial_private_form_data() {
     $rel_types = PrivateProfile::get_rel_types();
     $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
-    $interest_fieldsets = PrivacyPreferences::get_interests();
+
+
+    $interest_fieldsets = array();
+    $interests = PrivacyPreferences::get_interests();
+    $index = 0;
+    error_log("interests", 0);
+    foreach($interests as $interest_label=>$interest) {
+      error_log($interest, 0);
+      error_log($interest_label,0);
+      $interest_fieldset = "
+        <div id='interest_fieldset$index'>
+          <input type='text' id='interest_label$index' name='interest_label$index' value='$interest_label' class='url required' size='20' readonly />
+          (<input type='text' id='interest$index' name='interest$index' value='$interest' class='url required' size='50' readonly />)
+          <a id='del_rel$index' href='' onClick='del(\"#interest_fieldset$index\"); return false;'>[-]</a>
+        </div>
+        </br>";
+      $interest_fieldsets[$index] = $interest_fieldset;
+      $index++;
+    }
+    error_log(print_r($interest_fieldsets, 1), 0);
+    error_log($index);
+    $interest_counter = $index;
+    
+
     $params = array("rel_type_options"=>$rel_type_options,
                     "rel_fieldsets"=>array(),
                     "rel_counter"=>0,
                     "interest_fieldsets"=>$interest_fieldsets,
-                    "interest_counter"=>0
+                    "interest_counter"=>$interest_counter
                     );
     return $params;
   }

@@ -55,11 +55,11 @@ function del(domid) {
 }
 function addRel() {
   var i = parseInt($('#rel_counter').val());
-  var rel_block = "<div id='rel_fieldset" + i + "'>";
-  rel_block = rel_block + "           <select id='rel_type" + i + "' name='rel_type" + i + "' class='required'>";
+  var rel_block = "<div id='rel_fieldset"+i+"'>";
+  rel_block = rel_block + "           <select id='rel_type"+i+"' name='rel_type"+i+"' class='required'>";
   rel_block = rel_block + "           </select>";
-  rel_block = rel_block + "           <input name='person" + i + "' id='person" + i + "' type='text' class='url required' size='50' />";
-  rel_block = rel_block + "           <a id='del_rel" + i + "' href='' onClick='del(\"#rel_fieldset" + i + "\"); return false;'>[-]</a>";
+  rel_block = rel_block + "           <input name='person"+i+"' id='person"+i+"' type='text' class='url required' size='50' />";
+  rel_block = rel_block + "           <a id='del_rel"+i+"' href='' onClick='del(\"#rel_fieldset"+i+"\"); return false;'>[-]</a>";
   rel_block = rel_block + "        </div></br>";
   $("#rel_block").append(rel_block);
   $('#rel_type').children().clone().appendTo('#rel_type' + i);
@@ -67,46 +67,54 @@ function addRel() {
   $('#rel_counter').val(i);
 }
 
-function addInterest() {
-  var i = parseInt($('#interest_counter').val());
-  var interest_block = "        <div id='interest_fieldset" + i + "'>";
-  interest_block = interest_block + "          <input type='text' id='interest_label" + i + "' name='interest_label" + i + "' class='required' size='20' />";
-  interest_block = interest_block + "          <a id='interest_suggestion" + i + "' href='' onClick='suggestion(\"#interest_form" + i + "\", \"#suggestions" + i + "\", \"#interest_label" + i + "\"); return false;'>Interlink!</a>";
-  interest_block = interest_block + "          (<input name='interest" + i + "' id='interest" + i + "' type='text' class='url required' size='40' readonly />)";
-  interest_block = interest_block + "          <a id='del_interest" + i + "' href='' onClick='del(\"#interest_fieldset" + i + "\"); return false;'>[-]</a>";
-  interest_block = interest_block + "          <div id='interest_form" + i + "' style='display: none;'>";
-  interest_block = interest_block + "            <div id='suggestions" + i + "'></div>";
-  interest_block = interest_block + "            <a id='suggestion_submit" + i + "' href='' onClick='suggestion_submit(\"#interest_form" + i + "\", \"#suggestions" + i + "\", \"#interest" + i + "\", \"#interest_label" + i + "\"); return false;'>Done!</a>";
-  interest_block = interest_block + "          </div>";
-  interest_block = interest_block + "        </div></br>";
-  $("#interest_block").append(interest_block);
-  i = i + 1;
- $('#interest_counter').val(i);
+function addInterest(smob_root, interest_domids) {
+  var i = parseInt($('#'+interest_domids.topic_counter).val());
+  
+  var interest_block = "<div id='"+interest_domids.topic_block+i+"'>";
+  interest_block += "  <input type='text' id='"+interest_domids.topic_label+i+"' name='"+interest_domids.topic_label+i+"' class='required' size='20' />";
+  interest_block += "  <a id='"+interest_domids.topic_interlink+i+"' href='' onClick='suggestion(smob_root,interest_domids); return false;'>Interlink!</a>";
+  interest_block += "  (<input name='"+interest_domids.topic_uri+i+"' id='"+interest_domids.topic_uri+i+"' type='text' class='url required' size='40' readonly />)";
+  interest_block += "  <a id='"+interest_domids.topic_del+i+"' href='' onClick='del(\"#"+interest_domids.topic_block+i+"\"); return false;'>[-]</a>";
+  interest_block += "  <div id='"+interest_domids.topic_interlink_form+i+"' style='display: none;'>";
+  interest_block += "    <div id='"+interest_domids.topic_interlink_block+i+"'></div>";
+  interest_block += "    <a id='"+interest_domids.topic_interlink_submit+i+"' href='' onClick='suggestion_submit(interest_domids); return false;'>Done!</a>";
+  interest_block += "  </div>";
+  interest_block += "</div></br>";
+  $("#"+interest_domids.topics_block).append(interest_block);
 }
 
-function suggestion(domform, domsuggestions, domterm) {
-  var term = $(domterm).val();
-  var loc = document.location.href;
-  loc = loc.replace("private/edit","");
-  console.debug(loc + "ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam());
-  $.get(loc+"ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
+function set_suggestion_result(data){
+  var i = parseInt($('#'+interest_domids.topic_counter).val());
+  $('#'+interest_domids.topic_interlink_block+i).children().remove();
+  $('#'+interest_domids.topic_interlink_block+i).append(data);
+  $('#'+interest_domids.topic_interlink_form+i).show();
+}
+
+function suggestion(smob_root, interest_domids) {
+  var i = parseInt($('#'+interest_domids.topic_counter).val());
+  var term = $('#'+interest_domids.topic_label+i).val();
+  //var loc = document.location.href;
+  //loc = loc.replace("private/edit","");
+  console.debug(smob_root + "ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam());
+  $.get(smob_root + "ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
     console.debug(data);
-    $(domsuggestions).children().remove();
-    $(domsuggestions).append(data);
-    $(domform).show();
+    set_suggestion_result(data);
   });
 }
 
-function suggestion_submit(domform, domsuggestions, domuri, domlabel) {
+function suggestion_submit(interest_domids) {
+  var i = parseInt($('#'+interest_domids.topic_counter).val());
   //var suggestion = $('suggestion option:selected').text();
   var suggestion = $('input:radio[name=suggestion]:checked').val();
   var id = $('input:radio[name=suggestion]:checked').attr('id');
   var suggestion_label = $("label[for="+id+"]").text();
   console.debug(suggestion);
-  $(domuri).val(suggestion);
-  $(domlabel).val(suggestion_label);
-  $(domsuggestions).children().remove();
-  $(domform).hide();
+  $('#'+interest_domids.topic_uri+i).val(suggestion);
+  $('#'+interest_domids.topic_label+i).val(suggestion_label);
+  $('#'+interest_domids.topic_interlink_block+i).children().remove();
+  $('#'+interest_domids.topic_interlink_form+i).hide();
+  i += 1;
+  $('#'+interest_domids.topic_counter).val(i);
 }
 
 function post_data2triples(user_uri) {
