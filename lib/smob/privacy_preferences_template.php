@@ -45,7 +45,7 @@
         //});
         //$("#private_form").validate();
         var user_uri = document.location.href;
-        post_data2triples(smob_root+"me");
+        post_privacydata2triples(smob_root+"me");
       });
 
     });

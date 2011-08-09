@@ -152,6 +152,46 @@ function post_data2triples(user_uri) {
   });
 }
 
+
+function post_privacydata2triples(smob_root) {
+  var accessspace = "";
+  var interest_counter = parseInt($('#interest_counter').val());
+  for(i=0; i<interest_counter; i++) {
+    var interest = $('#interest'+i).val();
+    var interest_label = $('#interest_label'+i).val();
+    // we will never have an id biggest than counter, but it could happen that some of the items where removed
+    if ((interest != undefined) && (interest_label != undefined)) {
+      accessspace += "?user <http://xmlns.com/foaf/0.1/topic_interest> <" + interest + "> . ";
+      //accessspace += "<" + interest + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + interest_label + "' . ";
+    }
+  }
+  console.debug(accessspace);
+  
+  var accessquery = "SELECT ?user WHERE { "+accessspace+" .}";
+  var resource_object = "http://dbpedia.org/resource/Semantic_Web";
+  
+  var graph = smob_root+'/ppo';
+  var ppo = smob_root+'/preferences';
+  var triples = "<"+ppo+"> a ppo:PrivacyPreference;";
+  triples += "ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost> ;";
+  triples += "ppo:hasCondition _:c ;";
+  triples += "ppo:assignAccess acl:Read ;";
+  triples += "ppo:hasAccessSpace _:a .";
+  triples += "_:a ppo:hasAccessQuery "+accessquery+" . ";
+  triples += "_:c ppo:hasProperty tag:Tag ;";
+  triples += "_:c ppo:resourceAsObject <$resource_object> .";
+
+  $("#privacy_result").text(triples).html();
+  $("#privacy_result").show();
+  console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
+  //$.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
+  //  console.debug(data);
+  //  $("#result").html(data);
+  //});
+}
+
+
+
 function post_private_profile(user_uri) {
   var persons = [];
   var rel_types = [];
@@ -193,3 +233,7 @@ function post_private_profile(user_uri) {
     $("#result").html(data);
   });
 }
+
+
+
+

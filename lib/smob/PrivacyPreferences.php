@@ -102,6 +102,17 @@ class PrivacyPreferences {
           ppo:hasAccessSpace [
                              ppo:hasAccessQuery \"$accessquery\"
                              ] . ";
+
+    $triples = "
+      <$ppo> a ppo:PrivacyPreference;
+          ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost> ;
+          ppo:hasCondition _:c ;
+          ppo:assignAccess acl:Read ;
+          ppo:hasAccessSpace _:a .
+      _:a ppo:hasAccessQuery \"$accessquery\" . 
+      _:c ppo:hasProperty tag:Tag ;
+      _:c ppo:resourceAsObject <$resource_object> .";
+
     $query = "INSERT INTO <$graph> { $triples }";
     $data = SMOBStore::query($query);
     error_log("interests inserted",0);
@@ -119,6 +130,17 @@ class PrivacyPreferences {
           ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
     }";
 //  FILTER(REGEX(?accessquery, 'topic_interest', 'i')).
+
+    $query = "SELECT * FROM <$graph> WHERE {
+      <$ppo> a ppo:PrivacyPreference;
+          ppo:appliesToResource ?resource;
+          ppo:hasCondition _:c ;
+          ppo:assignAccess acl:Read;
+          ppo:hasAccessSpace _:a.
+      _:a ppo:hasAccessQuery ?accessquery .
+      _:c ppo:hasProperty tag:Tag;
+      _:c ppo:resourceAsObject ?hashtag;
+    }";
 
     $data = SMOBStore::query($query);
     error_log("interests queried",0);
