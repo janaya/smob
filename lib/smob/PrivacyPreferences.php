@@ -81,65 +81,42 @@ class PrivacyPreferences {
     error_log(print_r($data, 1),0);
     
     $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
-    $conditions = " ppo:hasProperty tag:Tag;
-                    ppo:resourceAsObject <$resource_object>";
+    $conditions = " ppo:hasProperty moat:taggedWith ;
+                    ppo:resourceAsObject <$resource_object> . ";
                     //ppo:resourceAsObject <RDF>
                     //ppo:resourceAsObject <db./semweb>
                     //filter?
     $interest = "http://dbpedia.org/resource/Semantic_Web";
-    $accessspace = "?user foaf:topic_interest <$interest>.";
+    $accessspace = "?user foaf:topic_interest <$interest> .";
                   //foaf:knows
                   //filter
                   // ?topic dcterms:subject category:Semantic_Web
-    $accessquery = "SELECT ?user WHERE { $accessspace .}";
-    
-    
+    $accessquery = "SELECT ?user WHERE { $accessspace }";
+
     $triples = "
       <$ppo> a ppo:PrivacyPreference;
-          ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost>;
-          ppo:hasCondition [ $conditions ];
+          ppo:appliesToResource rdfs:MicroblogPost;
           ppo:assignAccess acl:Read;
+          ppo:hasCondition [ $conditions ];
           ppo:hasAccessSpace [
-                             ppo:hasAccessQuery \"$accessquery\"
+                             ppo:hasAccessQuery \"$accessquery\"^^xsd:string
                              ] . ";
 
-    $triples = "
-      <$ppo> a ppo:PrivacyPreference;
-          ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost> ;
-          ppo:hasCondition _:c ;
-          ppo:assignAccess acl:Read ;
-          ppo:hasAccessSpace _:a .
-      _:a ppo:hasAccessQuery \"$accessquery\" . 
-      _:c ppo:hasProperty tag:Tag ;
-      _:c ppo:resourceAsObject <$resource_object> .";
-
     $query = "INSERT INTO <$graph> { $triples }";
+    error_log($query, 0);
     $data = SMOBStore::query($query);
     error_log("interests inserted",0);
     error_log(print_r($data, 1),0);
 
-
     $query = "SELECT * FROM <$graph> WHERE {
       <$ppo> a ppo:PrivacyPreference;
-          ppo:appliesToResource ?resource;
+          ppo:appliesToResource rdfs:MicroblogPost;
           ppo:hasCondition [
-                    ppo:hasProperty tag:Tag;
-                    ppo:resourceAsObject ?hashtag; 
+                    ppo:hasProperty moat:taggedWith ;
+                    ppo:resourceAsObject ?hashtag .
                     ];
           ppo:assignAccess acl:Read;
           ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
-    }";
-//  FILTER(REGEX(?accessquery, 'topic_interest', 'i')).
-
-    $query = "SELECT * FROM <$graph> WHERE {
-      <$ppo> a ppo:PrivacyPreference;
-          ppo:appliesToResource ?resource;
-          ppo:hasCondition _:c ;
-          ppo:assignAccess acl:Read;
-          ppo:hasAccessSpace _:a.
-      _:a ppo:hasAccessQuery ?accessquery .
-      _:c ppo:hasProperty tag:Tag;
-      _:c ppo:resourceAsObject ?hashtag;
     }";
 
     $data = SMOBStore::query($query);
@@ -157,14 +134,18 @@ class PrivacyPreferences {
       }
     };
     error_log(print_r($accessqueries, 1),0);
+    error_log(print_r($hashtags, 1),0);
     $interests = array();
     if($accessqueries) {
       foreach($accessqueries as $i=>$t) {
-        $interests[$i] = substr(stristr($t, "topic_interest <"), 1, strpos(">"));
+        $starturi = strpos($t, "<")+1;
+        $enduri = strpos($t, ">")-$starturi;
+        $interests[$i] = substr($t, $starturi, $enduri);
+        error_log($interests[$i], 0);
       }
     }
     error_log(print_r($interests, 1),0);
-    return $interests;
+    return array('interests'=>$interests, 'hashtags'=>$hashtags);
     //return array($accessquery);
   }
 
@@ -173,8 +154,9 @@ class PrivacyPreferences {
     $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
 
 
+    $initial_data = PrivacyPreferences::get_interests();
+    $interests = $initial_data['interests'];
     $interest_fieldsets = array();
-    $interests = PrivacyPreferences::get_interests();
     $index = 0;
     error_log("interests", 0);
     foreach($interests as $interest_label=>$interest) {
@@ -183,7 +165,7 @@ class PrivacyPreferences {
       $interest_fieldset = "
         <div id='interest_fieldset$index'>
           <input type='text' id='interest_label$index' name='interest_label$index' value='$interest_label' class='url required' size='20' readonly />
-          (<input type='text' id='interest$index' name='interest$index' value='$interest' class='url required' size='50' readonly />)
+          (<input type='text' id='interest$index' name='interest$index' value='$interest' class='url required' size='40' readonly />)
           <a id='del_rel$index' href='' onClick='del(\"#interest_fieldset$index\"); return false;'>[-]</a>
         </div>
         </br>";
@@ -193,11 +175,33 @@ class PrivacyPreferences {
     error_log(print_r($interest_fieldsets, 1), 0);
     error_log($index);
     $interest_counter = $index;
-    
+
+    $hashtags = $initial_data['hashtags'];
+    $hashtag_fieldsets = array();
+    $index = 0;
+    error_log("hashtags", 0);
+    foreach($hashtags as $hashtag_label=>$hashtag) {
+      error_log($hashtag, 0);
+      error_log($hashtag_label,0);
+      $hashtag_fieldset = "
+        <div id='hashtag_fieldset$index'>
+          <input type='text' id='hashtag_label$index' name='hashtag_label$index' value='$hashtag_label' class='url required' size='20' readonly />
+          (<input type='text' id='hashtag$index' name='hashtag$index' value='$hashtag' class='url required' size='40' readonly />)
+          <a id='del_rel$index' href='' onClick='del(\"#hashtag_fieldset$index\"); return false;'>[-]</a>
+        </div>
+        </br>";
+      $hashtag_fieldsets[$index] = $hashtag_fieldset;
+      $index++;
+    }
+    error_log(print_r($hashtag_fieldsets, 1), 0);
+    error_log($index);
+    $hashtag_counter = $index;
 
     $params = array("rel_type_options"=>$rel_type_options,
                     "rel_fieldsets"=>array(),
                     "rel_counter"=>0,
+                    "hashtag_fieldsets"=>$hashtag_fieldsets,
+                    "hashtag_counter"=>$hashtag_counter,
                     "interest_fieldsets"=>$interest_fieldsets,
                     "interest_counter"=>$interest_counter
                     );

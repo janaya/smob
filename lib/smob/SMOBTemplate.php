@@ -28,7 +28,7 @@ class SMOBTemplate {
 				}
 			});
 			$('#content').keyup(function(){
-				interlink();
+				interlink('#content', '#lod-form', '#tabs');
 				charsleft();
 			});
 		});

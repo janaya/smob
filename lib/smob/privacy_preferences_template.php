@@ -45,7 +45,7 @@
         //});
         //$("#private_form").validate();
         var user_uri = document.location.href;
-        post_privacydata2triples(smob_root+"me");
+        post_privacydata2triples(smob_root);
       });
 
     });
@@ -63,7 +63,7 @@
       <p><b>Condition</b></p>
       <fieldset><legend>Hashtag that the microposts must contain</legend> 
         <div id="hashtag_block">
-          <?php foreach($params['hashtags'] as $hashtag_item): ?>
+          <?php foreach($params['hashtag_fieldsets'] as $hashtag_item): ?>
             <?=$hashtag_item;?>
           <?php endforeach; ?>
         </div> 
@@ -93,7 +93,7 @@
 
 <h2>Result</h2>
     <div id="result"></div>
-    <div id="profile_result" class="post external" style="display:none;"></div>
+    <div id="privacy_result" class="post external" style="display:none;"></div>
  
 </div> 
  

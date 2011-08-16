@@ -42,6 +42,7 @@ class SMOBStore {
 	PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 	PREFIX rel: <http://purl.org/vocab/relationship>
 	PREFIX ppo: <http://vocab.deri.ie/ppo>
+	PREFIX acl: <http://www.w3.org/ns/auth/acl#>
 
 		$query";		
 		$rs = $store->query($query);

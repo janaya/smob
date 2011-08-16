@@ -174,20 +174,20 @@ function post_privacydata2triples(smob_root) {
   var ppo = smob_root+'/preferences';
   var triples = "<"+ppo+"> a ppo:PrivacyPreference;";
   triples += "ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost> ;";
-  triples += "ppo:hasCondition _:c ;";
+  triples += "ppo:hasCondition ?condition ;";
   triples += "ppo:assignAccess acl:Read ;";
-  triples += "ppo:hasAccessSpace _:a .";
-  triples += "_:a ppo:hasAccessQuery "+accessquery+" . ";
-  triples += "_:c ppo:hasProperty tag:Tag ;";
-  triples += "_:c ppo:resourceAsObject <$resource_object> .";
+  triples += "ppo:hasAccessSpace ?accessspace .";
+  triples += "?accessspace ppo:hasAccessQuery "+accessquery+" . ";
+  triples += "?condition ppo:hasProperty tag:Tag ;";
+  triples += "?condition ppo:resourceAsObject <$resource_object> .";
 
   $("#privacy_result").text(triples).html();
   $("#privacy_result").show();
   console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
-  //$.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
-  //  console.debug(data);
-  //  $("#result").html(data);
-  //});
+  $.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
+    console.debug(data);
+    $("#result").html(data);
+  });
 }
 
 

@@ -374,6 +374,7 @@ WHERE {
 		$graph = $this->graph();
 		$rdf = SMOBTools::render_sparql_triples($this->triples);	
 		$query = "INSERT INTO <$graph> { $rdf }";
+		error_log($query,0);
 		SMOBStore::query($query);
 		print '<li>Message saved locally !</li>';
 	}
