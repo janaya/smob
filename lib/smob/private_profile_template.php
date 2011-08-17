@@ -86,6 +86,7 @@
         <p><a id="add_rel" href="">[+]</a></p>
         <input type="hidden" id="rel_counter" value="<?=$params['rel_counter'];?>">
       </fieldset>
+
       <button id="private_submit" class="content-details">Save</button>
 
     </form> 

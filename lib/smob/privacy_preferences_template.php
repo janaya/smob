@@ -94,7 +94,7 @@
 
 
       <p><b>Access Space </b></p>
-      <fieldset><legend>Topics on which subcribers must be interested to receive the microposts</legend> 
+      <fieldset><legend>Topics on which the subcribers must be interested in to receive the microposts</legend> 
         <div id="interest_block">
           <?php foreach($params['interest_fieldsets'] as $interest_item): ?>
             <?=$interest_item;?>
@@ -102,6 +102,18 @@
         </div> 
         <p><a id="add_interest" href="">[+]</a></p>
         <input type="hidden" id="interest_counter" value="<?=$params['interest_counter'];?>">
+      </fieldset>
+
+      OR<input type="radio"  name="interest_rel" value="0" checked="checked"/> AND <input type="radio" name="interest_rel" value="1" /> 
+
+      <fieldset><legend>Relationships the subcribers must have with me to receive the microposts</legend> 
+        <div id="rel_block">
+          <?php foreach($params['rel_fieldsets'] as $rel_item): ?>
+            <?=$rel_item;?>
+          <?php endforeach; ?>
+        </div> 
+        <p><a id="add_rel" href="">[+]</a></p>
+        <input type="hidden" id="rel_counter" value="<?=$params['rel_counter'];?>">
       </fieldset>
 
       </br>
