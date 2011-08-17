@@ -198,9 +198,10 @@ function post_privacydata2triples(smob_root) {
 
   $("#privacy_result").text(triples).html();
   $("#privacy_result").show();
-  console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
-  //$.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
-  $.post(smob_root + "sparql?", {query:query}, function(data){
+  //console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
+  //console.debug(smob_root + "sparql?" + $.param({"query":query}));
+  $.post(smob_root + "ajax/privacy.php?", {query:query}, function(data){
+  //$.post(smob_root + "sparql?", {query:query}, function(data){
     console.debug(data);
     $("#result").html(data);
   });
