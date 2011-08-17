@@ -7,8 +7,8 @@ define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVE
 
 class PrivacyPreferences {
   // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-  function view_private_profile() {
-    $turtle = SMOBTools::triples_from_graph(SMOB_ROOT."me");
+  function view_privacy_preferences() {
+    $turtle = SMOBTools::triples_from_graph(SMOB_ROOT."ppo");
     header('Content-Type: text/turtle; charset=utf-8'); 
     return $turtle;
   }

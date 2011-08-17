@@ -64,7 +64,6 @@
         // }
         //});
         //$("#private_form").validate();
-        var user_uri = document.location.href;
         post_privacydata2triples(smob_root);
       });
 

@@ -200,55 +200,9 @@ function post_privacydata2triples(smob_root) {
   $("#privacy_result").show();
   //console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
   //console.debug(smob_root + "sparql?" + $.param({"query":query}));
-  $.post(smob_root + "ajax/privacy.php?", {query:query}, function(data){
+  $.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
   //$.post(smob_root + "sparql?", {query:query}, function(data){
     console.debug(data);
     $("#result").html(data);
   });
 }
-
-function post_private_profile(user_uri) {
-  var persons = [];
-  var rel_types = [];
-  var triples = "";
-  $.each($('#private_form').serializeArray(), function(i, field) {
-      var p = field.name.replace( "person", "");
-      if (p.length < 3 && p.length > 0) {
-        persons[parseInt(p)] = field.value;    
-      } else {
-        var t = field.name.replace( "rel_type", "");
-        if (t.length < 3 && t.length > 0) {
-          rel_types[parseInt(t)] = field.value;    
-        }  
-      }
-  });
-  console.debug(persons);
-  console.debug(rel_types);
-  
-  var triples = "";
-  for(i=0; i<persons.length; i++) {
-    triples = triples + "<" + user_uri + "> <" + rel_types[i] + "> <" + persons[i] + "> . ";
-  }
-  console.debug(triples);
-  
-  $("#lod_interest :checked").each(function() {
-    lod_uri = $(this).val().split('--')[2];
-    lod_label = $(this).val().split('--')[1];
-    triples = triples + "<" + user_uri + ">  <http://xmlns.com/foaf/0.1/topic_interest> <" + lod_uri + "> . ";
-    triples = triples + "<" + lod_uri + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + lod_label + "' . ";
-  })
-  console.debug(triples);
-  
-  $("#privacy_result").text(triples).html();
-  var loc = document.location.href;
-  loc = loc.replace("private/edit","");
-  console.debug(loc + "ajax/private.php?" + $.param({"triples":triples}));
-  $.post(loc + "ajax/private.php?", {triples:triples}, function(data){
-    console.debug(data);
-    $("#result").html(data);
-  });
-}
-
-
-
-

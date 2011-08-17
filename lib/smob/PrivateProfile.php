@@ -47,13 +47,13 @@ class PrivateProfile {
 
   function get_interests($user_uri) {
     // cleaning from previous code errors
-    $query = "DELETE FROM <$user_uri> {
-      <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
-      <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
-    } WHERE {
-      <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
-      <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
-    }";
+    //$query = "DELETE FROM <$user_uri> {
+    //  <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
+    //  <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
+    //} WHERE {
+    //  <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
+    //  <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
+    //}";
     //$query = "DELETE {
     //  <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
     //  <http://localhost:443/smob/ajax/undefined> rdfs:label 'null' . 
