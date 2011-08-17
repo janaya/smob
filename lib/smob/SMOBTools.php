@@ -574,6 +574,13 @@ WHERE {
     return $turtle;
   }
 
+  function delete_graph() {
+    $query = "DELETE FROM <$graph>";
+    $data = SMOBStore::query($query);
+    error_log("graph deleted",0);
+    error_log(print_r($data, 1),0);
+  }
+
 }
 
 ?>

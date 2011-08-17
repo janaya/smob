@@ -67,54 +67,54 @@ function addRel() {
   $('#rel_counter').val(i);
 }
 
-function addInterest(smob_root, interest_domids) {
-  var i = parseInt($('#'+interest_domids.topic_counter).val());
+function addTopic(smob_root, topic_domids) {
+  var i = parseInt($('#'+topic_domids.topic_counter).val());
   
-  var interest_block = "<div id='"+interest_domids.topic_block+i+"'>";
-  interest_block += "  <input type='text' id='"+interest_domids.topic_label+i+"' name='"+interest_domids.topic_label+i+"' class='required' size='20' />";
-  interest_block += "  <a id='"+interest_domids.topic_interlink+i+"' href='' onClick='suggestion(smob_root,interest_domids); return false;'>Interlink!</a>";
-  interest_block += "  (<input name='"+interest_domids.topic_uri+i+"' id='"+interest_domids.topic_uri+i+"' type='text' class='url required' size='40' readonly />)";
-  interest_block += "  <a id='"+interest_domids.topic_del+i+"' href='' onClick='del(\"#"+interest_domids.topic_block+i+"\"); return false;'>[-]</a>";
-  interest_block += "  <div id='"+interest_domids.topic_interlink_form+i+"' style='display: none;'>";
-  interest_block += "    <div id='"+interest_domids.topic_interlink_block+i+"'></div>";
-  interest_block += "    <a id='"+interest_domids.topic_interlink_submit+i+"' href='' onClick='suggestion_submit(interest_domids); return false;'>Done!</a>";
-  interest_block += "  </div>";
-  interest_block += "</div></br>";
-  $("#"+interest_domids.topics_block).append(interest_block);
+  var topic_block = "<div id='"+topic_domids.topic_block+i+"'>";
+  topic_block += "  <input type='text' id='"+topic_domids.topic_label+i+"' name='"+topic_domids.topic_label+i+"' class='required' size='20' />";
+  topic_block += "  <a id='"+topic_domids.topic_interlink+i+"' href='' onClick='suggestion(smob_root,"+topic_domids.label+"); return false;'>Interlink!</a>";
+  topic_block += "  (<input name='"+topic_domids.topic_uri+i+"' id='"+topic_domids.topic_uri+i+"' type='text' class='url required' size='40' readonly />)";
+  topic_block += "  <a id='"+topic_domids.topic_del+i+"' href='' onClick='del(\"#"+topic_domids.topic_block+i+"\"); return false;'>[-]</a>";
+  topic_block += "  <div id='"+topic_domids.topic_interlink_form+i+"' style='display: none;'>";
+  topic_block += "    <div id='"+topic_domids.topic_interlink_block+i+"'></div>";
+  topic_block += "    <a id='"+topic_domids.topic_interlink_submit+i+"' href='' onClick='suggestion_submit("+topic_domids.label+"); return false;'>Done!</a>";
+  topic_block += "  </div>";
+  topic_block += "</div></br>";
+  $("#"+topic_domids.topics_block).append(topic_block);
 }
 
-function set_suggestion_result(data){
-  var i = parseInt($('#'+interest_domids.topic_counter).val());
-  $('#'+interest_domids.topic_interlink_block+i).children().remove();
-  $('#'+interest_domids.topic_interlink_block+i).append(data);
-  $('#'+interest_domids.topic_interlink_form+i).show();
+function set_suggestion_result(data, topic_domids){
+  var i = parseInt($('#'+topic_domids.topic_counter).val());
+  $('#'+topic_domids.topic_interlink_block+i).children().remove();
+  $('#'+topic_domids.topic_interlink_block+i).append(data);
+  $('#'+topic_domids.topic_interlink_form+i).show();
 }
 
-function suggestion(smob_root, interest_domids) {
-  var i = parseInt($('#'+interest_domids.topic_counter).val());
-  var term = $('#'+interest_domids.topic_label+i).val();
+function suggestion(smob_root, topic_domids) {
+  var i = parseInt($('#'+topic_domids.topic_counter).val());
+  var term = $('#'+topic_domids.topic_label+i).val();
   //var loc = document.location.href;
   //loc = loc.replace("private/edit","");
   console.debug(smob_root + "ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam());
   $.get(smob_root + "ajax/suggestions.php?type=tag&term="+urlencode(term)+getCacheBusterParam(), function(data){
     console.debug(data);
-    set_suggestion_result(data);
+    set_suggestion_result(data, topic_domids);
   });
 }
 
-function suggestion_submit(interest_domids) {
-  var i = parseInt($('#'+interest_domids.topic_counter).val());
+function suggestion_submit(topic_domids) {
+  var i = parseInt($('#'+topic_domids.topic_counter).val());
   //var suggestion = $('suggestion option:selected').text();
   var suggestion = $('input:radio[name=suggestion]:checked').val();
   var id = $('input:radio[name=suggestion]:checked').attr('id');
   var suggestion_label = $("label[for="+id+"]").text();
   console.debug(suggestion);
-  $('#'+interest_domids.topic_uri+i).val(suggestion);
-  $('#'+interest_domids.topic_label+i).val(suggestion_label);
-  $('#'+interest_domids.topic_interlink_block+i).children().remove();
-  $('#'+interest_domids.topic_interlink_form+i).hide();
+  $('#'+topic_domids.topic_uri+i).val(suggestion);
+  $('#'+topic_domids.topic_label+i).val(suggestion_label);
+  $('#'+topic_domids.topic_interlink_block+i).children().remove();
+  $('#'+topic_domids.topic_interlink_form+i).hide();
   i += 1;
-  $('#'+interest_domids.topic_counter).val(i);
+  $('#'+topic_domids.topic_counter).val(i);
 }
 
 function post_data2triples(user_uri) {
@@ -161,36 +161,50 @@ function post_privacydata2triples(smob_root) {
     var interest_label = $('#interest_label'+i).val();
     // we will never have an id biggest than counter, but it could happen that some of the items where removed
     if ((interest != undefined) && (interest_label != undefined)) {
-      accessspace += "?user <http://xmlns.com/foaf/0.1/topic_interest> <" + interest + "> . ";
+      accessspace += "?user foaf:topic_interest <" + interest + "> . ";
       //accessspace += "<" + interest + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + interest_label + "' . ";
+                  //foaf:knows
+                  //filter
+                  // ?topic dcterms:subject category:Semantic_Web
     }
   }
   console.debug(accessspace);
+  var accessquery = "SELECT ?user WHERE { " + accessspace + "}";
+
+  var resource_object = "";
+  var hashtag_counter = parseInt($('#hashtag_counter').val());
+  for(i=0; i<hashtag_counter; i++) {
+    var hashtag = $('#hashtag'+i).val();
+    var hashtag_label = $('#hashtag_label'+i).val();
+    // we will never have an id biggest than counter, but it could happen that some of the items where removed
+    if ((hashtag != undefined) && (hashtag_label != undefined)) {
+      resource_object += " ppo:resourceAsObject <" + hashtag + "> . ";
+                    //filter?
+    }
+  }
+  console.debug(resource_object);
   
-  var accessquery = "SELECT ?user WHERE { "+accessspace+" .}";
-  var resource_object = "http://dbpedia.org/resource/Semantic_Web";
-  
-  var graph = smob_root+'/ppo';
-  var ppo = smob_root+'/preferences';
+  var conditions = " ppo:hasProperty moat:taggedWith ; " + resource_object;
+
+  var graph = smob_root+'ppo';
+  var ppo = smob_root+'preferences';
   var triples = "<"+ppo+"> a ppo:PrivacyPreference;";
-  triples += "ppo:appliesToResource <http://rdfs.org/sioc/ns#MicroblogPost> ;";
-  triples += "ppo:hasCondition ?condition ;";
+  triples += "ppo:appliesToResource rdfs:MicroblogPost ;";
   triples += "ppo:assignAccess acl:Read ;";
-  triples += "ppo:hasAccessSpace ?accessspace .";
-  triples += "?accessspace ppo:hasAccessQuery "+accessquery+" . ";
-  triples += "?condition ppo:hasProperty tag:Tag ;";
-  triples += "?condition ppo:resourceAsObject <$resource_object> .";
+  triples += "ppo:hasCondition [ " + conditions + "] ;";
+  triples += "ppo:hasAccessSpace [ ppo:hasAccessQuery \"" + accessquery +"\"^^xsd:string ] . ";
+
+  query = "INSERT INTO <" + graph + "> { " + triples + " }";
 
   $("#privacy_result").text(triples).html();
   $("#privacy_result").show();
   console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
-  $.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
+  //$.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
+  $.post(smob_root + "sparql?", {query:query}, function(data){
     console.debug(data);
     $("#result").html(data);
   });
 }
-
-
 
 function post_private_profile(user_uri) {
   var persons = [];

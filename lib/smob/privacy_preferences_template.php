@@ -1,23 +1,39 @@
 <?php include('header.php'); ?>  
   <script type="text/javascript"> 
     var smob_root = "<?php echo SMOB_ROOT; ?>";
-        var interest_domids = {
-          "topics_block" : "interest_block",
-          "topic_block" : "interest_fieldset",
-          "topic_label" : "interest_label",
-          "topic_interlink" : "interest_suggestion",
-          "topic_uri" : "interest",
-          "topic_interlink_form" : "interest_form",
-          "topic_interlink_block" : "suggestions",
-          "topic_interlink_submit" : "suggestion_submit",
-          "topic_add" : "add_interest",
-          "topic_del" : "del_interest",
-          "topic_counter" : "interest_counter"
-        }
+    var interest_domids = {
+      "label" : "interest_domids",
+      "topics_block" : "interest_block",
+      "topic_block" : "interest_fieldset",
+      "topic_label" : "interest_label",
+      "topic_interlink" : "interest_suggestion",
+      "topic_uri" : "interest",
+      "topic_interlink_form" : "interest_form",
+      "topic_interlink_block" : "interest_suggestions",
+      "topic_interlink_submit" : "interest_suggestion_submit",
+      "topic_add" : "add_interest",
+      "topic_del" : "del_interest",
+      "topic_counter" : "interest_counter"
+    }
+    var hashtag_domids = {
+      "label" : "hashtag_domids",
+      "topics_block" : "hashtag_block",
+      "topic_block" : "hashtag_fieldset",
+      "topic_label" : "hashtag_label",
+      "topic_interlink" : "hashtag_suggestion",
+      "topic_uri" : "hashtag",
+      "topic_interlink_form" : "hashtag_form",
+      "topic_interlink_block" : "hashtag_suggestions",
+      "topic_interlink_submit" : "hashtag_suggestion_submit",
+      "topic_add" : "add_hashtag",
+      "topic_del" : "del_hashtag",
+      "topic_counter" : "hashtag_counter"
+    }
   </script> 
   <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/private_profile.js"></script> 
   <script type="text/javascript"> 
     var smob_root = "<?php echo SMOB_ROOT; ?>";
+    // TODO: eliminate function arguments already defined as global vars
 
     $(document).ready(function(){
       // TODO: add validation
@@ -30,7 +46,11 @@
       });
       $('#add_interest').click(function(e) {
         e.preventDefault();
-        addInterest(smob_root, interest_domids);
+        addTopic(smob_root, interest_domids);
+      });
+      $('#add_hashtag').click(function(e) {
+        e.preventDefault();
+        addTopic(smob_root, hashtag_domids);
       });
 
       $('#private_submit').click(function(e) {

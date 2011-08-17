@@ -13,6 +13,7 @@ $res = SMOBStore::query($query);
 //error_log(var_dump($res, 1), 0);
 $query = "INSERT INTO <".SMOB_ROOT."ppo> { $triples }";
 error_log($query, 0);
+
 $res = SMOBStore::query($query);
 //error_log(var_dump($res, 1), 0);
 print "Your private profile has been stored...\n";

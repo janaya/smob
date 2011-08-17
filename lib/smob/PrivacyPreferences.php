@@ -74,39 +74,6 @@ class PrivacyPreferences {
   function get_interests() {
     $graph = SMOB_ROOT."ppo";
     $ppo = SMOB_ROOT."preferences";
-    
-    $query = "DELETE FROM <$graph>";
-    $data = SMOBStore::query($query);
-    error_log("interests deleted",0);
-    error_log(print_r($data, 1),0);
-    
-    $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
-    $conditions = " ppo:hasProperty moat:taggedWith ;
-                    ppo:resourceAsObject <$resource_object> . ";
-                    //ppo:resourceAsObject <RDF>
-                    //ppo:resourceAsObject <db./semweb>
-                    //filter?
-    $interest = "http://dbpedia.org/resource/Semantic_Web";
-    $accessspace = "?user foaf:topic_interest <$interest> .";
-                  //foaf:knows
-                  //filter
-                  // ?topic dcterms:subject category:Semantic_Web
-    $accessquery = "SELECT ?user WHERE { $accessspace }";
-
-    $triples = "
-      <$ppo> a ppo:PrivacyPreference;
-          ppo:appliesToResource rdfs:MicroblogPost;
-          ppo:assignAccess acl:Read;
-          ppo:hasCondition [ $conditions ];
-          ppo:hasAccessSpace [
-                             ppo:hasAccessQuery \"$accessquery\"^^xsd:string
-                             ] . ";
-
-    $query = "INSERT INTO <$graph> { $triples }";
-    error_log($query, 0);
-    $data = SMOBStore::query($query);
-    error_log("interests inserted",0);
-    error_log(print_r($data, 1),0);
 
     $query = "SELECT * FROM <$graph> WHERE {
       <$ppo> a ppo:PrivacyPreference;
@@ -120,7 +87,7 @@ class PrivacyPreferences {
     }";
 
     $data = SMOBStore::query($query);
-    error_log("interests queried",0);
+    error_log("pp queried",0);
     error_log(print_r($data, 1),0);
 
     $hashtags = array();
@@ -220,4 +187,35 @@ class PrivacyPreferences {
     ob_end_clean();
     return $contents;
   }
+
+  function insert_pp() {
+    $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
+    $conditions = " ppo:hasProperty moat:taggedWith ;
+                    ppo:resourceAsObject <$resource_object> . ";
+                    //ppo:resourceAsObject <RDF>
+                    //ppo:resourceAsObject <db./semweb>
+                    //filter?
+    $interest = "http://dbpedia.org/resource/Semantic_Web";
+    $accessspace = "?user foaf:topic_interest <$interest> .";
+                  //foaf:knows
+                  //filter
+                  // ?topic dcterms:subject category:Semantic_Web
+    $accessquery = "SELECT ?user WHERE { $accessspace }";
+
+    $triples = "
+      <$ppo> a ppo:PrivacyPreference;
+          ppo:appliesToResource rdfs:MicroblogPost;
+          ppo:assignAccess acl:Read;
+          ppo:hasCondition [ $conditions ];
+          ppo:hasAccessSpace [
+                             ppo:hasAccessQuery \"$accessquery\"^^xsd:string
+                             ] . ";
+
+    $query = "INSERT INTO <$graph> { $triples }";
+    error_log($query, 0);
+    $data = SMOBStore::query($query);
+    error_log("pp inserted",0);
+    error_log(print_r($data, 1),0);
+  }
+
 }
