@@ -23,11 +23,6 @@ class SMOBFeed {
 		$rss .= $items;
 		$rss .= "\n</rdf:RDF>";
 		echo $rss;
-		//$rssfilepath = dirname(__FILE__).'../../rss.xml';
-		//error_log("DEBUG: rssfilepath: $rssfilepath");
-        //$rssfile = fopen($rssfilepath, 'w') or die("can't open file");
-        //fwrite($rssfile, $rss);
-        //fclose($rssfile);
 	}
 	
 	public function rssrdf() {
@@ -40,11 +35,6 @@ class SMOBFeed {
 		$rss .= $items;
 		$rss .= "\n</rdf:RDF>";
 		echo $rss;
-		//$rssfilepath = dirname(__FILE__).'../../rss.xml';
-		//error_log("DEBUG: rssfilepath: $rssfilepath");
-        //$rssfile = fopen($rssfilepath, 'w') or die("can't open file");
-        //fwrite($rssfile, $rss);
-        //fclose($rssfile);
 	}
 	
 	public function rss_header() {

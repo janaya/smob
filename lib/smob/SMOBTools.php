@@ -315,7 +315,7 @@ LIMIT 1";
 		return '"' . addslashes($date) . '"^^xsd:dateTime';
 	}
 
-    function add2rssfile($uri, $ocontent, $date, $name, $turtle) {
+    function add2rssfile($uri, $ocontent, $date, $name, $turtle, $access_space) {
 
         $xml = new DOMDocument();
         
@@ -345,6 +345,11 @@ LIMIT 1";
         $content_encoded = $xml->createElement("content:encoded");
         $content_encoded->appendChild($xml->createCDATASection($turtle));
         $item->appendChild($content_encoded);
+
+        $privacy = $xml->createElement("privacy");
+        $access_space = $privacy->createElement("access_space");
+        $access_space ->appendChild($xml->createCDATASection($access_space));
+        $item->appendChild($access_space);
         
         $xml->appendChild($item);
         
@@ -455,6 +460,8 @@ LIMIT 1";
 		$title = "SMOB Hub of $owner";
 		$ts = date('c');
 		$rssfile = fopen(FEED_FILE_PATH,'w');
+		error_log("rss file open: ", 0);
+		error_log($rssfile, 0);
 		$rss = "<?xml version='1.0' encoding='utf-8'?>
 <rdf:RDF
 	xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'

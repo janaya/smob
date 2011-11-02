@@ -109,6 +109,10 @@ WHERE {
 		return $item;
 	}
 	
+	public function create_access_space() {
+		
+	}
+	
 	// Render the post as RSS 1.0 item with RDF in content tag 
 	// Function not used now, as rss is is adding the RDF
 	public function rssrdf() {
@@ -155,7 +159,7 @@ WHERE {
 	}
 
 
-    public function add2rssfile() {
+    public function update_rss_file() {
 		$uri = $this->uri;
 		// the data array is only generated when the post is loaded from the triple store
 		// but it is not generated when the post is generated from user interface
@@ -175,8 +179,10 @@ WHERE {
 		
 		//Adding the RDF to content 
 		$turtle = $this->turtle();
+		$data = PrivacyPreferences::get_access_spaces_hashtags();
+		$access_spaces = $data['access_spaces'];
 		
-		SMOBTools::add2rssfile($uri, $ocontent, $date, $name, $turtle);
+		SMOBTools::add2rssfile($uri, $ocontent, $date, $name, $turtle, $access_spaces);
     }
 
     public function deletefromrssfile() {

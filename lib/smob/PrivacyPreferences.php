@@ -70,8 +70,8 @@ class PrivacyPreferences {
     };
     return $rel_persons;
   }
-
-  function get_interests() {
+  
+  function get_privacy_preferences() {
     $graph = SMOB_ROOT."ppo";
     $ppo = SMOB_ROOT."preferences";
 
@@ -89,7 +89,12 @@ class PrivacyPreferences {
     $data = SMOBStore::query($query);
     error_log("pp queried",0);
     error_log(print_r($data, 1),0);
-
+    return $data;
+  	
+  }
+  
+  function get_access_spaces_hashtags() {
+	$data = this.get_privacy_preferences();
     $hashtags = array();
     $accessqueries = array();
     if($data) {
@@ -102,6 +107,13 @@ class PrivacyPreferences {
     };
     error_log(print_r($accessqueries, 1),0);
     error_log(print_r($hashtags, 1),0);
+    return array('access_spaces'=>$accessqueries, 'hashtags'=>$hashtags);
+  }
+  
+  function get_interests() {
+  	$data = this.get_access_spaces_hashtags();
+  	$access_spaces = $data['access_spaces'];
+  	$hashtags = $data['hashtags'];
     $interests = array();
     if($accessqueries) {
       foreach($accessqueries as $i=>$t) {
@@ -123,6 +135,8 @@ class PrivacyPreferences {
 
     $initial_data = PrivacyPreferences::get_interests();
     $interests = $initial_data['interests'];
+    error_log("interests: ", 0);
+    error_log(print_r($interests, 1), 0);
     $interest_fieldsets = array();
     $index = 0;
     error_log("interests", 0);
