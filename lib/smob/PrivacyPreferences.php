@@ -72,6 +72,7 @@ class PrivacyPreferences {
   }
   
   function get_privacy_preferences() {
+  	error_log("DEBUG: PP::get_privacy_preferences",0);
     $graph = SMOB_ROOT."ppo";
     $ppo = SMOB_ROOT."preferences";
 
@@ -87,14 +88,15 @@ class PrivacyPreferences {
     }";
 
     $data = SMOBStore::query($query);
-    error_log("pp queried",0);
+    error_log("DEBUG: pp stored",0);
     error_log(print_r($data, 1),0);
     return $data;
   	
   }
   
   function get_access_spaces_hashtags() {
-	$data = this.get_privacy_preferences();
+  	error_log("DEBUG: PP::get_access_spaces_hashtags",0);
+	$data = PrivacyPreferences::get_privacy_preferences();
     $hashtags = array();
     $accessqueries = array();
     if($data) {
@@ -111,7 +113,7 @@ class PrivacyPreferences {
   }
   
   function get_interests() {
-  	$data = this.get_access_spaces_hashtags();
+  	$data = PrivacyPreferences::get_access_spaces_hashtags();
   	$access_spaces = $data['access_spaces'];
   	$hashtags = $data['hashtags'];
     $interests = array();

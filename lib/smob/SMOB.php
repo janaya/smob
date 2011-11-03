@@ -5,7 +5,8 @@
 */
 
 require_once(dirname(__FILE__).'/SMOBAuth.php');
-require_once(dirname(__FILE__).'/SMOBFeed.php');
+// require_once(dirname(__FILE__).'/SMOBFeed.php');
+require_once(dirname(__FILE__).'/SMOBFeedRDF.php');
 require_once(dirname(__FILE__).'/SMOBInstaller.php');
 require_once(dirname(__FILE__).'/SMOBPost.php');
 require_once(dirname(__FILE__).'/SMOBPostList.php');

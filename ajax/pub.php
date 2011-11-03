@@ -23,7 +23,7 @@ if($content) {
 	print "<h2>Publishing your message...</h2>\n";
 	print "<ul>\n";	
 	$post->save();
-	$post->update_rss_file();
+	$post->add_to_rss_file();
 	$post->notify();
 	if($twitter) {
 		$post->tweet();		

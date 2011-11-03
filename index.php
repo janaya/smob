@@ -138,17 +138,7 @@ if(!SMOBTools::check_config()) {
 	}	
 	elseif($t == 'rss_owner') {
 		header ("Content-type: text/xml");
-		//$tweet = new SMOBFeed();
-		//$tweet->rss();
-		error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH,0);
-		if (!file_exists(FEED_FILE_PATH)) {
-		    error_log("DEBUG: initial RSS file does not exists", 0);
-		    SMOBTools::initial_rss_file();
-		}
-        $rssfile = fopen(FEED_FILE_PATH, 'r'); 
-        $rss = fread($rssfile, filesize(FEED_FILE_PATH));
-        fclose($rssfile);
-        echo($rss);
+		SMOBFeedRDF::rss();
 	}
 	// function to server RDF inside item content
 	// is not being used for now

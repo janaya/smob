@@ -84,82 +84,83 @@ WHERE {
 		return;
 		}
 	
-	// Render the post as RSS 1.0 item
-	public function rss() {
-		$uri = $this->uri;
-		$graph = $this->graph();
-		$content = $this->data['content'];
-		$ocontent = strip_tags($content);
-		$date = $this->data['date'];
-		$name = $this->data['name'];
-		//Adding the RDF to content 
-        $turtle = $this->turtle();
-        //$content = "INSERT INTO <$graph> { $turtle }";
-		$content = $turtle;
-		$item = "	
-<item rdf:about=\"$uri\">
-	<title>$ocontent</title>
-	<link>$uri</link>
-	<description>$ocontent</description>
-	<dc:creator>$name</dc:creator>
-	<dc:date>$date</dc:date>
-	<content:encoded><![CDATA[$content]]></content:encoded>
-</item>
-";
-		return $item;
-	}
+// 	// Render the post as RSS 1.0 item
+// 	public function rss() {
+// 		$uri = $this->uri;
+// 		$graph = $this->graph();
+// 		$content = $this->data['content'];
+// 		$ocontent = strip_tags($content);
+// 		$date = $this->data['date'];
+// 		$name = $this->data['name'];
+// 		//Adding the RDF to content 
+//         $turtle = $this->turtle();
+//         //$content = "INSERT INTO <$graph> { $turtle }";
+// 		$content = $turtle;
+// 		$item = "	
+// <item rdf:about=\"$uri\">
+// 	<title>$ocontent</title>
+// 	<link>$uri</link>
+// 	<description>$ocontent</description>
+// 	<dc:creator>$name</dc:creator>
+// 	<dc:date>$date</dc:date>
+// 	<content:encoded><![CDATA[$content]]></content:encoded>
+// </item>
+// ";
+// 		return $item;
+// 	}
 	
-	public function create_access_space() {
+// 	public function create_access_space() {
 		
-	}
+// 	}
 	
-	// Render the post as RSS 1.0 item with RDF in content tag 
-	// Function not used now, as rss is is adding the RDF
-	public function rssrdf() {
-		$uri = $this->uri;
-		$graph = $this->graph();
-		$content = $this->data['content'];
-		$ocontent = strip_tags($content);
-		$date = $this->data['date'];
-		$name = $this->data['name'];
+// 	// Render the post as RSS 1.0 item with RDF in content tag 
+// 	// Function not used now, as rss is is adding the RDF
+// 	public function rssrdf() {
+// 		$uri = $this->uri;
+// 		$graph = $this->graph();
+// 		$content = $this->data['content'];
+// 		$ocontent = strip_tags($content);
+// 		$date = $this->data['date'];
+// 		$name = $this->data['name'];
 
-        ////when user_agent is the Hub, delete the post marked to be deleted
-        //// Has the post been deleted?
-        //$query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
-        //$res = SMOBStore::query($query, true);
-        //error_log($res,0);
+//         ////when user_agent is the Hub, delete the post marked to be deleted
+//         //// Has the post been deleted?
+//         //$query = "ASK { GRAPH <$graph> {<$uri> <http://smob.me/ns#Status> \"DELETED\"^^<http://www.w3.org/2001/XMLSchema#string> .}}";
+//         //$res = SMOBStore::query($query, true);
+//         //error_log($res,0);
 
-        //if ($res == 1) {
-        //    $content = "DELETE FROM <$graph>";
-        //    // If the Hub is getting the post to be deleted
-        //    if (isset($_SERVER['REMOTE_HOST']) && $_SERVER['REMOTE_HOST'] == HUB_URL) {
+//         //if ($res == 1) {
+//         //    $content = "DELETE FROM <$graph>";
+//         //    // If the Hub is getting the post to be deleted
+//         //    if (isset($_SERVER['REMOTE_HOST']) && $_SERVER['REMOTE_HOST'] == HUB_URL) {
 
-        //        // Real delete
-        //        $res = SMOBStore::query($content);
-        //        error_log($res,0);
-        //    }
-        //} else {
-		//Adding the RDF to content 
-		$graph = $this->graph();
-        $turtle = $this->turtle();
-        //$content = "INSERT INTO <$graph> { $turtle }";
-		$content = $turtle;
+//         //        // Real delete
+//         //        $res = SMOBStore::query($content);
+//         //        error_log($res,0);
+//         //    }
+//         //} else {
+// 		//Adding the RDF to content 
+// 		$graph = $this->graph();
+//         $turtle = $this->turtle();
+//         //$content = "INSERT INTO <$graph> { $turtle }";
+// 		$content = $turtle;
 		
-		$item = "	
-<item rdf:about=\"$uri\">
-	<title>$ocontent</title>
-	<link>$uri</link>
-	<description>$ocontent</description>
-	<dc:creator>$name</dc:creator>
-	<dc:date>$date</dc:date>
-	<content:encoded><![CDATA[$content]]></content:encoded>
-</item>
-";
-		return $item;
-	}
+// 		$item = "	
+// <item rdf:about=\"$uri\">
+// 	<title>$ocontent</title>
+// 	<link>$uri</link>
+// 	<description>$ocontent</description>
+// 	<dc:creator>$name</dc:creator>
+// 	<dc:date>$date</dc:date>
+// 	<content:encoded><![CDATA[$content]]></content:encoded>
+// </item>
+// ";
+// 		return $item;
+// 	}
 
 
-    public function update_rss_file() {
+    public function add_to_rss_file() {
+    	error_log("DEBUG: adding to rss file", 0);
 		$uri = $this->uri;
 		// the data array is only generated when the post is loaded from the triple store
 		// but it is not generated when the post is generated from user interface
@@ -169,25 +170,24 @@ WHERE {
 		//$date = $this->data['date'];
 		//$name = $this->data['name'];
 		
-		$date = $this->ts;
-		$content = $this->content;
+		$date = isset($this->ts) ? $this->ts: $this->data['date'];;
+		$content = isset($this->content) ? $this->content : $this->data['content']; 
 		$ocontent = strip_tags($content);
 		// @FIXME: can not get the name from new post data model, although it is stored in the triples
 		//$name = SMOBTools::uri(SMOBTools::user_uri());
 		$name = "";
-		
+		$name = $this->data['name'];
 		
 		//Adding the RDF to content 
 		$turtle = $this->turtle();
-		$data = PrivacyPreferences::get_access_spaces_hashtags();
-		$access_spaces = $data['access_spaces'];
-		
-		SMOBTools::add2rssfile($uri, $ocontent, $date, $name, $turtle, $access_spaces);
+		$access_spaces = $this->get_access_spaces();
+		$item = SMOBFeedRDF::create_rss_item($uri, $ocontent, $date, $name, $turtle, $access_spaces);
+		SMOBFeedRDF::add_rss_item($item);
     }
 
-    public function deletefromrssfile() {
+    public function delete_from_rss_file() {
         $uri = $this->uri;
-        SMOBTools::deletefromrssfile($uri);
+        SMOBFeedRDF::delete_rss_item($uri);
     }
 
 	// Render the post in RDFa/XHTML
@@ -389,7 +389,7 @@ WHERE {
 		$uri = $this->uri; 
 		$graph = $this->graph(); 
 		SMOBStore::query("DELETE FROM <$graph>");
-		$this->deletefromrssfile();
+		$this->delete_from_rss_file();
 		$this->notify('DELETE FROM');
 	}
 	
@@ -501,5 +501,52 @@ WHERE {
 		}
 		return $turtle;
 	}	
+	
+	function get_access_spaces() {
+		$post = $this->uri;
+// 		$query = "
+// 		SELECT ?accessquery WHERE {
+// 			<$post> a rdfs:MicroblogPost;
+// 			moat:taggedWith ?hashtag.
+// 			?pp a ppo:PrivacyPreference;
+// 			ppo:appliesToResource rdfs:MicroblogPost;
+// 			ppo:hasCondition [
+// 			ppo:hasProperty moat:taggedWith ;
+// 			ppo:resourceAsObject ?hashtag .
+// 			];
+// 			ppo:assignAccess acl:Read;
+// 			ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
+// 		}";
+		$query = "
+		SELECT ?accessquery WHERE {
+			<$post> a rdfs:MicroblogPost;
+			moat:taggedWith ?hashtag.
+			?pp a ppo:PrivacyPreference;
+				ppo:appliesToResource rdfs:MicroblogPost;
+				ppo:assignAccess acl:Read;
+				ppo:hasCondition ?x;
+				ppo:hasAccessSpace ?y.
+			?x ppo:hasProperty moat:taggedWith ;
+			  	ppo:resourceAsObject ?hashtag .
+			?y ppo:hasAccessQuery ?accessquery .
+		}";
+// 		$query = "
+// 		SELECT ?accessquery WHERE {
+// 			<$post> a rdfs:MicroblogPost;
+// 			moat:taggedWith ?hashtag.
+// 			?x ppo:resourceAsObject ?hashtag .
+// 			?y ppo:hasAccessQuery ?accessquery .
+// 		}";
+		$data = SMOBStore::query($query);
+		$accessqueries = array();
+	    foreach($data as $t) {
+	        //$interests[$t['interest_label']] = $t['accessquery'];
+	        //$preferences[$t['resource']] = 
+	        $accessqueries[] = $t['accessquery'];
+	    }
+	    error_log("DEBUG: Post::get_access_spaces", 0);
+	    error_log(print_r($accessqueries, 1), 0);
+	    return $accessqueries;
+	}
 		
 }
