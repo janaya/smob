@@ -110,16 +110,74 @@ function setupSMOB() {
 // Default HUB_URL for the publisher
 // @TODO: ask the user about the Hub?, or where is it better to store this global?
 	$config = "
-define('SMOB_ROOT', '$smob_root');
+
 define('PURGE', '$purge');
+
 
 //define('HUB_URL', 'http://pubsubhubbub.appspot.com/');
 //define('HUB_URL_PUBLISH', 'http://smob.superfeedr.com/');
 //define('HUB_URL_SUBSCRIBE', 'http://smob.superfeedr.com/');
 define('HUB_URL_PUBLISH', 'http://pubsubhubbub.appspot.com/publish');
 define('HUB_URL_SUBSCRIBE', 'http://pubsubhubbub.appspot.com/subscribe');
-define('FEED_FILE_PATH', dirname(__FILE__).'/../rss/rss.xml');
-define('FEED_URL_PATH', '/rss');
+//define('FEED_FILE_PATH', realpath(dirname(__FILE__).'./../rss/rss.xml'));
+define('FEED_FILE_PATH', '/var/www/smob/rss/rss.xml');
+
+define('WSSERVER_HOST', 'localhost');
+define('WSSERVER_PORT', '8081');
+
+
+define('TWITTER_READ', '0');
+define('TWITTER_POST', '0');
+
+define('TWITTER_USER', '');
+define('TWITTER_PASS', '');
+
+define('AUTH', 'foafssl');
+
+define('SMOB_ROOT', '$smob_root');
+define('FOAF_URI', SMOB_ROOT.'me#id');
+
+define('ME_URL_PATH', '/me/');
+define('ME_FEED_URL_PATH','/me/rss');
+define('ME_FEEDRDF_URL_PATH','/me/rssrdf');
+
+define('POST_URL_PATH','/post/');
+
+define('DATA_URL_PATH','/data/');
+
+define('FEED_URL_PATH', '/rss/');
+
+define('DELETE_URL_PATH','/delete/');
+
+define('FOLLOWINGS_URL_PATH','/followings/');
+define('FOLLOWERS_URL_PATH','/followers/');
+define('FOLLOWING_ADD_URL_PATH','/add/following/');
+define('FOLLOWER_ADD_URL_PATH','/add/follower/');
+define('FOLLOWER_REMOVE_URL_PATH','/remove/follower/');
+define('FOLLOWING_REMOVE_URL_PATH','/remove/following/');
+define('FOLLOWING_PING_PATH','/ping/following/');
+define('FOLLOWER_PING_URL_PATH','/ping/follower/');
+
+define('REPLIES_URL_PATH','/replies/');
+
+
+define('USER_URL_PATH','/user/');
+define('MAP_URL_PATH','/map/');
+define('RESOURCE_URL_PATH','/resource/');
+
+define('CALLBACK_URL_PATH', '/callback/');
+define('CALLBACKRDF_URL_PATH', '/callbackrdf/');
+
+define('PRIVATE_PROFILE_EDIT_URL_PATH','/private/edit/');
+define('PRIVATE_PROFILE_URL_PATH','/private/');
+
+define('PRIVACY_PREFERENCES_EDIT_URL_PATH','/privacy/edit/');
+define('PRIVACY_PREFERENCES_URL_PATH','/privacy/');
+
+define('LOGOUT_URL_PATH','/logout/');
+// define('POST_URL_PATH', 'feedrdf/');
+// define('POST_URL_PATH', 'select/');
+	
 
 ";
 

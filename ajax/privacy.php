@@ -7,9 +7,9 @@ require_once(dirname(__FILE__)."/../config/config.php");
 
 $triples = $_POST['triples'];
 error_log($triples,0);
-$query = "DELETE FROM <".SMOB_ROOT."ppo> ";
+$query = "DELETE FROM <".PRIVACY_PREFERENCES_URL_PATH."> ";
 $res = SMOBStore::query($query);
-$query = "INSERT INTO <".SMOB_ROOT."ppo> { $triples }";
+$query = "INSERT INTO <".PRIVACY_PREFERENCES_URL_PATH."> { $triples }";
 
 //$query = $_POST['query'];
 //error_log($query, 0);

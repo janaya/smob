@@ -107,7 +107,7 @@
       OR<input type="radio"  name="interest_rel" value="0" checked="checked"/> AND <input type="radio" name="interest_rel" value="1" /> 
 
 
-      <fieldset><legend><b>Relationships the subcribers must have with me to receive the microposts</b></legend>
+      <fieldset><legend>Relationships the subcribers must have with me to receive the microposts</legend>
         <select id="rel_type" name="rel_type" style="visibility:hidden;">
             <?=$params['rel_type_options'];?>
         </select>

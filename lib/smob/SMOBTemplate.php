@@ -154,11 +154,11 @@ xml:lang="fr">
 			process();
 		});
 	});
-	$(function() { 
-		$("#np").everyTime(10000,function(i) {
-			getnews();
-		});
-	});
+	//$(function() { 
+//		$("#np").everyTime(10000,function(i) {
+//			getnews();
+//		});
+//	});
 	$(document).ready(function(){
 		$("#tabs").tabs();
 		<?php if($ismap) { echo "\n\nmap();"; } ?>

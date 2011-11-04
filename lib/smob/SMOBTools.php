@@ -54,6 +54,7 @@ WHERE {
 	
 	// Generate arc config file
 	function arc_config() {
+		error_log("setting up arc",0);
 		return array(
 			'db_host' => DB_HOST, 
 			'db_name' => DB_NAME,
@@ -70,6 +71,7 @@ WHERE {
 		    	'select', 'construct', 'ask', 'describe', 'load'
 			),
 			'sem_html_formats' => 'rdfa',
+		    'endpoint_max_limit' => 1000,
 		);
 	}
 	

@@ -48,14 +48,29 @@ class SMOBStore {
 		$rs = $store->query($query);
 		
 		if ($errors = $store->getErrors()) {
-			error_log("SMOB SPARQL Error:\n" . join("\n", $errors));
-			return array();
+			// Log errors.
+	       foreach ($errors as $error) {
+	         trigger_error($error, E_USER_ERROR);
+	       }
+	       return NULL;
+// 			error_log("SMOB SPARQL Error:\n" . join("\n", $errors));
+// 			return array();
 		}
-		
+//  		error_log(print_r($rs, 1),0);
 		if($ask) {
 			return $rs['result'];
 		} else {
-			return $rs['result']['rows'];
+// 			return $rs['result']['rows'];
+			if ($rs['query_type'] == 'insert') {
+				return $rs['result'];
+			} else {
+				return $rs['result']['rows'];
+			}
+// 			if (array_key_exists('rows', $rs)) {
+// 				return $rs['result']['rows'];
+// 			} else {
+// 				return $rs['result'];
+// 			}
 		}
 	}
 	

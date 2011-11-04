@@ -503,6 +503,7 @@ WHERE {
 	}	
 	
 	function get_access_spaces() {
+	    error_log("DEBUG: Post::get_access_spaces", 0);
 		$post = $this->uri;
 // 		$query = "
 // 		SELECT ?accessquery WHERE {
@@ -517,34 +518,43 @@ WHERE {
 // 			ppo:assignAccess acl:Read;
 // 			ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
 // 		}";
-		$query = "
-		SELECT ?accessquery WHERE {
-			<$post> a rdfs:MicroblogPost;
-			moat:taggedWith ?hashtag.
-			?pp a ppo:PrivacyPreference;
-				ppo:appliesToResource rdfs:MicroblogPost;
-				ppo:assignAccess acl:Read;
-				ppo:hasCondition ?x;
-				ppo:hasAccessSpace ?y.
-			?x ppo:hasProperty moat:taggedWith ;
-			  	ppo:resourceAsObject ?hashtag .
-			?y ppo:hasAccessQuery ?accessquery .
-		}";
 // 		$query = "
 // 		SELECT ?accessquery WHERE {
 // 			<$post> a rdfs:MicroblogPost;
 // 			moat:taggedWith ?hashtag.
-// 			?x ppo:resourceAsObject ?hashtag .
+// 			?pp a ppo:PrivacyPreference;
+// 				ppo:appliesToResource rdfs:MicroblogPost;
+// 				ppo:assignAccess acl:Read;
+// 				ppo:hasCondition ?x;
+// 				ppo:hasAccessSpace ?y.
+// 			?x ppo:hasProperty moat:taggedWith ;
+// 			  	ppo:resourceAsObject ?hashtag .
 // 			?y ppo:hasAccessQuery ?accessquery .
 // 		}";
+		$query = "SELECT ?accessquery WHERE {
+  ?pp <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vocab.deri.ie/ppo#PrivacyPreference>;
+    <http://vocab.deri.ie/ppo#hasCondition> ?x;
+    <http://vocab.deri.ie/ppo#hasAccessSpace> ?y.
+  ?x <http://vocab.deri.ie/ppo#resourceAsObject> ?hashtag .
+  ?y <http://vocab.deri.ie/ppo#hasAccessQuery> ?accessquery .
+  <$post> <http://moat-project.org/ns#taggedWith> ?hashtag .
+}";
+		
+
+// 		SELECT * WHERE {
+// 			GRAPH <https://localhost/smob/ppo> { ?s ?p ?o . }
+// 		}
 		$data = SMOBStore::query($query);
+		print_r($data);
+	    error_log(print_r($data, 1), 0);
 		$accessqueries = array();
 	    foreach($data as $t) {
+	    	print_r($t);
+	    	error_log(print_r($t,1),0);
 	        //$interests[$t['interest_label']] = $t['accessquery'];
 	        //$preferences[$t['resource']] = 
 	        $accessqueries[] = $t['accessquery'];
 	    }
-	    error_log("DEBUG: Post::get_access_spaces", 0);
 	    error_log(print_r($accessqueries, 1), 0);
 	    return $accessqueries;
 	}

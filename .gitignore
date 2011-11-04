@@ -6,3 +6,8 @@ js/jquery-dynamic-form.js
 js/dbpedia-spotlight-0.2.js
 js/dbpedia-spotlight-0.1.js
 test_data/*
+.buildpath
+.metadata/
+.project
+.settings/
+permissions

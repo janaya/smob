@@ -3,12 +3,12 @@
 //require_once(dirname(__FILE__)."/../../config/config.php");
 //require_once(dirname(__FILE__)."SMOBTools.php");
 //require_once(dirname(__FILE__)."SMOBStore.php");
-define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+// define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
 class PrivacyPreferences {
   // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-  function view_privacy_preferences() {
-    $turtle = SMOBTools::triples_from_graph(SMOB_ROOT."ppo");
+  function view() {
+    $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URL_PATH);
     header('Content-Type: text/turtle; charset=utf-8'); 
     return $turtle;
   }
@@ -88,7 +88,7 @@ class PrivacyPreferences {
     }";
 
     $data = SMOBStore::query($query);
-    error_log("DEBUG: pp stored",0);
+    error_log("DEBUG: pp queried",0);
     error_log(print_r($data, 1),0);
     return $data;
   	
@@ -117,8 +117,8 @@ class PrivacyPreferences {
   	$access_spaces = $data['access_spaces'];
   	$hashtags = $data['hashtags'];
     $interests = array();
-    if($accessqueries) {
-      foreach($accessqueries as $i=>$t) {
+    if($access_spaces) {
+      foreach($access_spaces as $i=>$t) {
         $starturi = strpos($t, "<")+1;
         $enduri = strpos($t, ">")-$starturi;
         $interests[$i] = substr($t, $starturi, $enduri);
@@ -204,7 +204,7 @@ class PrivacyPreferences {
     return $contents;
   }
 
-  function insert_pp() {
+  function save() {
     $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
     $conditions = " ppo:hasProperty moat:taggedWith ;
                     ppo:resourceAsObject <$resource_object> . ";
