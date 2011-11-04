@@ -121,13 +121,13 @@ function post_data2triples(user_uri) {
   var triples = "";
   var rel_counter = parseInt($('#rel_counter').val());
   for(i=0; i<rel_counter; i++) {
-    var person = $('#person'+i).val();
-    var rel_type = $('#rel_type'+i).val();
-    var rel_label = $('#rel_type'+i+' option:selected').text();
-    if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
-      triples = triples + "<" + user_uri + "> <" + rel_type + "> <" + person + "> . ";
-      triples = triples + "<" + rel_type + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + rel_label + "' . ";
-    }
+	  var person = $('#person'+i).val();
+	  var rel_type = $('#rel_type'+i).val();
+	  var rel_label = $('#rel_type'+i+' option:selected').text();
+	  if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
+		triples = triples + "<" + user_uri + "> <" + rel_type + "> <" + person + "> . ";
+	    triples = triples + "<" + rel_type + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + rel_label + "' . ";
+      }
   }
   var interest_counter = parseInt($('#interest_counter').val());
   for(i=0; i<interest_counter; i++) {

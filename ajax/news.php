@@ -9,15 +9,15 @@ if(!$np) die();
 $query = "
 SELECT count(?post) as ?c
 WHERE {
-	?post rdf:type sioct:MicroblogPost .
+    ?post rdf:type sioct:MicroblogPost .
 }
 ";
 
 $res = SMOBStore::query($query);
 $num = $res[0]['c'];
 if($num > $np) {
-	$diff = $num - $np;
-	print "$diff new update(s) since last time ! [<a href='.'>Reload</a>]";
+    $diff = $num - $np;
+    print "$diff new update(s) since last time ! [<a href='.'>Reload</a>]";
 }
 
 ?>

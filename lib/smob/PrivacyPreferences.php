@@ -9,7 +9,7 @@ class PrivacyPreferences {
   // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
   function view() {
     $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URL_PATH);
-    header('Content-Type: text/turtle; charset=utf-8'); 
+    header('Content-Type: text/turtle; charset=utf-8');
     return $turtle;
   }
 
@@ -49,15 +49,15 @@ class PrivacyPreferences {
     $rel_persons = array();
     //"<" + user_uri + "> <" + rel_types[i] + "> <" + persons[i] + "> . ";
     $query = "SELECT ?person ?rel_type ?rel_label FROM <$user_uri> WHERE {
-      <$user_uri> ?rel_type ?person . 
-      ?person a foaf:person . 
-      ?rel_type rdfs:isDefinedBy <http://purl.org/vocab/relationship/> . 
+      <$user_uri> ?rel_type ?person .
+      ?person a foaf:person .
+      ?rel_type rdfs:isDefinedBy <http://purl.org/vocab/relationship/> .
       ?rel_type rdfs:label ?rel_label . }";
       // rdfs:subPropertyOf foaf:knows
     $query = "SELECT ?person ?rel_type ?rel_label FROM <$user_uri> WHERE {
-       <$user_uri> ?rel_type ?person . 
+       <$user_uri> ?rel_type ?person .
        FILTER(REGEX(?rel_type, 'http://purl.org/vocab/relationship/', 'i')).
-       OPTIONAL { ?rel_type rdfs:label ?rel_label  } 
+       OPTIONAL { ?rel_type rdfs:label ?rel_label  }
        }";
     $data = SMOBStore::query($query);
     error_log("rels",0);
@@ -70,9 +70,9 @@ class PrivacyPreferences {
     };
     return $rel_persons;
   }
-  
+
   function get_privacy_preferences() {
-  	error_log("DEBUG: PP::get_privacy_preferences",0);
+      error_log("DEBUG: PP::get_privacy_preferences",0);
     $graph = SMOB_ROOT."ppo";
     $ppo = SMOB_ROOT."preferences";
 
@@ -91,18 +91,18 @@ class PrivacyPreferences {
     error_log("DEBUG: pp queried",0);
     error_log(print_r($data, 1),0);
     return $data;
-  	
+
   }
-  
+
   function get_access_spaces_hashtags() {
-  	error_log("DEBUG: PP::get_access_spaces_hashtags",0);
-	$data = PrivacyPreferences::get_privacy_preferences();
+      error_log("DEBUG: PP::get_access_spaces_hashtags",0);
+    $data = PrivacyPreferences::get_privacy_preferences();
     $hashtags = array();
     $accessqueries = array();
     if($data) {
       foreach($data as $i=>$t) {
         //$interests[$t['interest_label']] = $t['accessquery'];
-        //$preferences[$t['resource']] = 
+        //$preferences[$t['resource']] =
         $accessqueries[$i] = $t['accessquery'];
         $hashtags[$i] = $t['hashtag'];
       }
@@ -111,11 +111,11 @@ class PrivacyPreferences {
     error_log(print_r($hashtags, 1),0);
     return array('access_spaces'=>$accessqueries, 'hashtags'=>$hashtags);
   }
-  
+
   function get_interests() {
-  	$data = PrivacyPreferences::get_access_spaces_hashtags();
-  	$access_spaces = $data['access_spaces'];
-  	$hashtags = $data['hashtags'];
+      $data = PrivacyPreferences::get_access_spaces_hashtags();
+      $access_spaces = $data['access_spaces'];
+      $hashtags = $data['hashtags'];
     $interests = array();
     if($access_spaces) {
       foreach($access_spaces as $i=>$t) {
@@ -204,34 +204,35 @@ class PrivacyPreferences {
     return $contents;
   }
 
-  function save() {
-    $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
-    $conditions = " ppo:hasProperty moat:taggedWith ;
-                    ppo:resourceAsObject <$resource_object> . ";
-                    //ppo:resourceAsObject <RDF>
-                    //ppo:resourceAsObject <db./semweb>
-                    //filter?
-    $interest = "http://dbpedia.org/resource/Semantic_Web";
-    $accessspace = "?user foaf:topic_interest <$interest> .";
-                  //foaf:knows
-                  //filter
-                  // ?topic dcterms:subject category:Semantic_Web
-    $accessquery = "SELECT ?user WHERE { $accessspace }";
+  // save is done by private_profile.js
+//   function save() {
+//     $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
+//     $conditions = " ppo:hasProperty moat:taggedWith ;
+//                     ppo:resourceAsObject <$resource_object> . ";
+//                     //ppo:resourceAsObject <RDF>
+//                     //ppo:resourceAsObject <db./semweb>
+//                     //filter?
+//     $interest = "http://dbpedia.org/resource/Semantic_Web";
+//     $accessspace = "?user foaf:topic_interest <$interest> .";
+//                   //foaf:knows
+//                   //filter
+//                   // ?topic dcterms:subject category:Semantic_Web
+//     $accessquery = "SELECT ?user WHERE { $accessspace }";
 
-    $triples = "
-      <$ppo> a ppo:PrivacyPreference;
-          ppo:appliesToResource rdfs:MicroblogPost;
-          ppo:assignAccess acl:Read;
-          ppo:hasCondition [ $conditions ];
-          ppo:hasAccessSpace [
-                             ppo:hasAccessQuery \"$accessquery\"^^xsd:string
-                             ] . ";
+//     $triples = "
+//       <$ppo> a ppo:PrivacyPreference;
+//           ppo:appliesToResource rdfs:MicroblogPost;
+//           ppo:assignAccess acl:Read;
+//           ppo:hasCondition [ $conditions ];
+//           ppo:hasAccessSpace [
+//                              ppo:hasAccessQuery \"$accessquery\"^^xsd:string
+//                              ] . ";
 
-    $query = "INSERT INTO <$graph> { $triples }";
-    error_log($query, 0);
-    $data = SMOBStore::query($query);
-    error_log("pp inserted",0);
-    error_log(print_r($data, 1),0);
-  }
+//     $query = "INSERT INTO <$graph> { $triples }";
+//     error_log($query, 0);
+//     $data = SMOBStore::query($query);
+//     error_log("pp inserted",0);
+//     error_log(print_r($data, 1),0);
+//   }
 
 }
