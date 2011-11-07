@@ -121,12 +121,12 @@ function post_data2triples(user_uri) {
   var triples = "";
   var rel_counter = parseInt($('#rel_counter').val());
   for(i=0; i<rel_counter; i++) {
-	  var person = $('#person'+i).val();
-	  var rel_type = $('#rel_type'+i).val();
-	  var rel_label = $('#rel_type'+i+' option:selected').text();
-	  if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
-		triples = triples + "<" + user_uri + "> <" + rel_type + "> <" + person + "> . ";
-	    triples = triples + "<" + rel_type + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + rel_label + "' . ";
+    var person = $('#person'+i).val();
+    var rel_type = $('#rel_type'+i).val();
+    var rel_label = $('#rel_type'+i+' option:selected').text();
+    if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
+    triples = triples + "<" + user_uri + "> <" + rel_type + "> <" + person + "> . ";
+      triples = triples + "<" + rel_type + "> <http://www.w3.org/2000/01/rdf-schema#label> '" + rel_label + "' . ";
       }
   }
   var interest_counter = parseInt($('#interest_counter').val());
@@ -155,6 +155,16 @@ function post_data2triples(user_uri) {
 
 function post_privacydata2triples(smob_root) {
   var accessspace = "";
+  
+  var rel_counter = parseInt($('#rel_counter').val());
+  for(i=0; i<rel_counter; i++) {
+    var person = $('#person'+i).val();
+    var rel_type = $('#rel_type'+i).val();
+    if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
+    accessspace += "?user <" + rel_type + "> <" + person + "> . ";
+      }
+  }
+  
   var interest_counter = parseInt($('#interest_counter').val());
   for(i=0; i<interest_counter; i++) {
     var interest = $('#interest'+i).val();
@@ -178,16 +188,17 @@ function post_privacydata2triples(smob_root) {
     var hashtag_label = $('#hashtag_label'+i).val();
     // we will never have an id biggest than counter, but it could happen that some of the items where removed
     if ((hashtag != undefined) && (hashtag_label != undefined)) {
-      resource_object += " ppo:resourceAsObject <" + hashtag + "> . ";
+      resource_object += " ;  ppo:resourceAsObject <" + hashtag + ">";
                     //filter?
     }
   }
   console.debug(resource_object);
   
-  var conditions = " ppo:hasProperty moat:taggedWith ; " + resource_object;
-
-  var graph = smob_root+'ppo';
-  var ppo = smob_root+'preferences';
+  var conditions = " ppo:hasProperty moat:taggedWith " + resource_object;
+  var d = new Date();
+  
+  var graph = smob_root+'ppo/'+toISOString(d);
+  var ppo = smob_root+'privacy/'+toISOString(d);
   var triples = "<"+ppo+"> a ppo:PrivacyPreference;";
   triples += "ppo:appliesToResource rdfs:MicroblogPost ;";
   triples += "ppo:assignAccess acl:Read ;";
@@ -200,9 +211,25 @@ function post_privacydata2triples(smob_root) {
   $("#privacy_result").show();
   //console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
   //console.debug(smob_root + "sparql?" + $.param({"query":query}));
-  $.post(smob_root + "ajax/privacy.php?", {triples:triples}, function(data){
+  $.post(smob_root + "ajax/privacy.php?", {graph: graph, triples:triples}, function(data){
   //$.post(smob_root + "sparql?", {query:query}, function(data){
     console.debug(data);
     $("#result").html(data);
   });
+}
+
+function padzero(n) {
+    return n < 10 ? '0' + n : n;
+}
+function pad2zeros(n) {
+    if (n < 100) {
+      n = '0' + n;
+    }
+    if (n < 10) {
+      n = '0' + n;
+    }
+    return n;     
+}
+function toISOString(d) {
+    return d.getUTCFullYear() + '-' +  padzero(d.getUTCMonth() + 1) + '-' + padzero(d.getUTCDate()) + 'T' + padzero(d.getUTCHours()) + ':' +  padzero(d.getUTCMinutes()) + ':' + padzero(d.getUTCSeconds()) + '.' + pad2zeros(d.getUTCMilliseconds()) + 'Z';
 }

@@ -7,11 +7,7 @@
 
 class PrivacyPreferences {
   // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-  function view() {
-    $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URL_PATH);
-    header('Content-Type: text/turtle; charset=utf-8');
-    return $turtle;
-  }
+
 
   function get_rel_types() {
     $rels = array();
@@ -71,13 +67,35 @@ class PrivacyPreferences {
     return $rel_persons;
   }
 
+  function get_privacy_preference() {
+  error_log("DEBUG: PP::get_privacy_preference",0);
+  $graph = SMOB_ROOT."ppo";
+      $ppo = SMOB_ROOT."preferences";
+
+      $query = "SELECT * FROM <$graph> WHERE {
+        <$ppo> a ppo:PrivacyPreference;
+            ppo:appliesToResource rdfs:MicroblogPost;
+            ppo:hasCondition [
+                      ppo:hasProperty moat:taggedWith ;
+                      ppo:resourceAsObject ?hashtag .
+                      ];
+            ppo:assignAccess acl:Read;
+            ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
+      }";
+
+      $data = SMOBStore::query($query);
+  error_log("DEBUG: pp queried",0);
+      error_log(print_r($data, 1),0);
+  return $data;
+  }
+
   function get_privacy_preferences() {
-      error_log("DEBUG: PP::get_privacy_preferences",0);
+    error_log("DEBUG: PP::get_privacy_preferences",0);
     $graph = SMOB_ROOT."ppo";
     $ppo = SMOB_ROOT."preferences";
 
-    $query = "SELECT * FROM <$graph> WHERE {
-      <$ppo> a ppo:PrivacyPreference;
+    $query = "SELECT DISTINCT ?pp ?hashtag ?accessquery WHERE {
+      ?pp a ppo:PrivacyPreference;
           ppo:appliesToResource rdfs:MicroblogPost;
           ppo:hasCondition [
                     ppo:hasProperty moat:taggedWith ;
@@ -91,12 +109,11 @@ class PrivacyPreferences {
     error_log("DEBUG: pp queried",0);
     error_log(print_r($data, 1),0);
     return $data;
-
   }
 
   function get_access_spaces_hashtags() {
       error_log("DEBUG: PP::get_access_spaces_hashtags",0);
-    $data = PrivacyPreferences::get_privacy_preferences();
+    $data = PrivacyPreferences::get_privacy_preference();
     $hashtags = array();
     $accessqueries = array();
     if($data) {
@@ -130,7 +147,7 @@ class PrivacyPreferences {
     //return array($accessquery);
   }
 
-  function get_initial_private_form_data() {
+  function get_initial_privacy_form() {
     $rel_types = PrivateProfile::get_rel_types();
     $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
 
@@ -191,11 +208,11 @@ class PrivacyPreferences {
     return $params;
   }
 
-  function view_privacy_preferences_form() {
+  function edit() {
     $file = 'privacy_preferences_template.php';
     // if(IS_AJAX) {
     // } else {
-    $params = PrivacyPreferences::get_initial_private_form_data();
+    $params = PrivacyPreferences::get_initial_privacy_form();
     extract($params);
     ob_start();
     include($file);
@@ -204,6 +221,132 @@ class PrivacyPreferences {
     return $contents;
   }
 
+  function add() {
+    $rel_types = PrivateProfile::get_rel_types();
+    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
+    $file = 'privacy_preference_add_template.php';
+    $params = array("rel_type_options"=>$rel_type_options,
+                    "rel_counter"=>0,
+                    "hashtag_counter"=>0,
+                    "interest_counter"=>0);
+    extract($params);
+    ob_start();
+    include($file);
+    $contents = ob_get_contents();
+    ob_end_clean();
+    return $contents;
+  }
+
+  function get_list() {
+      $initial_data = PrivacyPreferences::get_interests();
+      $interests = $initial_data['interests'];
+      error_log("interests: ", 0);
+      error_log(print_r($interests, 1), 0);
+      $interest_fieldsets = array();
+      $index = 0;
+      error_log("interests", 0);
+      foreach($interests as $interest_label=>$interest) {
+          error_log($interest, 0);
+          error_log($interest_label,0);
+          $interest_fieldset = "
+              <div id='interest_fieldset$index'>
+                <input type='text' id='interest_label$index' name='interest_label$index' value='$interest_label' class='url required' size='20' readonly />
+                (<input type='text' id='interest$index' name='interest$index' value='$interest' class='url required' size='40' readonly />)
+                <a id='del_rel$index' href='' onClick='del(\"#interest_fieldset$index\"); return false;'>[-]</a>
+              </div>
+              </br>";
+          $interest_fieldsets[$index] = $interest_fieldset;
+          $index++;
+      }
+      error_log(print_r($interest_fieldsets, 1), 0);
+      error_log($index);
+      $interest_counter = $index;
+
+      $hashtags = $initial_data['hashtags'];
+      $hashtag_fieldsets = array();
+      $index = 0;
+      error_log("hashtags", 0);
+      foreach($hashtags as $hashtag_label=>$hashtag) {
+          error_log($hashtag, 0);
+          error_log($hashtag_label,0);
+          $hashtag_fieldset = "
+              <div id='hashtag_fieldset$index'>
+                <input type='text' id='hashtag_label$index' name='hashtag_label$index' value='$hashtag_label' class='url required' size='20' readonly />
+                (<input type='text' id='hashtag$index' name='hashtag$index' value='$hashtag' class='url required' size='40' readonly />)
+                <a id='del_rel$index' href='' onClick='del(\"#hashtag_fieldset$index\"); return false;'>[-]</a>
+              </div>
+              </br>";
+          $hashtag_fieldsets[$index] = $hashtag_fieldset;
+          $index++;
+      }
+      error_log(print_r($hashtag_fieldsets, 1), 0);
+      error_log($index);
+      $hashtag_counter = $index;
+
+      $params = array("rel_type_options"=>$rel_type_options,
+                          "rel_fieldsets"=>array(),
+                          "rel_counter"=>0,
+                          "hashtag_fieldsets"=>$hashtag_fieldsets,
+                          "hashtag_counter"=>$hashtag_counter,
+                          "interest_fieldsets"=>$interest_fieldsets,
+                          "interest_counter"=>$interest_counter
+      );
+      return $params;
+  }
+
+  function view_list() {
+    $file = 'privacy_preferences_list_template.php';
+    $params = PrivacyPreferences::get_privacy_preferences();
+    extract($params);
+    ob_start();
+    include($file);
+    $contents = ob_get_contents();
+    ob_end_clean();
+    return $contents;
+
+  }
+
+  function view() {
+    $file = 'privacy_preferences_template.php';
+    $rel_types = PrivateProfile::get_rel_types();
+    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
+    $preferences = PrivacyPreferences::get_privacy_preferences();
+    $params = array("rel_type_options"=>$rel_type_options,
+                    "rel_counter"=>0,
+                    "hashtag_counter"=>0,
+                    "interest_counter"=>0,
+                    "preferences"=>$preferences,
+                    );
+    extract($params);
+    ob_start();
+    include($file);
+    $contents = ob_get_contents();
+    ob_end_clean();
+    return $contents;
+
+  }
+
+  function view_list_rdf() {
+      $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URL_PATH);
+      header('Content-Type: text/turtle; charset=utf-8');
+      return $turtle;
+  }
+  
+  function delete($graph) {
+    error_log("PP::delete, graph:",0);
+    error_log($graph, 0);
+    $query = "DELETE FROM <$graph>";
+    $res = SMOBStore::query($query);
+    error_log(print_r($res, 1), 0);
+    error_log("privacy preference deleted");
+  }
+
+  function save($graph, $triples) {
+    $query = "INSERT INTO <$graph> { $triples }";
+    $res = SMOBStore::query($query);
+    error_log(print_r($res, 1), 0);
+    error_log("privacy preferences stored");
+  }
   // save is done by private_profile.js
 //   function save() {
 //     $resource_object = "http://dbpedia.org/resource/Resource\_Description\_Framework";
@@ -234,5 +377,8 @@ class PrivacyPreferences {
 //     error_log("pp inserted",0);
 //     error_log(print_r($data, 1),0);
 //   }
-
+//$class_methods = get_class_methods('PrivacyPreferences');
+//foreach ($class_methods as $method_name) {
+//    error_log("$method_name\n",0);
+//}
 }
