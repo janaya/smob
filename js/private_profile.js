@@ -160,7 +160,9 @@ function post_privacydata2triples(smob_root) {
   for(i=0; i<rel_counter; i++) {
     var person = $('#person'+i).val();
     var rel_type = $('#rel_type'+i).val();
-    if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
+//    var rel_label = $('#rel_type'+i+' option:selected').text();
+//    if ((rel_type != undefined) && (rel_label != undefined) && (person != undefined)) {
+    if ((rel_type != undefined) && (person != undefined)) {
     accessspace += "?user <" + rel_type + "> <" + person + "> . ";
       }
   }
@@ -205,10 +207,10 @@ function post_privacydata2triples(smob_root) {
   triples += "ppo:hasCondition [ " + conditions + "] ;";
   triples += "ppo:hasAccessSpace [ ppo:hasAccessQuery \"" + accessquery +"\"^^xsd:string ] . ";
 
-  query = "INSERT INTO <" + graph + "> { " + triples + " }";
+//  query = "INSERT INTO <" + graph + "> { " + triples + " }";
 
-  $("#privacy_result").text(triples).html();
-  $("#privacy_result").show();
+//  $("#privacy_result").text(triples).html();
+//  $("#privacy_result").show();
   //console.debug(smob_root + "ajax/privacy.php?" + $.param({"triples":triples}));
   //console.debug(smob_root + "sparql?" + $.param({"query":query}));
   $.post(smob_root + "ajax/privacy.php?", {graph: graph, triples:triples}, function(data){
@@ -216,6 +218,18 @@ function post_privacydata2triples(smob_root) {
     console.debug(data);
     $("#result").html(data);
   });
+  add_privacy_item_to_list(ppo, conditions, accessquery);
+}
+
+function add_privacy_item_to_list(ppo, conditions, accessquery) {  
+  var privacy_block = "<div id='" +jq(ppo)+"' typeof='ppo::PrivacyPreference' about='"+ppo+"' class='post internal' cols='82''> "+ppo;
+  privacy_block = privacy_block + "<div id='hashtag_block'> hashtag:  "+$('<div/>').text(conditions).html()+ "</div>";
+  privacy_block = privacy_block + "<div id='interest_block'> access query: "+$('<div/>').text(accessquery).html()+"</div>";
+  privacy_block = privacy_block + "<a href='' onclick='del_pp(\"#"+ppo+"\"); return false;'>[-]</a>";
+  privacy_block = privacy_block + "</div>";
+  $("#privacy_list").prepend(privacy_block).fadeIn("slow");
+//  $('<div/>').html(privacy_block).text()
+
 }
 
 function padzero(n) {
@@ -232,4 +246,12 @@ function pad2zeros(n) {
 }
 function toISOString(d) {
     return d.getUTCFullYear() + '-' +  padzero(d.getUTCMonth() + 1) + '-' + padzero(d.getUTCDate()) + 'T' + padzero(d.getUTCHours()) + ':' +  padzero(d.getUTCMinutes()) + ':' + padzero(d.getUTCSeconds()) + '.' + pad2zeros(d.getUTCMilliseconds()) + 'Z';
+}
+
+function jq(myid) { 
+    return myid.replace(/(:|\.)/g,'\\$1');
+}
+
+function unjq(myid) { 
+    return myid.replace(/(\\)/g,'$1');
 }

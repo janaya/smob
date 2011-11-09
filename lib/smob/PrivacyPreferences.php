@@ -68,41 +68,19 @@ class PrivacyPreferences {
   }
 
   function get_privacy_preference() {
-  error_log("DEBUG: PP::get_privacy_preference",0);
-  $graph = SMOB_ROOT."ppo";
-      $ppo = SMOB_ROOT."preferences";
-
-      $query = "SELECT * FROM <$graph> WHERE {
-        <$ppo> a ppo:PrivacyPreference;
-            ppo:appliesToResource rdfs:MicroblogPost;
-            ppo:hasCondition [
-                      ppo:hasProperty moat:taggedWith ;
-                      ppo:resourceAsObject ?hashtag .
-                      ];
-            ppo:assignAccess acl:Read;
-            ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
-      }";
-
-      $data = SMOBStore::query($query);
-  error_log("DEBUG: pp queried",0);
-      error_log(print_r($data, 1),0);
-  return $data;
-  }
-
-  function get_privacy_preferences() {
-    error_log("DEBUG: PP::get_privacy_preferences",0);
+    error_log("DEBUG: PP::get_privacy_preference",0);
     $graph = SMOB_ROOT."ppo";
     $ppo = SMOB_ROOT."preferences";
 
-    $query = "SELECT DISTINCT ?pp ?hashtag ?accessquery WHERE {
-      ?pp a ppo:PrivacyPreference;
-          ppo:appliesToResource rdfs:MicroblogPost;
-          ppo:hasCondition [
-                    ppo:hasProperty moat:taggedWith ;
-                    ppo:resourceAsObject ?hashtag .
-                    ];
-          ppo:assignAccess acl:Read;
-          ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
+    $query = "SELECT * FROM <$graph> WHERE {
+    <$ppo> a ppo:PrivacyPreference;
+        ppo:appliesToResource rdfs:MicroblogPost;
+        ppo:hasCondition [
+                  ppo:hasProperty moat:taggedWith ;
+                  ppo:resourceAsObject ?hashtag .
+                  ];
+        ppo:assignAccess acl:Read;
+        ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] .
     }";
 
     $data = SMOBStore::query($query);
@@ -111,6 +89,67 @@ class PrivacyPreferences {
     return $data;
   }
 
+  function get_privacy_preferences_new() {
+    error_log("DEBUG: PP::get_privacy_preferences",0);
+    $graph = SMOB_ROOT."ppo";
+    $ppo = SMOB_ROOT."preferences";
+
+    $query = "SELECT DISTINCT ?pp ?condition ?accessquery WHERE {
+      ?pp a ppo:PrivacyPreference;
+          ppo:appliesToResource rdfs:MicroblogPost;
+          ppo:assignAccess acl:Read;
+          ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] ;
+          ppo:hasCondition ?condition.
+    }";
+
+    $data = SMOBStore::query($query);
+    error_log("DEBUG: pp queried",0);
+    error_log(print_r($data, 1),0);
+    if (count($data) == 1) {
+        error_log("result 1 element",0);
+        $condition = $data[0]['condition'];
+        $query = "SELECT ?hashtag WHERE {
+            '$condition' ppo:hasPropery moat:taggedWith.
+            OPTIONAL { '$condition'  ppo:resourceAsObject ?hashtag }
+        }";
+        $hashtags = SMOBStore::query($query);
+        error_log(print_r($hashtags,1),0);
+    } else {
+        foreach($data as $item) {
+            $condition = $item['condition'];
+            $query = "SELECT ?hashtag WHERE {
+                '$condition' ppo:hasPropery moat:taggedWith.
+                OPTIONAL { '$condition'  ppo:resourceAsObject ?hashtag }
+            }";
+            $hashtags = SMOBStore::query($query);
+            error_log(print_r($hashtags,1),0);
+        }
+    }
+    return $data;
+  }
+
+  function get_privacy_preferences() {
+    //TODO: pp with more than hashtag are returned as 2 different pp
+    error_log("DEBUG: PP::get_privacy_preferences",0);
+    $graph = SMOB_ROOT."ppo";
+    $ppo = SMOB_ROOT."preferences";
+
+    $query = "SELECT DISTINCT ?pp ?hashtag ?accessquery WHERE {
+      ?pp a ppo:PrivacyPreference;
+          ppo:appliesToResource rdfs:MicroblogPost;
+          ppo:assignAccess acl:Read;
+          ppo:hasAccessSpace [ ppo:hasAccessQuery ?accessquery ] ;
+        ppo:hasCondition [
+                  ppo:hasProperty moat:taggedWith ;
+                  ppo:resourceAsObject ?hashtag .
+                  ].
+    }";
+
+    $data = SMOBStore::query($query);
+    error_log("DEBUG: pp queried",0);
+    error_log(print_r($data, 1),0);
+    return $data;
+  }
   function get_access_spaces_hashtags() {
       error_log("DEBUG: PP::get_access_spaces_hashtags",0);
     $data = PrivacyPreferences::get_privacy_preference();

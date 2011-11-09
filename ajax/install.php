@@ -125,58 +125,51 @@ define('FEED_FILE_PATH', '/var/www/smob/rss/rss.xml');
 define('WSSERVER_HOST', 'localhost');
 define('WSSERVER_PORT', '8081');
 
-
-define('TWITTER_READ', '0');
-define('TWITTER_POST', '0');
-
-define('TWITTER_USER', '');
-define('TWITTER_PASS', '');
-
-define('AUTH', 'foafssl');
-
 define('SMOB_ROOT', '$smob_root');
-define('FOAF_URI', SMOB_ROOT.'me#id');
 
-define('ME_URL_PATH', SMOB_ROOT.'/me/');
-define('ME_FEED_URL_PATH','/me/rss');
-define('ME_FEEDRDF_URL_PATH','/me/rssrdf');
+define('ME_URL_PATH', SMOB_ROOT.'me/');
 
-define('POST_URL_PATH','/post/');
+define('ME_FEED_URL_PATH', SMOB_ROOT.'me/rss');
+define('ME_FEEDRDF_URL_PATH', SMOB_ROOT.'me/rssrdf');
 
-define('DATA_URL_PATH','/data/');
+define('POST_URL_PATH', SMOB_ROOT.'post/');
 
-define('FEED_URL_PATH', SMOB_ROOT.'/rss/');
+define('DATA_URL_PATH', SMOB_ROOT.'data/');
 
-define('DELETE_URL_PATH','/delete/');
+define('FEED_URL_PATH', SMOB_ROOT.'rss/');
 
-define('FOLLOWINGS_URL_PATH','/followings/');
-define('FOLLOWERS_URL_PATH','/followers/');
-define('FOLLOWING_ADD_URL_PATH','/add/following/');
-define('FOLLOWER_ADD_URL_PATH','/add/follower/');
-define('FOLLOWER_REMOVE_URL_PATH','/remove/follower/');
-define('FOLLOWING_REMOVE_URL_PATH','/remove/following/');
-define('FOLLOWING_PING_PATH','/ping/following/');
-define('FOLLOWER_PING_URL_PATH','/ping/follower/');
+define('DELETE_URL_PATH', SMOB_ROOT.'delete/');
 
-define('REPLIES_URL_PATH','/replies/');
+define('FOLLOWINGS_URL_PATH', SMOB_ROOT.'followings/');
+define('FOLLOWERS_URL_PATH', SMOB_ROOT.'followers/');
+define('FOLLOWING_ADD_URL_PATH', SMOB_ROOT.'add/following/');
+define('FOLLOWER_ADD_URL_PATH', SMOB_ROOT.'add/follower/');
+define('FOLLOWER_REMOVE_URL_PATH', SMOB_ROOT.'remove/follower/');
+define('FOLLOWING_REMOVE_URL_PATH', SMOB_ROOT.'remove/following/');
+define('FOLLOWING_PING_PATH', SMOB_ROOT.'ping/following/');
+define('FOLLOWER_PING_URL_PATH', SMOB_ROOT.'ping/follower/');
+
+define('REPLIES_URL_PATH', SMOB_ROOT.'replies/');
 
 
-define('USER_URL_PATH','/user/');
-define('MAP_URL_PATH','/map/');
-define('RESOURCE_URL_PATH','/resource/');
+define('USER_URL_PATH', SMOB_ROOT.'user/');
+define('MAP_URL_PATH', SMOB_ROOT.'map/');
+define('RESOURCE_URL_PATH', SMOB_ROOT.'resource/');
 
-define('CALLBACK_URL_PATH', SMOB_ROOT.'/callback/');
-define('CALLBACKRDF_URL_PATH', SMOB_ROOT.'/callbackrdf/');
+define('CALLBACK_URL_PATH', '/callback/');
+define('CALLBACKRDF_URL_PATH', '/callbackrdf/');
 
-define('PRIVATE_PROFILE_EDIT_URL_PATH','/private/edit/');
-define('PRIVATE_PROFILE_URL_PATH','/private/');
+define('PRIVATE_PROFILE_EDIT_URL_PATH', SMOB_ROOT.'private/edit/');
+define('PRIVATE_PROFILE_URL_PATH', SMOB_ROOT.'private/');
 
-define('PRIVACY_PREFERENCES_EDIT_URL_PATH','/privacy/edit/');
-define('PRIVACY_PREFERENCES_URL_PATH','/privacy/');
+define('PRIVACY_PREFERENCES_ADD_URL_PATH', SMOB_ROOT.'privacy/add/');
+define('PRIVACY_PREFERENCES_EDIT_URL_PATH', SMOB_ROOT.'privacy/edit/');
+define('PRIVACY_PREFERENCES_URL_PATH', SMOB_ROOT.'privacy/');
+define('PRIVACY_PREFERENCE_URI_PATH', SMOB_ROOT.'ppo/');
 
-define('LOGOUT_URL_PATH','/logout/');
-// define('POST_URL_PATH', SMOB_ROOT.'feedrdf/');
-// define('POST_URL_PATH', SMOB_ROOT.'select/');
+define('LOGOUT_URL_PATH', SMOB_ROOT.'logout/');
+// define('POST_URL_PATH', 'feedrdf/');
+// define('POST_URL_PATH', 'select/');
 
 
 ";

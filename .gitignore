@@ -11,3 +11,6 @@ test_data/*
 .project
 .settings/
 permissions
+lib/smob/privacy_preference_add_template.php
+lib/smob/privacy_preferences_list_template.php
+lib/smob/privacy_preferences_template.all.php

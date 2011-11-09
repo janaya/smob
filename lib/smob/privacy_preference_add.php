@@ -117,4 +117,3 @@
     <div id="result"></div>
     <div id="privacy_result" class="post external" style="display:none;"></div>
 
-</div>
