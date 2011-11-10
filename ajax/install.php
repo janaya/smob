@@ -117,8 +117,10 @@ define('PURGE', '$purge');
 //define('HUB_URL', 'http://pubsubhubbub.appspot.com/');
 //define('HUB_URL_PUBLISH', 'http://smob.superfeedr.com/');
 //define('HUB_URL_SUBSCRIBE', 'http://smob.superfeedr.com/');
-define('HUB_URL_PUBLISH', 'http://pubsubhubbub.appspot.com/publish');
-define('HUB_URL_SUBSCRIBE', 'http://pubsubhubbub.appspot.com/subscribe');
+//define('HUB_URL_PUBLISH', 'http://pubsubhubbub.appspot.com/publish');
+//define('HUB_URL_SUBSCRIBE', 'http://pubsubhubbub.appspot.com/subscribe');
+define('HUB_URL_PUBLISH', 'http://localhost:8080/publish');
+define('HUB_URL_SUBSCRIBE', 'http://localhost:8080/subscribe');
 //define('FEED_FILE_PATH', realpath(dirname(__FILE__).'./../rss/rss.xml'));
 define('FEED_FILE_PATH', '/var/www/smob/rss/rss.xml');
 
@@ -136,10 +138,11 @@ define('POST_URL_PATH', SMOB_ROOT.'post/');
 
 define('DATA_URL_PATH', SMOB_ROOT.'data/');
 
-define('FEED_URL_PATH', SMOB_ROOT.'rss/');
+define('FEED_URL_PATH', '/rss');
 
 define('DELETE_URL_PATH', SMOB_ROOT.'delete/');
 
+define('FOLLOWINGS_GRAPH_URL', SMOB_ROOT.'data/followings');
 define('FOLLOWINGS_URL_PATH', SMOB_ROOT.'followings/');
 define('FOLLOWERS_URL_PATH', SMOB_ROOT.'followers/');
 define('FOLLOWING_ADD_URL_PATH', SMOB_ROOT.'add/following/');
@@ -156,8 +159,8 @@ define('USER_URL_PATH', SMOB_ROOT.'user/');
 define('MAP_URL_PATH', SMOB_ROOT.'map/');
 define('RESOURCE_URL_PATH', SMOB_ROOT.'resource/');
 
-define('CALLBACK_URL_PATH', '/callback/');
-define('CALLBACKRDF_URL_PATH', '/callbackrdf/');
+define('CALLBACK_URL_PATH', SMOB_ROOT.'/callback');
+define('CALLBACKRDF_URL_PATH', SMOB_ROOT.'/callbackrdf');
 
 define('PRIVATE_PROFILE_EDIT_URL_PATH', SMOB_ROOT.'private/edit/');
 define('PRIVATE_PROFILE_URL_PATH', SMOB_ROOT.'private/');

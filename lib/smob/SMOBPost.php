@@ -394,17 +394,23 @@ WHERE {
     }
     
     public function notify($action = 'LOAD') {
+        error_log("in notify");
         $followers = SMOBTools::followers();
+        $followers = "SELECT ?uri WHERE {graph <".FOLLOWINGS_GRAPH_URL."> {".ME_URL_PATH." sioc:follows ?uri .}}";
+        error_log("followers: ",0);
+        error_log(print_r($followers,1),0);
         if($followers) {
             // Publish new feed to the hub
 
             //@TODO: should the hub_url be stored somewhere?
             $hub_url = HUB_URL_PUBLISH;
-            $topic_url = SMOB_ROOT.'me'.FEED_URL_PATH;
+            $topic_url = ME_FEED_URL_PATH;
             // Reusing do_curl function
             $feed = urlencode($topic_url);
+            error_log("topic url: ".$feed,0);
             $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed");
-            // all good -- anything in the 200 range 
+            // all good -- anything in the 200 range
+            error_log("post sent",0); 
             if (substr($result[2],0,1) == "2") {
                 error_log("DEBUG: $topic_url was successfully published to hubsub $hub_url",0);
             }

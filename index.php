@@ -14,8 +14,12 @@ if(!SMOBTools::check_config()) {
     if($t == 'following') {
         // Add a new following
         if($a && $a == 'add') {
+            error_log("adding following",0);
             if(!SMOBAuth::check()) die();
-            $remote_user = SMOBTools::remote_user($u);
+            // FIXME: remote_user check deactivated, as can't load https://localhost...
+            //$remote_user = SMOBTools::remote_user($u);
+            error_log("remote user: ".$remote_user,0);
+            $remote_user = $u;
             if(!$remote_user) {
                 SMOBTemplate::header('');
                 print "<a href='$u'>$u</a> is not a valid Hub, user cannot be added";
@@ -23,9 +27,10 @@ if(!SMOBTools::check_config()) {
             } else {
                 // @TODO: check that the user were not already a following?
                 // Store the new relationship in local repository
-                $local_user = SMOBTools::user_uri();
+                //$local_user = SMOBTools::user_uri();
+                $local_user = ME_URL_PATH;
                 $follow = "<$local_user> sioc:follows <$remote_user> . ";
-                $local = "INSERT INTO <".SMOB_ROOT."data/followings> { $follow }";
+                $local = "INSERT INTO <".FOLLOWINGS_GRAPH_URL."> { $follow }";
                 SMOBStore::query($local);
                 error_log("DEBUG: Added following $remote_user with the query: $local",0);
                 SMOBTemplate::header('');
@@ -34,15 +39,19 @@ if(!SMOBTools::check_config()) {
 
                 // Get the Publisher (following) Hub
                 $remote_user_feed = $remote_user.FEED_URL_PATH;
-                $xml = simplexml_load_file($remote_user_feed);
-                if(count($xml) == 0)
-                    return;
-                $link_attributes = $xml->channel->link->attributes();
-                if($link_attributes['rel'] == 'hub') {
-                    $hub_url = $link_attributes['href'];
-                }
-                $callback_url = urlencode(SMOB_ROOT."callback");
+                //FIXME: simplexml_load_file(): I/O warning : failed to load external entity
+                //$xml = simplexml_load_file($remote_user_feed);
+                //if(count($xml) == 0)
+                //    return;
+                //$link_attributes = $xml->channel->link->attributes();
+                //if($link_attributes['rel'] == 'hub') {
+                //    $hub_url = $link_attributes['href'];
+                //}
+                $hub_url = HUB_URL_SUBSCRIBE;
+                $callback_url = urlencode(CALLBACK_URL_PATH);
+                error_log("callback url: ".$callback_url,0);
                 $feed = urlencode($remote_user_feed);
+                error_log("topic url: ".$feed,0);
 
                 // Not using subscriber library as it does not allow async verify
                 // Reusing do_curl function
@@ -175,7 +184,7 @@ if(!SMOBTools::check_config()) {
         elseif(isset($_POST)) {
                 $post_data = file_get_contents("php://input");
                 error_log("DEBUG: received POST with content: $post_data",0);
-                SMOBTools::get_rdf_from_rss($post_data) ;
+                SMOBFeedRDF::get_rdf_from_rss($post_data) ;
         }
         elseif(isset($_DELETE)) {
             $post_data = file_get_contents("php://input");
@@ -203,7 +212,7 @@ if(!SMOBTools::check_config()) {
         elseif(isset($_POST)) {
                 $post_data = file_get_contents("php://input");
                 error_log("DEBUG: received POST with content: $post_data",0);
-                SMOBTools::get_rdf_from_rss($post_data) ;
+                SMOBFeedRDF::get_rdf_from_rss($post_data) ;
         }
         elseif(isset($_DELETE)) {
             $post_data = file_get_contents("php://input");

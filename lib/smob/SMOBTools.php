@@ -220,6 +220,7 @@ LIMIT 1";
     function remote_user($u) {
         // LOAD the page and fine the Hub
         $u = str_replace(' ', '+', $u);
+        error_log("user ".$u, 0);
         $res = SMOBStore::query("LOAD <$u>");
         $hubs = "SELECT DISTINCT ?s WHERE { GRAPH <$u> { ?s a smob:Hub } } LIMIT 1";
         $res = SMOBStore::query($hubs);
