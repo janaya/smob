@@ -124,16 +124,17 @@ LIMIT 1";
     
     // List of followers
     function followers() {
-        $pattern = '?uri sioc:follows <' . SMOBTools::user_uri() . '>';
+        $pattern = '?uri sioc:follows <' . ME_URL_PATH . '>';
         return SMOBTools::people('followers', $pattern);
     }
 
     function followings() {
-        $pattern = '<' . SMOBTools::user_uri() . '> sioc:follows ?uri';
+        $pattern = '<' . ME_URL_PATH . '> sioc:follows ?uri';
         return SMOBTools::people('followings', $pattern);
     }
     
     function people($type, $pattern) {
+        //from  <https://localhost/smob/data/followings> 
         $query = "SELECT * WHERE { $pattern }";
         return SMOBStore::query($query);
     }

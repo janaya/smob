@@ -55,7 +55,7 @@ if(!SMOBTools::check_config()) {
 
                 // Not using subscriber library as it does not allow async verify
                 // Reusing do_curl function
-                $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=async&hub.callback=$callback_url&hub.topic=$feed");
+                $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=sync&hub.callback=$callback_url&hub.topic=$feed&hub.foaf=".PRIVATE_PROFILE_URL_PATH);
                 // all good -- anything in the 200 range
                 if (substr($result[2],0,1) == "2") {
                     error_log("DEBUG: Successfully subscribed to topic $remote_user_feed using hubsub $hub_url",0);
@@ -80,13 +80,13 @@ if(!SMOBTools::check_config()) {
             // @TODO: has it sense that the user remove a follower?. Then the follower should also be notified to remove the current user as following
             // Instead, when the request comes from another user removing a following, the action will not be run as there is not authentication
             $remote_user = $u;
-            $local_user = SMOBTools::user_uri();
+            $local_user = ME_URL_PATH;
             $follow = "<$remote_user> sioc:follows <$local_user> . ";
-            $local = "DELETE FROM <".SMOB_ROOT."data/followers> { $follow }";
+            $local = "DELETE FROM <".FOLLOWINGS_GRAPH_URL."> { $follow }";
             SMOBStore::query($local);
             error_log("DEBUG: Removed follower $remote_user with the query: $local",0);
         } else {
-        
+            error_log("followings?",0);
         }
     
     } elseif($t == 'follower') {
@@ -195,33 +195,33 @@ if(!SMOBTools::check_config()) {
                 error_log("DEBUG: received PUT with content: $post_data",0);
         }
     // same as callback funcion, just to check subscriptions with a different callback URL
-    } elseif($t == 'callbackrdf') {
-        if (array_key_exists('REMOTE_HOST',$_SERVER)) {//&& ($_SERVER['REMOTE_HOST'] == HUB_URL_SUBSCRIBE)) {
-            error_log("DEBUG: request from host: ".$_SERVER['REMOTE_HOST']);
-        }
-        if (array_key_exists('HTTP_USER_AGENT',$_SERVER)) {
-            error_log("DEBUG: request from user_agent: ".$_SERVER['REMOTE_HOST']);
-        }
-        // Getting hub_challenge from hub after sending it post subscription
-        if(isset($_GET["hub_challenge"])) {
-                // send confirmation to the hub
-                echo $_GET["hub_challenge"];
-                error_log("DEBUG: received and sent back hub challenge:".$_GET["hub_challenge"],0);
-        }
-        // Getting feed updates from hub
-        elseif(isset($_POST)) {
-                $post_data = file_get_contents("php://input");
-                error_log("DEBUG: received POST with content: $post_data",0);
-                SMOBFeedRDF::get_rdf_from_rss($post_data) ;
-        }
-        elseif(isset($_DELETE)) {
-            $post_data = file_get_contents("php://input");
-                error_log("DEBUG: received DELETE with content: $post_data",0);
-        }
-        elseif(isset($_PUT)) {
-            $post_data = file_get_contents("php://input");
-                error_log("DEBUG: received PUT with content: $post_data",0);
-        }
+//    } elseif($t == 'callbackrdf') {
+//        if (array_key_exists('REMOTE_HOST',$_SERVER)) {//&& ($_SERVER['REMOTE_HOST'] == HUB_URL_SUBSCRIBE)) {
+//            error_log("DEBUG: request from host: ".$_SERVER['REMOTE_HOST']);
+//        }
+//        if (array_key_exists('HTTP_USER_AGENT',$_SERVER)) {
+//            error_log("DEBUG: request from user_agent: ".$_SERVER['REMOTE_HOST']);
+//        }
+//        // Getting hub_challenge from hub after sending it post subscription
+//        if(isset($_GET["hub_challenge"])) {
+//                // send confirmation to the hub
+//                echo $_GET["hub_challenge"];
+//                error_log("DEBUG: received and sent back hub challenge:".$_GET["hub_challenge"],0);
+//        }
+//        // Getting feed updates from hub
+//        elseif(isset($_POST)) {
+//                $post_data = file_get_contents("php://input");
+//                error_log("DEBUG: received POST with content: $post_data",0);
+//                SMOBFeedRDF::get_rdf_from_rss($post_data) ;
+//        }
+//        elseif(isset($_DELETE)) {
+//            $post_data = file_get_contents("php://input");
+//                error_log("DEBUG: received DELETE with content: $post_data",0);
+//        }
+//        elseif(isset($_PUT)) {
+//            $post_data = file_get_contents("php://input");
+//                error_log("DEBUG: received PUT with content: $post_data",0);
+//        }
   } elseif($t == 'private') {
     // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
     // TODO: Authorize depending on the WebID URI
@@ -276,6 +276,7 @@ if(!SMOBTools::check_config()) {
     echo 'bye';
     
   } else {
+        error_log("default action, calling SMOB",0);
         $smob = new SMOB($t, $u, $p);
         $smob->reply_of($r);
         $smob->go();

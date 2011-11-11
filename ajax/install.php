@@ -159,8 +159,8 @@ define('USER_URL_PATH', SMOB_ROOT.'user/');
 define('MAP_URL_PATH', SMOB_ROOT.'map/');
 define('RESOURCE_URL_PATH', SMOB_ROOT.'resource/');
 
-define('CALLBACK_URL_PATH', SMOB_ROOT.'/callback');
-define('CALLBACKRDF_URL_PATH', SMOB_ROOT.'/callbackrdf');
+define('CALLBACK_URL_PATH', SMOB_ROOT.'callback');
+define('CALLBACKRDF_URL_PATH', SMOB_ROOT.'callbackrdf');
 
 define('PRIVATE_PROFILE_EDIT_URL_PATH', SMOB_ROOT.'private/edit/');
 define('PRIVATE_PROFILE_URL_PATH', SMOB_ROOT.'private/');
