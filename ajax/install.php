@@ -2,6 +2,8 @@
 
 require_once(dirname(__FILE__).'/../lib/smob/SMOB.php');
 
+// TODO: insert the allowed hubs, insert the privacy settings for the profile
+
 if(file_exists($arc)) {
     include_once($arc);
 }
@@ -105,76 +107,93 @@ function setupSMOB() {
     if(substr($smob_root, -1) != '/') {
         $smob_root = "$smob_root/";
     }
+    $smob_hub = (isset($_GET['smob-hub']) ? $_GET['smob-hub'] : 'http://localhost:8080');
+    $smob_hub_publish = (isset($_GET['smob-hub']) ? $_GET['smob-hub']."/publish" : 'http://localhost:8080/publish');
+    $smob_hub_subscribe = (isset($_GET['smob-hub']) ? $_GET['smob-hub']."/subscribe" : 'http://localhost:8080/subscribe');
+    $smob_websocket_host = (isset($_GET['smob-websocket-host']) ? $_GET['smob-websocket-host'] : 'localhost');
+    $smob_websocket_port = (isset($_GET['smob-websocket-port']) ? $_GET['smob-websocket-port'] : '8081');
     $purge = $_GET['purge'];
-
-// Default HUB_URL for the publisher
-// @TODO: ask the user about the Hub?, or where is it better to store this global?
+    $feed_path = realpath('./../rss/rss.xml'); //'/var/www/smob/rss/rss.xml'
+    error_log($feed_path,0);
+    $me_url = $smob_root.'me';
+    $me_feed_url = $smob_root.'me/rss';
+    $q = "INSERT
+        { <$smob_hub> a push:SemanticHub . 
+        <$me_feed_url>  push:has_hub <$smob_hub>
+        <$me_feed_url>  push:has_owner <$me_url>}";
+    
     $config = "
 
 define('PURGE', '$purge');
 
+define('HUB_URL_PUBLISH', '$smob_hub_publish');
+define('HUB_URL_SUBSCRIBE', '$smob_hub_subscribe');
 
-//define('HUB_URL', 'http://pubsubhubbub.appspot.com/');
-//define('HUB_URL_PUBLISH', 'http://smob.superfeedr.com/');
-//define('HUB_URL_SUBSCRIBE', 'http://smob.superfeedr.com/');
-//define('HUB_URL_PUBLISH', 'http://pubsubhubbub.appspot.com/publish');
-//define('HUB_URL_SUBSCRIBE', 'http://pubsubhubbub.appspot.com/subscribe');
-define('HUB_URL_PUBLISH', 'http://localhost:8080/publish');
-define('HUB_URL_SUBSCRIBE', 'http://localhost:8080/subscribe');
-//define('FEED_FILE_PATH', realpath(dirname(__FILE__).'./../rss/rss.xml'));
-define('FEED_FILE_PATH', '/var/www/smob/rss/rss.xml');
+define('FEED_FILE_PATH', $feed_path);
 
-define('WSSERVER_HOST', 'localhost');
-define('WSSERVER_PORT', '8081');
+define('WSSERVER_HOST', '$smob_websocket_host');
+define('WSSERVER_PORT', '$smob_websocket_port');
 
 define('SMOB_ROOT', '$smob_root');
 
-define('ME_URL_PATH', SMOB_ROOT.'me/');
+define('JS_URL', SMOB_ROOT.'js/');
+define('IMG_URL', SMOB_ROOT.'img/');
+define('CSS_URL', SMOB_ROOT.'css/');
+define('AJAX_URL', SMOB_ROOT.'ajax/');
+define('TWITTER_URL', SMOB_ROOT.'data/twitter/');
+define('TAGGING_URL', SMOB_ROOT.'tagging/');
 
-define('ME_FEED_URL_PATH', SMOB_ROOT.'me/rss');
-define('ME_FEEDRDF_URL_PATH', SMOB_ROOT.'me/rssrdf');
+define('STARS_URI', SMOB_ROOT.'data/stars');
 
-define('POST_URL_PATH', SMOB_ROOT.'post/');
+define('ME_URL', SMOB_ROOT.'me');
 
-define('DATA_URL_PATH', SMOB_ROOT.'data/');
+define('ME_URI', SMOB_ROOT.'data/me');
 
-define('FEED_URL_PATH', '/rss');
+define('ME_FEED_URL', SMOB_ROOT.'me/rss');
+define('ME_FEEDRDF_URL', SMOB_ROOT.'me/rssrdf');
 
-define('DELETE_URL_PATH', SMOB_ROOT.'delete/');
+define('AUTH_URL', SMOB_ROOT.'auth');
+define('POST_URL', SMOB_ROOT.'post/');
 
-define('FOLLOWINGS_GRAPH_URL', SMOB_ROOT.'data/followings');
-define('FOLLOWINGS_URL_PATH', SMOB_ROOT.'followings/');
-define('FOLLOWERS_URL_PATH', SMOB_ROOT.'followers/');
-define('FOLLOWING_ADD_URL_PATH', SMOB_ROOT.'add/following/');
-define('FOLLOWER_ADD_URL_PATH', SMOB_ROOT.'add/follower/');
-define('FOLLOWER_REMOVE_URL_PATH', SMOB_ROOT.'remove/follower/');
-define('FOLLOWING_REMOVE_URL_PATH', SMOB_ROOT.'remove/following/');
-define('FOLLOWING_PING_PATH', SMOB_ROOT.'ping/following/');
-define('FOLLOWER_PING_URL_PATH', SMOB_ROOT.'ping/follower/');
+define('POST_URI', SMOB_ROOT.'data/post/');
 
-define('REPLIES_URL_PATH', SMOB_ROOT.'replies/');
+define('DATA_URL', SMOB_ROOT.'data/');
+define('DELETE_URL', SMOB_ROOT.'delete/');
+define('USER_URL', SMOB_ROOT.'user/');
+define('RESOURCE_URL', SMOB_ROOT.'resource/');
+define('REPLIES_URL', SMOB_ROOT.'replies');
+define('MAP_URL', SMOB_ROOT.'map');
+define('SPARQL_URL', SMOB_ROOT.'sparql');
+define('REMOVE_URL', SMOB_ROOT.'remove/');
 
+define('FOLLOWINGS_URI', SMOB_ROOT.'data/followings');
 
-define('USER_URL_PATH', SMOB_ROOT.'user/');
-define('MAP_URL_PATH', SMOB_ROOT.'map/');
-define('RESOURCE_URL_PATH', SMOB_ROOT.'resource/');
+define('FOLLOWINGS_URL', SMOB_ROOT.'followings');
+define('FOLLOWERS_URL', SMOB_ROOT.'followers');
 
-define('CALLBACK_URL_PATH', SMOB_ROOT.'callback');
-define('CALLBACKRDF_URL_PATH', SMOB_ROOT.'callbackrdf');
+define('FOLLOWING_ADD_URL', SMOB_ROOT.'add/following/');
+define('FOLLOWER_ADD_URL', SMOB_ROOT.'add/follower/');
 
-define('PRIVATE_PROFILE_EDIT_URL_PATH', SMOB_ROOT.'private/edit/');
-define('PRIVATE_PROFILE_URL_PATH', SMOB_ROOT.'private/');
+define('FOLLOWER_REMOVE_URL', SMOB_ROOT.'remove/follower/');
+define('FOLLOWING_REMOVE_URL', SMOB_ROOT.'remove/following/');
 
-define('PRIVACY_PREFERENCES_ADD_URL_PATH', SMOB_ROOT.'privacy/add/');
-define('PRIVACY_PREFERENCES_EDIT_URL_PATH', SMOB_ROOT.'privacy/edit/');
-define('PRIVACY_PREFERENCES_URL_PATH', SMOB_ROOT.'privacy/');
-define('PRIVACY_PREFERENCE_URI_PATH', SMOB_ROOT.'ppo/');
+define('FOLLOWING_PING', SMOB_ROOT.'ping/following/');
+define('FOLLOWER_PING_URL', SMOB_ROOT.'ping/follower/');
 
-define('LOGOUT_URL_PATH', SMOB_ROOT.'logout/');
-// define('POST_URL_PATH', 'feedrdf/');
-// define('POST_URL_PATH', 'select/');
+define('CALLBACK_URL', SMOB_ROOT.'callback');
+define('CALLBACKRDF_URL', SMOB_ROOT.'callbackrdf');
 
+define('PRIVATE_PROFILE_EDIT_URL', SMOB_ROOT.'private/edit/');
+define('PRIVATE_PROFILE_URL', SMOB_ROOT.'private');
 
+define('PRIVACY_PREFERENCES_ADD_URL', SMOB_ROOT.'privacy/add/');
+define('PRIVACY_PREFERENCES_EDIT_URL', SMOB_ROOT.'privacy/edit/');
+define('PRIVACY_PREFERENCES_URL', SMOB_ROOT.'privacy');
+
+define('PRIVACY_PREFERENCES_URI', SMOB_ROOT.'data/privacy_preferences');
+define('PRIVACY_PREFERENCE_URI', SMOB_ROOT.'data/privacy_preference/');
+
+define('LOGOUT_URL', SMOB_ROOT.'logout');
 ";
 
     $f = fopen(dirname(__FILE__).'/../config/config.php', 'a');
@@ -207,11 +226,11 @@ function setupUser() {
         }
     } else {
         if(!$foaf_uri) {
-            $foaf_uri = SMOB_ROOT.'me#id';
+            $foaf_uri = ME_URL.'#id';
             $username = $_GET['username'];
             $depiction = $_GET['depiction'];
             $profile = "
-INSERT INTO <".SMOB_ROOT."/profile> {
+INSERT INTO <".ME_URL."> {
 <$foaf_uri> a foaf:Person ;
     foaf:name \"$username\" ;
     foaf:depiction <$depiction> .

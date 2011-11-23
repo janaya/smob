@@ -96,7 +96,7 @@ $form .= '
     public function header($publisher, $reply_of = null, $ismap = null) {
         global $type;
         //if(!defined('SMOB_ROOT')) {
-        if(!defined(SMOB_ROOT)) {
+        if(!defined('SMOB_ROOT')) {
             define('SMOB_ROOT', '');
         }
         if($publisher) {
@@ -129,9 +129,10 @@ xml:lang="fr">
 <head profile="http://ns.inria.fr/grddl/rdfa/">
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
   <title>SMOB</title>
-  <link rel="icon" type="image/png" href="<?php echo SMOB_ROOT; ?>img/smob-icon.png" />
-  <link rel="stylesheet" type="text/css" href="<?php echo SMOB_ROOT; ?>css/style.css" />
+  <link rel="icon" type="image/png" href="<?php echo IMG_URL; ?>smob-icon.png" />
+  <link rel="stylesheet" type="text/css" href="<?php echo CSS_URL; ?>style.css" />
 
+<!--
   <link type="text/css" href="http://jqueryui.com/latest/themes/base/jquery.ui.all.css" rel="stylesheet" />
 
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -139,11 +140,18 @@ xml:lang="fr">
     google.load("jquery", "1.4.1");
     google.load("jqueryui", "1.7.2");
   </script>
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.timers-1.2.js"></script>
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.autocomplete-min.js"></script>
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.rating.js"></script>
+--> 
 
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/smob.js"></script>
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.js"></script>
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery-ui.min.js"></script>
+  <script type="text/javascript" src="<?php echo CSS_URL; ?>jquery.ui.all.css"></script>
+  
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.timers-1.2.js"></script>
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.autocomplete-min.js"></script>
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.rating.js"></script>
+
+  
+  <script type="text/javascript" src="<?php echo JS_URL; ?>smob.js"></script>
 
   <base href="<?php echo $root; ?>" />
   <script type="text/javascript">
@@ -192,28 +200,30 @@ xml:lang="fr">
 
 <div class="right">
 
-<h2>Navigation</h2>
-<ul>
-<li><a href='<?php echo SMOB_ROOT; ?>'>Home</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>map'>Map view</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>sparql'>SPARQL</a></li>
-</ul>
 
-<h2>People</h2>
-<ul>
-<li><a href='<?php echo SMOB_ROOT; ?>me'>Owner</a> [<a href='<?php echo SMOB_ROOT; ?>me/rss'>RSS</a>]</li>
-<li><a href='<?php echo SMOB_ROOT; ?>followings'>Followings</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>followers'>Followers</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>replies'>@replies</a></li>
-</ul>
-
-<h2>Hub owner</h2>
-<ul>
-<li><a href='<?php echo SMOB_ROOT; ?>auth'>Login</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>logout'>Logout</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>pp'>Privacy Settings</a></li>
-<li><a href='<?php echo SMOB_ROOT; ?>private/edit'>Private Profile Editor</a></li>
-</ul>
+<h2>Navigation</h2> 
+<ul> 
+<li><a href='<?php echo SMOB_ROOT; ?>'>Home</a></li> 
+<li><a href='<?php echo MAP_URL; ?>'>Map view</a></li> 
+<li><a href='<?php echo SPARQL_URL; ?>'>SPARQL</a></li> 
+</ul> 
+ 
+<h2>People</h2> 
+<ul> 
+<li><a href='<?php echo ME_URL; ?>'>Owner</a> [<a href='<?php echo ME_FEED_URL; ?>'>RSS</a>]</li> 
+<li><a href='<?php echo FOLLOWINGS_URL; ?>'>Followings</a></li> 
+<li><a href='<?php echo FOLLOWERS_URL; ?>'>Followers</a></li> 
+<li><a href='<?php echo REPLIES_URL; ?>replies'>@replies</a></li> 
+</ul> 
+ 
+<h2>Hub owner</h2> 
+<ul> 
+<!-- TODO: Login and logout should be shown depending on the authentication state -->
+<li><a href='<?php echo AUTH_URL; ?>'>Login</a></li> 
+<li><a href='<?php echo LOGOUT_URL; ?>'>Logout</a></li>
+<li><a href='<?php echo PRIVACY_PREFERENCES_URL; ?>'>Privacy Settings</a></li> 
+<li><a href='<?php echo PRIVATE_PROFILE_EDIT_URL; ?>'>Private Profile Editor</a></li> 
+</ul> 
 
 </div>
 
@@ -232,7 +242,7 @@ This page is valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a>
 var options, a;
 jQuery(function(){
     options = {
-        serviceUrl:'<?php echo SMOB_ROOT; ?>ajax/geonames.php',
+        serviceUrl:'<?php echo AJAX_URL; ?>geonames.php',
         minChars:2,
         onSelect: function(value, data) {
             $('#location_uri').val(data);
@@ -258,7 +268,7 @@ jQuery(function(){
                 $ht .= "<li><a href='$user'>$user</a>";
                 if (SMOBAuth::check()) {
                     $t = substr($type, 0, -1);
-                    $remove = SMOB_ROOT."remove/$t/$user";
+                    $remove = REMOVE_URL."$t/$user";
                     $ht .= " [<a href=\"$remove\" onclick=\"javascript:return confirm('Are you sure ? This cannot be undone.')\">remove</a>]";
                 }
                 $ht .= "</li>";
@@ -268,14 +278,14 @@ jQuery(function(){
             $ht .= 'No one at the moment';
         }
         if($type == 'followings' && SMOBAuth::check()) {
-            $ht .= "<p>If you want to follow new people, use the <a href=\"javascript:window.location='".FOLLOWING_ADD_URL_PATH."/'+window.location\">Follow in my SMOB!</a> bookmarklet.</p>";
+            $ht .= "<p>If you want to follow new people, use the <a href=\"javascript:window.location='".FOLLOWING_ADD_URL."/'+window.location\">Follow in my SMOB!</a> bookmarklet.</p>";
         }
         return $ht;
     }
 
     public function person($person, $uri) {
         $names = SMOBTools::either($person['names'], array("Anonymous"));
-        $imgs = SMOBTools::either($person['images'], array(SMOB_ROOT.'../img/avatar-blank.jpg'));
+        $imgs = SMOBTools::either($person['images'], array(IMG_URL.'avatar-blank.jpg'));
         $homepage = $person['homepage'];
         $weblog = $person['weblog'];
         $knows = $person['knows'];

@@ -8,39 +8,6 @@
 class PrivacyPreferences {
   // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
 
-
-  function get_rel_types() {
-    $rels = array();
-    $rels[''] = '';
-    $filename = 'relationship.json';
-    $jsonfile = fopen($filename,'r');
-    $jsontext = fread($jsonfile,filesize($filename));
-    fclose($jsonfile);
-    $json = json_decode($jsontext, true);
-    foreach ($json as $rel=>$relarray) {
-      if (strpos($rel, "http://purl.org/vocab/relationship/") === 0) {
-        if (array_key_exists('http://www.w3.org/2000/01/rdf-schema#label', $relarray)) {
-#          $label = $json[$rel]['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
-          $label = $relarray['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
-          error_log("position using with",0);
-          error_log(strpos($label, "Using With"),0);
-          if (strpos($label, "Using With") === FALSE) {
-            $rels[$label] = $rel;
-          };
-        };
-      };
-    };
-    return $rels;
-  }
-
-  function set_rel_type_options($rels) {
-    $options = "";
-    foreach($rels as $label=>$rel) {
-      $options .=  "        <option name='$label' value='$rel' >$label</option>\n";
-    };
-    return $options;
-  }
-
   function get_relationships($user_uri) {
     $rel_persons = array();
     //"<" + user_uri + "> <" + rel_types[i] + "> <" + persons[i] + "> . ";
@@ -67,10 +34,22 @@ class PrivacyPreferences {
     return $rel_persons;
   }
 
+  function test_delete() {
+    $query = "DELETE 
+ { _:b1802523160_arc93e0b1 <http://www.w3.org/ns/auth/rsa#modulus> ?modulus ;
+   <http://www.w3.org/ns/auth/rsa#public_exponent> ?exponent 
+WHERE {
+   _:b1802523160_arc93e0b1 <http://www.w3.org/ns/auth/rsa#modulus> ?modulus;
+    <http://www.w3.org/ns/auth/rsa#public_exponent> ?exponent
+  }";
+    $data = SMOBStore::query($query);
+    return $data;
+  }
+
   function get_privacy_preference() {
     error_log("DEBUG: PP::get_privacy_preference",0);
-    $graph = SMOB_ROOT."ppo";
-    $ppo = SMOB_ROOT."preferences";
+    $graph = PRIVACY_PREFERENCES_URI;
+    $ppo = PRIVACY_PREFERENCE_URI;
 
     $query = "SELECT * FROM <$graph> WHERE {
     <$ppo> a ppo:PrivacyPreference;
@@ -91,8 +70,8 @@ class PrivacyPreferences {
 
   function get_privacy_preferences_new() {
     error_log("DEBUG: PP::get_privacy_preferences",0);
-    $graph = SMOB_ROOT."ppo";
-    $ppo = SMOB_ROOT."preferences";
+    $graph = PRIVACY_PREFERENCES_URI;
+    $ppo = PRIVACY_PREFERENCE_URI;
 
     $query = "SELECT DISTINCT ?pp ?condition ?accessquery WHERE {
       ?pp a ppo:PrivacyPreference;
@@ -131,8 +110,8 @@ class PrivacyPreferences {
   function get_privacy_preferences() {
     //TODO: pp with more than hashtag are returned as 2 different pp
     error_log("DEBUG: PP::get_privacy_preferences",0);
-    $graph = SMOB_ROOT."ppo";
-    $ppo = SMOB_ROOT."preferences";
+    $graph = PRIVACY_PREFERENCES_URI;
+    $ppo = PRIVACY_PREFERENCE_URI;
 
     $query = "SELECT DISTINCT ?pp ?hashtag ?accessquery WHERE {
       ?pp a ppo:PrivacyPreference;
@@ -187,8 +166,8 @@ class PrivacyPreferences {
   }
 
   function get_initial_privacy_form() {
-    $rel_types = PrivateProfile::get_rel_types();
-    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
+    $rel_types = SMOBTools::get_rel_types();
+    $rel_type_options = SMOBTools::set_rel_type_options($rel_types);
 
 
     $initial_data = PrivacyPreferences::get_interests();
@@ -261,8 +240,8 @@ class PrivacyPreferences {
   }
 
   function add() {
-    $rel_types = PrivateProfile::get_rel_types();
-    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
+    $rel_types = SMOBTools::get_rel_types();
+    $rel_type_options = SMOBTools::set_rel_type_options($rel_types);
     $file = 'privacy_preference_add_template.php';
     $params = array("rel_type_options"=>$rel_type_options,
                     "rel_counter"=>0,
@@ -346,27 +325,35 @@ class PrivacyPreferences {
   }
 
   function view() {
-    $file = 'privacy_preferences_template.php';
-    $rel_types = PrivateProfile::get_rel_types();
-    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
-    $preferences = PrivacyPreferences::get_privacy_preferences();
-    $params = array("rel_type_options"=>$rel_type_options,
-                    "rel_counter"=>0,
-                    "hashtag_counter"=>0,
-                    "interest_counter"=>0,
-                    "preferences"=>$preferences,
-                    );
-    extract($params);
-    ob_start();
-    include($file);
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
+      // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
+      // TODO: Authorize depending on the WebID URI
+      error_log("PP::view",0);
 
+      if (SMOBAuth::authorize()) {
+          $file = 'privacy_preferences_template.php';
+          $rel_types = SMOBTools::get_rel_types();
+          $rel_type_options = SMOBTools::set_rel_type_options($rel_types);
+          $preferences = PrivacyPreferences::get_privacy_preferences();
+          $params = array("rel_type_options"=>$rel_type_options,
+                          "rel_counter"=>0,
+                          "hashtag_counter"=>0,
+                          "interest_counter"=>0,
+                          "preferences"=>$preferences,
+                          );
+          extract($params);
+          ob_start();
+          include($file);
+          $contents = ob_get_contents();
+          ob_end_clean();
+          return $contents;
+      } else {
+          header("Location: ".AUTH_URL."?redirect=".PRIVACY_PREFERENCES_URL);
+          exit;
+      }
   }
 
   function view_list_rdf() {
-      $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URL_PATH);
+      $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URI);
       header('Content-Type: text/turtle; charset=utf-8');
       return $turtle;
   }

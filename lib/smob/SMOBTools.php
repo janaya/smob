@@ -41,20 +41,27 @@ WHERE {
     public function ownername() {
         $query = "SELECT ?name WHERE { <".FOAF_URI."> foaf:name ?name } LIMIT 1";
         $res = SMOBSTore::query($query);
+        if(!isset($res[0]['name'])) {
+            $query = "SELECT ?name WHERE { <".FOAF_URI."> foaf:nick ?name } LIMIT 1";
+            $res = SMOBSTore::query($query);
+        }
         return $res[0]['name'];
     }
     
     // check if the FOAF URI is correct
     public function checkFoaf($foaf) {
         SMOBStore::query("LOAD <$foaf>");
+        error_log("checkFoaf: loaded $foaf",0);
         $name = "SELECT DISTINCT ?o WHERE { <$foaf> ?p ?o } LIMIT 1";
         $res = SMOBStore::query($name);
+        error_log("checkFoaf, select",0);
+        error_log(print_r($res,1),0);
         return sizeof($res) == 1;
     }
     
     // Generate arc config file
     function arc_config() {
-        error_log("setting up arc",0);
+        //error_log("setting up arc",0);
         return array(
             'db_host' => DB_HOST, 
             'db_name' => DB_NAME,
@@ -124,12 +131,12 @@ LIMIT 1";
     
     // List of followers
     function followers() {
-        $pattern = '?uri sioc:follows <' . ME_URL_PATH . '>';
+        $pattern = '?uri sioc:follows <' . ME_URL . '>';
         return SMOBTools::people('followers', $pattern);
     }
 
     function followings() {
-        $pattern = '<' . ME_URL_PATH . '> sioc:follows ?uri';
+        $pattern = '<' . ME_URL . '> sioc:follows ?uri';
         return SMOBTools::people('followings', $pattern);
     }
     
@@ -230,7 +237,7 @@ LIMIT 1";
     }
     
     function user_uri() {
-        return SMOB_ROOT.'me';
+        return ME_URL;
     }
     
     function get_uri($uri, $type) {
@@ -241,7 +248,7 @@ LIMIT 1";
     
     function get_post_uri($uri) {
         $uri = str_replace(' ', '+', $uri);
-        return SMOB_ROOT."post/$uri";
+        return POST_URL."$uri";
     }
     
     
@@ -363,17 +370,95 @@ WHERE {
   }
 }";
     $data = SMOBStore::query($query);
-    foreach($data as $triple) {
-      $s = $triple['s'];
-      $p = $triple['p'];
-      $o = $triple['o'];  
-      $ot = $triple['o type'];  
-      $odt = in_array('o datatype', array_keys($triple)) ? '^^<'.$triple['o datatype'].'>' : '';
-      $turtle .= "<$s> <$p> ";
-      $turtle .= ($ot == 'uri') ? "<$o> " : "\"$o\"$odt ";
-      $turtle .= ". " ;
-    }
+    $turtle = SMOBTools::triples_array2turtle($data);
     return $turtle;
+  }
+
+  public function rdfxml_from_graph($graph) {
+    $query = "
+SELECT *
+WHERE { 
+  GRAPH <$graph> {
+    ?s ?p ?o
+  }
+}";
+    $data = SMOBStore::query($query);
+    $ser = ARC2::getRDFXMLSerializer();
+    $rdfxml = $ser->getSerializedTriples($data);
+    return $rdfxml;
+  }
+
+  public function get_profile() {
+    //FIXME: add as globals
+    $ns = array(
+    'foaf' => 'http://xmlns.com/foaf/0.1/',
+    'rel' => 'http://purl.org/vocab/relationship/',
+    'cert'  => "http://www.w3.org/ns/auth/cert#",
+    'rsa' => "http://www.w3.org/ns/auth/rsa#",
+    'rdfs' => "http://www.w3.org/2000/01/rdf-schema#",
+    'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+    );
+    $conf = array('ns' => $ns);
+  
+    $query = "
+    SELECT DISTINCT *
+    WHERE { 
+      GRAPH <".ME_URL."> {
+        ?s ?p ?o
+      }
+    }";
+    $me = SMOBStore::query($query);
+    error_log("Tools::get_profile data",0);
+    error_log(print_r($me,1),0);
+    
+    if(FOAF_URI != ME_URL) {
+        $query = "
+        SELECT *
+        WHERE { 
+          GRAPH <".FOAF_URI."> {
+            ?s ?p ?o
+          }
+        }";
+        $foaf = SMOBStore::query($query);
+        error_log("Tools::get_profile data",0);
+        error_log(print_r($foaf,1),0);
+        $me += $foaf;
+    }
+    $ser = ARC2::getRDFXMLSerializer($conf);
+    $rdfxml = $ser->getSerializedTriples($me);
+    return $rdfxml;
+  }
+
+  function get_rel_types() {
+    $rels = array();
+    $rels[''] = '';
+    $filename = 'relationship.json';
+    $jsonfile = fopen($filename,'r');
+    $jsontext = fread($jsonfile,filesize($filename));
+    fclose($jsonfile);
+    $json = json_decode($jsontext, true);
+    foreach ($json as $rel=>$relarray) {
+      if (strpos($rel, "http://purl.org/vocab/relationship/") === 0) {
+        if (array_key_exists('http://www.w3.org/2000/01/rdf-schema#label', $relarray)) {
+//          $label = $json[$rel]['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
+          $label = $relarray['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
+          //error_log("position using with",0);
+          //error_log(strpos($label, "Using With"),0);
+          if (strpos($label, "Using With") === FALSE) {
+            $rels[$label] = $rel;
+          };
+        };
+      };
+    };
+    return $rels;
+  }
+
+  function set_rel_type_options($rels) {
+    $options = "";
+    foreach($rels as $label=>$rel) {
+      $options .=  "        <option name='$label' value='$rel' >$label</option>\n";
+    };
+    return $options;
   }
 
   function delete_graph() {

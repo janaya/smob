@@ -53,8 +53,8 @@ class SMOB {
         if(in_array($this->type, $this->commands)) {
             $func = $this->type;
             $content = $this->$func();
-            error_log("SMOB::go content:",0);
-            error_log($content,0);
+            //error_log("SMOB::go content:",0);
+            //error_log($content,0);
         } else {
             $content = "Cannot interpret that command";
         }

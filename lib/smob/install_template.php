@@ -1,41 +1,66 @@
-<?php
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+     "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:sioc="http://rdfs.org/sioc/ns#"
+    xmlns:sioct="http://rdfs.org/sioc/types#"
+    xmlns:ctag="http://commontag.org/ns#"
+    xmlns:opo="http://online-presence.net/opo/ns#"
+    xmlns:smob="http://smob.me/ns#"
+    xmlns:moat="http://moat-project.org/ns#"
+    xmlns:content="http://purl.org/rss/1.0/modules/content/"
+    xmlns:rev="http://purl.org/stuff/rev#"
+xml:lang="fr">
 
-/* 
-    The installer class
-*/
+<head profile="http://ns.inria.fr/grddl/rdfa/">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <title>SMOB</title>
+  <link rel="icon" type="image/png" href="<?php echo $root; ?>img/smob-icon.png" />
+  <link rel="stylesheet" type="text/css" href="<?php echo $root; ?>css/style.css" />
 
-class SMOBInstaller {
-    
-    // Construct
-    public function __construct() {
-    }
-    
-    // Main method - analyse the query type, get the content and render it
-    public function go() {
-        SMOBTemplate::header('');
-        print $this->core();
-        SMOBTemplate::footer();
-    }
-    
-    function view() {
-      $root = ($_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-      error_log($root,0);
-      $file = "install_template.php";
-      $params = array("root"=>$root,
-                      "smob_hub"=>'http://localhost:8080',
-                      "smob_websocket_host"=>'localhost',
-                      "smob_websocket_port"=>'8081',);
-      extract($params);
-      ob_start();
-      include($file);
-      $contents = ob_get_contents();
-      ob_end_clean();
-      return $contents;
-    }
-    
-    private function core() {
-        $root = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-        return <<<_END_
+
+  <script type="text/javascript" src="<?php echo $root; ?>js/jquery.js"></script>
+  <script type="text/javascript" src="<?php echo $root; ?>js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="<?php echo $root; ?>css/jquery.ui.all.css"></script>
+  
+  <script type="text/javascript" src="<?php echo $root; ?>js/jquery.timers-1.2.js"></script>
+  <script type="text/javascript" src="<?php echo $root; ?>js/jquery.autocomplete-min.js"></script>
+  <script type="text/javascript" src="<?php echo $root; ?>js/jquery.rating.js"></script>
+
+  
+  <script type="text/javascript" src="<?php echo $root; ?>js/smob.js"></script>
+
+  <base href="<?php echo $root; ?>" />
+  <script type="text/javascript">
+    var state = 0;
+    var maxstate = 6;
+    $(function() {
+        $("#step").click(function () {
+            process();
+        });
+    });
+  </script>
+
+
+
+<body about="<?php echo SMOB_ROOT; ?>" typeof="smob:Hub sioct:Microblog">
+
+<div id="full">
+
+<div id="header">
+<h1><a href="<?php echo SMOB_ROOT; ?>">SMOB</a></h1>
+<h2><span class="smob">S</span>emantic-<span class="smob">M</span>icr<span class="smob">OB</span>logging</h2>
+</div>
+
+<div id="main">
+
+<div class="left">
+
     <div id="head">
         <h2>1. Server setup</h2>
         <p>
@@ -77,9 +102,12 @@ class SMOBInstaller {
             <form>
                 <fieldset>
                     <legend>SMOB settings</legend>
-                    <label for="smob-root">SMOB hub address:</label> <input type="text" id="smob-root" name="smob-root" value="$root" size="50"><br />
-                    <label for="smob-purge">Purge posts after <input type="text" id="smob-purge" name="smob-purge" value="5" size="2"> days (0 to keep them)</label> <br />    
-                </fieldset>    
+                    <label for="smob-root">SMOB hub address:</label> <input type="text" id="smob-root" name="smob-root" value="<?=$params['root'];?>" size="50"><br />
+                    <label for="smob-purge">Purge posts after <input type="text" id="smob-purge" name="smob-purge" value="0" size="2"> days (0 to keep them)</label> <br />
+                    <label for="smob-hub-publish">SMOB PubSubHubbub hub address:</label> <input type="text" id="smob-hub" name="smob-hub" value="<?=$params['smob_hub'];?>" size="30"><br />
+                    <label for="smob-websocket-host">SMOB websocket host:</label> <input type="text" id="smob-websocket-host" name="smob-websocket-host" value="<?=$params['smob_websocket_host'];?>" size="10"><br />
+                    <label for="smob-websocket-port">SMOB websocket port:</label> <input type="text" id="smob-websocket-port" name="smob-websocket-port" value="<?=$params['smob_websocket_port'];?>" size="6"><br />
+                </fieldset>
             </form>
         </div>
         <div id="smob-settings-pane-out">
@@ -109,8 +137,8 @@ class SMOBInstaller {
                 </fieldset>
                 <fieldset>
                     <legend>Authentication method</legend>
-                    <input type="radio" name="smob-auth" id="smob-auth" value="htpasswd" checked="true"> htpasswd (default)<br/>
-                    <input type="radio" name="smob-auth" id="smob-auth" value="foafssl"> foafssl<br/>
+                    <input type="radio" name="smob-auth" id="smob-auth" value="htpasswd"> htpasswd (default)<br/>
+                    <input type="radio" name="smob-auth" id="smob-auth" value="foafssl" checked="true"> foafssl<br/>
                 </fieldset>
                 <fieldset>
                     <legend>Twitter integration</legend>
@@ -131,7 +159,11 @@ class SMOBInstaller {
     <div id="done-pane">
     </div>
     <button id="step">Ready ? Go !</button>
-_END_;
-    }
-}
 
+
+</div>
+</div>
+
+</body>
+
+</html>

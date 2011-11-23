@@ -43,12 +43,16 @@ class SMOBStore {
     PREFIX rel: <http://purl.org/vocab/relationship/>
     PREFIX ppo: <http://vocab.deri.ie/ppo#>
     PREFIX acl: <http://www.w3.org/ns/auth/acl#>
+    PREFIX rsa: <http://www.w3.org/ns/auth/rsa#> 
+    PREFIX cert: <http://www.w3.org/ns/auth/cert#>
 
         $query";        
         $rs = $store->query($query);
         
         if ($errors = $store->getErrors()) {
             // Log errors.
+           error_log("Store::query errors: ",0);
+           error_log(print_r($errors,1),0);
            foreach ($errors as $error) {
              trigger_error($error, E_USER_ERROR);
            }

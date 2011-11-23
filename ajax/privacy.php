@@ -10,7 +10,7 @@ $triples = $_POST['triples'];
 $graph = $_POST['graph'];
 error_log($triples,0);
 
-////$query = "DELETE FROM <".PRIVACY_PREFERENCE_URI_PATH.date('c')."> ";
+////$query = "DELETE FROM <".PRIVACY_PREFERENCE_URI.date('c')."> ";
 ////$res = SMOBStore::query($query);
 //$query = "INSERT INTO <".$graph."> { $triples }";
 ////$query = $_POST['query'];

@@ -73,7 +73,7 @@ function addTopic(smob_root, topic_domids) {
   var topic_block = "<div id='"+topic_domids.topic_block+i+"'>";
   topic_block += "  <input type='text' id='"+topic_domids.topic_label+i+"' name='"+topic_domids.topic_label+i+"' class='required' size='20' />";
   topic_block += "  <a id='"+topic_domids.topic_interlink+i+"' href='' onClick='suggestion(smob_root,"+topic_domids.label+"); return false;'>Interlink!</a>";
-  topic_block += "  (<input name='"+topic_domids.topic_uri+i+"' id='"+topic_domids.topic_uri+i+"' type='text' class='url required' size='40' readonly />)";
+  topic_block += "  (<input name='"+topic_domids.topic_uri+i+"' id='"+topic_domids.topic_uri+i+"' type='text' class='url required' size='40'  />)";
   topic_block += "  <a id='"+topic_domids.topic_del+i+"' href='' onClick='del(\"#"+topic_domids.topic_block+i+"\"); return false;'>[-]</a>";
   topic_block += "  <div id='"+topic_domids.topic_interlink_form+i+"' style='display: none;'>";
   topic_block += "    <div id='"+topic_domids.topic_interlink_block+i+"'></div>";

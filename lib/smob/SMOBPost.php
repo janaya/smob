@@ -209,7 +209,7 @@ WHERE {
         $locname = $this->data['locname'];
         $star = $this->get_star();
 
-        $pic = SMOBTools::either($this->data['depiction'], SMOB_ROOT.'img/avatar-blank.jpg');
+        $pic = SMOBTools::either($this->data['depiction'], IMG_URL.'avatar-blank.jpg');
         $class = strpos($uri, SMOB_ROOT) !== FALSE ? "post internal" : "post external";
         $ht .= "<div about=\"$presence\" rel=\"opo:customMessage\">\n";
 
@@ -233,7 +233,7 @@ WHERE {
         $ht .= "  <a href=\"$uri\" class=\"date\" property=\"dcterms:created\">$date</a>\n";
         if(strpos($uri, 'http://twitter.com/') !== FALSE) {
             $ex = explode('/', $uri);
-            $data = SMOB_ROOT.'data/twitter/' . $ex[5];
+            $data = TWITTER_URL. $ex[5];
         } else { 
             $data = str_replace('post', 'data', $uri);
         }
@@ -243,7 +243,7 @@ WHERE {
                 $ex = explode('/', $uri);
                 error_log("DEBUG: post delete path: ".join(' ', $ex),0);
                 error_log("DEBUG: post uri: ".$uri,0);
-                $action = SMOB_ROOT.'delete/'.$ex[5];
+                $action = DELETE_URL.$ex[5];
                 // the previous line doesn't work as the post is in the position 4
                 $action = str_replace('post', 'delete', $uri);
                 error_log("DEBUG: is going to be run the action: ".$action,0);
@@ -354,7 +354,7 @@ WHERE {
                 elseif($mapping[0] == 'tag' || $mapping[0] == 'location') {
                     $tag = $mapping[1];
                     $uri = $mapping[2];
-                    $tagging = SMOB_ROOT.'tagging/'.uniqid();
+                    $tagging = TAGGING_URL.uniqid();
                     $triples[] = array(SMOBTools::uri($tagging), "a", "tags:RestrictedTagging");
                     $triples[] = array(SMOBTools::uri($tagging), "tags:taggedResource", SMOBTools::uri($this->uri));
                     $triples[] = array(SMOBTools::uri($tagging), "tags:associatedTag", SMOBTools::literal($tag));
@@ -369,11 +369,12 @@ WHERE {
     }
     
     private function uri() {
-        $this->uri = SMOB_ROOT.'post/'.$this->ts;
+        $this->uri = POST_URL.$this->ts;
     }
     
     private function graph() {
-        return str_replace('/post/', '/data/', $this->uri);
+        //return str_replace('/post/', '/data/', $this->uri);
+        return DATA_URL.$this->ts;
     }
     
     public function save() {
@@ -396,7 +397,7 @@ WHERE {
     public function notify($action = 'LOAD') {
         error_log("in notify");
         $followers = SMOBTools::followers();
-        $followers = "SELECT ?uri WHERE {graph <".FOLLOWINGS_GRAPH_URL."> {".ME_URL_PATH." sioc:follows ?uri .}}";
+        $followers = "SELECT ?uri WHERE {graph <".FOLLOWINGS_URI."> {".ME_URL." sioc:follows ?uri .}}";
         error_log("followers: ",0);
         error_log(print_r($followers,1),0);
         if($followers) {
@@ -404,7 +405,7 @@ WHERE {
 
             //@TODO: should the hub_url be stored somewhere?
             $hub_url = HUB_URL_PUBLISH;
-            $topic_url = ME_FEED_URL_PATH;
+            $topic_url = ME_FEED_URL;
             // Reusing do_curl function
             $feed = urlencode($topic_url);
             error_log("topic url: ".$feed,0);

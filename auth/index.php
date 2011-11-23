@@ -5,19 +5,26 @@ require_once(dirname(__FILE__).'/../lib/smob/SMOBStore.php');
 require_once(dirname(__FILE__).'/../lib/smob/SMOBTools.php'); 
 require_once(dirname(__FILE__).'/../config/config.php'); 
 
-error_log("going to authenticate");
-SMOBAuth::grant();
-error_log("authentication done");
+error_log("/auth going to authenticate");
+$requested_url = trim(($_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],'/');
+$requested_url = $_GET["redirect"];
+error_log('requested_url '. $requested_url,0);
 
-//if($_SESSION['grant'] && isset($_REQUEST['referer'])){
-//  error_log("has been authenticated and came from other page, going to the initial page");
-//  header("Location: ".$_REQUEST['referer']);
-if ($_SESSION['grant'] && $_GET["redirect"]) {
-  error_log("has been authenticated and came from other page, going to the initial page");
-  header("Location: ".SMOB_ROOT.$_GET["redirect"]);
+if (SMOBAuth::grant()) {
+    error_log("/auth authentication done");
+    
+    if($requested_url) {
+      error_log('redirecting to '. $requested_url,0);
+      header("Location: ". $requested_url);
+      exit;
+    } else {
+      header("Location: ".SMOB_ROOT);
+      exit;
+    }
 } else {
-  error_log("has no been authenticated or did not come from other page, going to the main page");
-  header("Location: ".SMOB_ROOT);
+    header("Location: ".SMOB_ROOT);
+    exit;
 }
+
 
 ?>

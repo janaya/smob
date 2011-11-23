@@ -17,7 +17,7 @@
       "topic_counter" : "interest_counter"
     }
   </script> 
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/private_profile.js"></script> 
+  <script type="text/javascript" src="<?php echo JS_URL; ?>private_profile.js"></script> 
   <script type="text/javascript"> 
     var smob_root = "<?php echo SMOB_ROOT; ?>";
 

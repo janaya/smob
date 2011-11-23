@@ -35,6 +35,8 @@ class SMOBFeedRDF {
         $rssfile = fopen(FEED_FILE_PATH, 'r');
         $rss = fread($rssfile, filesize(FEED_FILE_PATH));
         fclose($rssfile);
+        error_log("rss: ".$rss);
+        header ("Content-type: text/xml");
         echo($rss);
     }
     function create_rss_doc() {
