@@ -36,11 +36,11 @@ class PrivacyPreferences {
 
   function test_delete() {
     $query = "DELETE 
- { _:b1802523160_arc93e0b1 <http://www.w3.org/ns/auth/rsa#modulus> ?modulus ;
-   <http://www.w3.org/ns/auth/rsa#public_exponent> ?exponent 
+ { _:b1802523160_arc93e0b1 <http://www.w3.org/ns/auth/rsa//modulus> ?modulus ;
+   <http://www.w3.org/ns/auth/rsa//public_exponent> ?exponent 
 WHERE {
-   _:b1802523160_arc93e0b1 <http://www.w3.org/ns/auth/rsa#modulus> ?modulus;
-    <http://www.w3.org/ns/auth/rsa#public_exponent> ?exponent
+   _:b1802523160_arc93e0b1 <http://www.w3.org/ns/auth/rsa//modulus> ?modulus;
+    <http://www.w3.org/ns/auth/rsa//public_exponent> ?exponent
   }";
     $data = SMOBStore::query($query);
     return $data;
@@ -184,7 +184,7 @@ WHERE {
         <div id='interest_fieldset$index'>
           <input type='text' id='interest_label$index' name='interest_label$index' value='$interest_label' class='url required' size='20' readonly />
           (<input type='text' id='interest$index' name='interest$index' value='$interest' class='url required' size='40' readonly />)
-          <a id='del_rel$index' href='' onClick='del(\"#interest_fieldset$index\"); return false;'>[-]</a>
+          <a id='del_rel$index' href='' onClick='del(\"//interest_fieldset$index\"); return false;'>[-]</a>
         </div>
         </br>";
       $interest_fieldsets[$index] = $interest_fieldset;
@@ -205,7 +205,7 @@ WHERE {
         <div id='hashtag_fieldset$index'>
           <input type='text' id='hashtag_label$index' name='hashtag_label$index' value='$hashtag_label' class='url required' size='20' readonly />
           (<input type='text' id='hashtag$index' name='hashtag$index' value='$hashtag' class='url required' size='40' readonly />)
-          <a id='del_rel$index' href='' onClick='del(\"#hashtag_fieldset$index\"); return false;'>[-]</a>
+          <a id='del_rel$index' href='' onClick='del(\"//hashtag_fieldset$index\"); return false;'>[-]</a>
         </div>
         </br>";
       $hashtag_fieldsets[$index] = $hashtag_fieldset;
@@ -226,34 +226,46 @@ WHERE {
     return $params;
   }
 
-  function edit() {
-    $file = 'privacy_preferences_template.php';
-    // if(IS_AJAX) {
-    // } else {
-    $params = PrivacyPreferences::get_initial_privacy_form();
-    extract($params);
-    ob_start();
-    include($file);
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
-  }
+//  function edit() {
+//      error_log("PP::edit",0);
+//      if (SMOBAuth::authorize()) {
+//          $file = 'privacy_preferences_template.php';
+//          // if(IS_AJAX) {
+//          // } else {
+//          $params = PrivacyPreferences::get_initial_privacy_form();
+//          extract($params);
+//          ob_start();
+//          include($file);
+//          $contents = ob_get_contents();
+//          ob_end_clean();
+//          return $contents;
+//      } else {
+//          header("Location: ".AUTH_URL."?redirect=".PRIVACY_PREFERENCES_URL);
+//          exit;
+//      }
+//  }
 
-  function add() {
-    $rel_types = SMOBTools::get_rel_types();
-    $rel_type_options = SMOBTools::set_rel_type_options($rel_types);
-    $file = 'privacy_preference_add_template.php';
-    $params = array("rel_type_options"=>$rel_type_options,
-                    "rel_counter"=>0,
-                    "hashtag_counter"=>0,
-                    "interest_counter"=>0);
-    extract($params);
-    ob_start();
-    include($file);
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
-  }
+//  function add() {
+//      error_log("PP::add",0);
+//      if (SMOBAuth::authorize()) {
+//          $rel_types = SMOBTools::get_rel_types();
+//          $rel_type_options = SMOBTools::set_rel_type_options($rel_types);
+//          $file = 'privacy_preference_add_template.php';
+//          $params = array("rel_type_options"=>$rel_type_options,
+//                          "rel_counter"=>0,
+//                          "hashtag_counter"=>0,
+//                          "interest_counter"=>0);
+//          extract($params);
+//          ob_start();
+//          include($file);
+//          $contents = ob_get_contents();
+//          ob_end_clean();
+//          return $contents;
+//      } else {
+//          header("Location: ".AUTH_URL."?redirect=".PRIVACY_PREFERENCES_URL);
+//          exit;
+//      }
+//  }
 
   function get_list() {
       $initial_data = PrivacyPreferences::get_interests();
@@ -270,7 +282,7 @@ WHERE {
               <div id='interest_fieldset$index'>
                 <input type='text' id='interest_label$index' name='interest_label$index' value='$interest_label' class='url required' size='20' readonly />
                 (<input type='text' id='interest$index' name='interest$index' value='$interest' class='url required' size='40' readonly />)
-                <a id='del_rel$index' href='' onClick='del(\"#interest_fieldset$index\"); return false;'>[-]</a>
+                <a id='del_rel$index' href='' onClick='del(\"//interest_fieldset$index\"); return false;'>[-]</a>
               </div>
               </br>";
           $interest_fieldsets[$index] = $interest_fieldset;
@@ -291,7 +303,7 @@ WHERE {
               <div id='hashtag_fieldset$index'>
                 <input type='text' id='hashtag_label$index' name='hashtag_label$index' value='$hashtag_label' class='url required' size='20' readonly />
                 (<input type='text' id='hashtag$index' name='hashtag$index' value='$hashtag' class='url required' size='40' readonly />)
-                <a id='del_rel$index' href='' onClick='del(\"#hashtag_fieldset$index\"); return false;'>[-]</a>
+                <a id='del_rel$index' href='' onClick='del(\"//hashtag_fieldset$index\"); return false;'>[-]</a>
               </div>
               </br>";
           $hashtag_fieldsets[$index] = $hashtag_fieldset;
@@ -312,23 +324,27 @@ WHERE {
       return $params;
   }
 
-  function view_list() {
-    $file = 'privacy_preferences_list_template.php';
-    $params = PrivacyPreferences::get_privacy_preferences();
-    extract($params);
-    ob_start();
-    include($file);
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
-
-  }
+//  function view_list() {
+//      error_log("PP::view_list",0);
+//      if (SMOBAuth::authorize()) {
+//          $file = 'privacy_preferences_list_template.php';
+//          $params = PrivacyPreferences::get_privacy_preferences();
+//          extract($params);
+//          ob_start();
+//          include($file);
+//          $contents = ob_get_contents();
+//          ob_end_clean();
+//          return $contents;
+//      } else {
+//          header("Location: ".AUTH_URL."?redirect=".PRIVACY_PREFERENCES_URL);
+//          exit;
+//      }
+//  }
 
   function view() {
       // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
       // TODO: Authorize depending on the WebID URI
       error_log("PP::view",0);
-
       if (SMOBAuth::authorize()) {
           $file = 'privacy_preferences_template.php';
           $rel_types = SMOBTools::get_rel_types();
@@ -352,11 +368,17 @@ WHERE {
       }
   }
 
-  function view_list_rdf() {
-      $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URI);
-      header('Content-Type: text/turtle; charset=utf-8');
-      return $turtle;
-  }
+//  function view_list_rdf() {
+//      error_log("PP::view_list_rdf",0);
+//      if (SMOBAuth::authorize()) {
+//          $turtle = SMOBTools::triples_from_graph(PRIVACY_PREFERENCES_URI);
+//          header('Content-Type: text/turtle; charset=utf-8');
+//          return $turtle;
+//      } else {
+//          header("Location: ".AUTH_URL."?redirect=".PRIVACY_PREFERENCES_URL);
+//          exit;
+//      }
+//  }
   
   function delete($graph) {
     error_log("PP::delete, graph:",0);

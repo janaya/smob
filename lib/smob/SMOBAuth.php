@@ -9,11 +9,13 @@
 class SMOBAuth {
 
     function authorize() {
+    //FIXME: hackish
         error_log("auth:authorize",0);
+        session_start();
         //'subjectAltName'
-        if (isset($_SESSION['isOwner'])) {
+        if (isset($_SESSION['isOwner']) || isset($_SESSION['isHub'])) {
             error_log("Auth::authorize, owner already set",0);
-            return $_SESSION['isOwner'];
+            return ($_SESSION['isOwner'] || $_SESSION['isHub']);
         } else {
             error_log("Auth::authorize, owner not set",0);
             return false;
@@ -234,20 +236,32 @@ class SMOBAuth {
 
         // Authorization:
         // isOwner?
-        $q = "ASK { <$foaf_uri> a foaf:Person }"; 
-        $res = SMOBStore::query($q);
-        error_log('SMOBAuth::getAuth, result ask:',0);
-        error_log(print_r($res,1),0);
-        $result = array_merge($result, array( 'isOwner'=>$res[0]));
+        //$q = "ASK { <$foafuri> a foaf:Person }"; 
+        //$res = SMOBStore::query($q);
+        //error_log('SMOBAuth::getAuth, result ask:',0);
+        //error_log(print_r($res,1),0);
+        //$result = array_merge($result, array( 'isOwner'=>$res[0]));
+        //FIXME: previous query doesn't work, compare with foaf uri
+        if (FOAF_URI == trim($foafuri,'#me')) {
+            $result = array_merge($result, array( 'isOwner'=>1));
+        } else {
+            $result = array_merge($result, array( 'isOwner'=>0));
+        }
         // isHub?
-        $q = "ASK 
-        { <$foaf_uri> a push:SemanticHub . 
-        ".ME_FEED_URL."  push:has_hub <$foaf_uri>
-        ".ME_FEED_URL."  push:has_owner ".ME_URL."}"; 
-        $res = SMOBStore::query($q);
-        error_log('SMOBAuth::getAuth, result ask:',0);
-        error_log(print_r($res,1),0);
-        $result = array_merge($result, array( 'isHub'=>$res[0]));
+        //$q = "ASK 
+        //{ <$foafuri> a push:SemanticHub . 
+        //".ME_FEED_URL."  push:has_hub <$foafuri>
+        //".ME_FEED_URL."  push:has_owner ".ME_URL."}"; 
+        //$res = SMOBStore::query($q);
+        //error_log('SMOBAuth::getAuth, result ask:',0);
+        //error_log(print_r($res,1),0);
+        //$result = array_merge($result, array( 'isHub'=>$res[0]));
+        //FIXME: hackish
+        if (HUB_URL."/me" == $foafuri) {
+            $result = array_merge($result, array( 'isHub'=>1));
+        } else {
+            $result = array_merge($result, array( 'isHub'=>0));
+        }
         // isAuthorized?
         //
 

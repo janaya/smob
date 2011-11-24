@@ -5,24 +5,6 @@
 //require_once(dirname(__FILE__)."SMOBStore.php");
 
 class PrivateProfile {
-  // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-  function view_private_profile() {
-    // as sempush can't parse n3, return profile as rdf/xml
-    //$turtle = SMOBTools::triples_from_graph(ME_URL);
-    //error_log("PrivateProfile::view_private_profile turtle",0);
-    //error_log($turtle,0);
-    //header('Content-Type: text/turtle; charset=utf-8'); 
-    //return $turtle;
-
-    //FIXME: the profile should be all in the same graph, and serve it depending
-    // on the privacy settings
-    //$rdfxml = SMOBTools::rdfxml_from_graph(ME_URL);
-    $rdfxml = SMOBTools::get_profile();
-    error_log("PrivateProfile::view_private_profile rdfxml",0);
-    error_log($rdfxml,0);
-    header('Content-Type: application/rdf+xml; charset=utf-8'); 
-    return $rdfxml;
-  }
 
   function get_interests($user_uri) {
     // cleaning from previous code errors
@@ -141,17 +123,48 @@ class PrivateProfile {
     return $params;
   }
   
-  function view_private_profile_form() {
-    $file = 'private_profile_template.php';
-    // if(IS_AJAX) {
-    // } else {
-    $params = PrivateProfile::get_initial_private_form_data();
-    extract($params);
-    ob_start();
-    include($file);
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
+  function edit() {
+      error_log("PP::edit",0);
+      if (SMOBAuth::authorize()) {
+          $file = 'private_profile_template.php';
+          // if(IS_AJAX) {
+          // } else {
+          $params = PrivateProfile::get_initial_private_form_data();
+          extract($params);
+          ob_start();
+          include($file);
+          $contents = ob_get_contents();
+          ob_end_clean();
+          return $contents;
+      } else {
+          header("Location: ".AUTH_URL."?redirect=".PRIVATE_PROFILE_EDIT_URL);
+          exit;
+      }
+  }
+
+  // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
+  function view() {
+      error_log("PP::view",0);
+      if (SMOBAuth::authorize()) {
+          // as sempush can't parse n3, return profile as rdf/xml
+          //$turtle = SMOBTools::triples_from_graph(ME_URL);
+          //error_log("PrivateProfile::view turtle",0);
+          //error_log($turtle,0);
+          //header('Content-Type: text/turtle; charset=utf-8'); 
+          //return $turtle;
+
+          //FIXME: the profile should be all in the same graph, and serve it depending
+          // on the privacy settings
+          //$rdfxml = SMOBTools::rdfxml_from_graph(ME_URL);
+          $rdfxml = SMOBTools::get_profile();
+          error_log("PrivateProfile::view rdfxml",0);
+          error_log($rdfxml,0);
+          header('Content-Type: application/rdf+xml; charset=utf-8'); 
+          return $rdfxml;
+      } else {
+          header("Location: ".AUTH_URL."?redirect=".PRIVATE_PROFILE_URL);
+          exit;
+      }
   }
   
   function save() {

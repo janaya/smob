@@ -243,28 +243,13 @@ if(!SMOBTools::check_config()) {
     //                error_log("DEBUG: received PUT with content: $post_data",0);
     //        }
       } elseif($t == 'private') {
-        // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-        // TODO: Authorize depending on the WebID URI
-        // disable authentication as webid not working in sempush
-        // FIXME: insecure
-        //if(!SMOBAuth::check()) {
-        //  error_log("/private not authenticated");
-        //  if($a && $a == 'edit'){
-        //    header( 'Location: '.SMOB_ROOT.'auth?redirect=private/edit' ) ;
-        //  } else {
-        //    header( 'Location: '.SMOB_ROOT.'auth?redirect=private' ) ;
-        //  };
-        //  //header( 'Location: '.SMOB_ROOT.'auth' ) ;
-        //} else {
-
           error_log("private",0);
           if(isset($a)) {
               if($a == 'edit'){
-                echo PrivateProfile::view_private_profile_form();
+                echo PrivateProfile::edit();
               }
           } else {
-              echo PrivateProfile::view_private_profile();
-              //exit();
+              echo PrivateProfile::view();
           }
 
       // FIXME: remove
@@ -281,30 +266,15 @@ if(!SMOBTools::check_config()) {
       //  echo($rss);
 
       } elseif($t == 'privacy') {
-        // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-        // TODO: Authorize depending on the WebID URI
-        //if(!SMOBAuth::check()) {
-        //  error_log("/privacy not authenticated");
-        //  if($a && $a == 'edit'){
-        //    header( 'Location: '.SMOB_ROOT.'auth?redirect=privacy/edit' ) ;
-        //  } else {
-        //    header( 'Location: '.SMOB_ROOT.'auth?redirect=privacy' ) ;
-        //  };
-        //  //header( 'Location: '.SMOB_ROOT.'auth' ) ;
-        //} else {
-        //  error_log("authenticated");
-          
-          if(isset($a)) {
-              if($a == 'edit') {
-                echo PrivacyPreferences::edit();
-              } elseif($a == 'add') {
-                echo PrivacyPreferences::add();
-              }
-          } else {
-      //         echo PrivacyPreferences::view_rdf();
+          //if(isset($a)) {
+          //    if($a == 'edit') {
+          //      echo PrivacyPreferences::edit();
+          //    } elseif($a == 'add') {
+          //      echo PrivacyPreferences::add();
+          //    }
+          //} else {
               echo PrivacyPreferences::view();
-              //exit();
-          }
+          //}
       } elseif($t == 'logout'){
           session_start();
           session_destroy();

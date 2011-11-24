@@ -126,6 +126,7 @@ function setupSMOB() {
 
 define('PURGE', '$purge');
 
+define('HUB_URL', '$smob_hub');
 define('HUB_URL_PUBLISH', '$smob_hub_publish');
 define('HUB_URL_SUBSCRIBE', '$smob_hub_subscribe');
 

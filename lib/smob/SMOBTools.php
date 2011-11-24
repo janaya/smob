@@ -389,17 +389,6 @@ WHERE {
   }
 
   public function get_profile() {
-    //FIXME: add as globals
-    $ns = array(
-    'foaf' => 'http://xmlns.com/foaf/0.1/',
-    'rel' => 'http://purl.org/vocab/relationship/',
-    'cert'  => "http://www.w3.org/ns/auth/cert#",
-    'rsa' => "http://www.w3.org/ns/auth/rsa#",
-    'rdfs' => "http://www.w3.org/2000/01/rdf-schema#",
-    'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-    );
-    $conf = array('ns' => $ns);
-  
     $query = "
     SELECT DISTINCT *
     WHERE { 
