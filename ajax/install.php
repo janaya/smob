@@ -113,8 +113,10 @@ function setupSMOB() {
     $smob_websocket_host = (isset($_GET['smob-websocket-host']) ? $_GET['smob-websocket-host'] : 'localhost');
     $smob_websocket_port = (isset($_GET['smob-websocket-port']) ? $_GET['smob-websocket-port'] : '8081');
     $purge = $_GET['purge'];
-    $feed_path = realpath('./../rss/rss.xml'); //'/var/www/smob/rss/rss.xml'
-    error_log($feed_path,0);
+    //$feed_path = realpath('../rss').'rss.xml'; //'/var/www/smob/rss/rss.xml'
+    $feed_path = fopen(getcwd().'./../../rss/rss.xml','x');
+    fclose( $feed_path);
+    error_log("feed_path".$feed_path,0);
     $me_url = $smob_root.'me';
     $me_feed_url = $smob_root.'me/rss';
     $q = "INSERT
@@ -130,7 +132,7 @@ define('HUB_URL', '$smob_hub');
 define('HUB_URL_PUBLISH', '$smob_hub_publish');
 define('HUB_URL_SUBSCRIBE', '$smob_hub_subscribe');
 
-define('FEED_FILE_PATH', $feed_path);
+define('FEED_FILE_PATH', '$feed_path');
 
 define('WSSERVER_HOST', '$smob_websocket_host');
 define('WSSERVER_PORT', '$smob_websocket_port');

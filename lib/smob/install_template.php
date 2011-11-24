@@ -126,7 +126,7 @@ xml:lang="fr">
                     If you do not have a FOAF profile, you can create one <a href="http://foafbuilder.qdos.com/">here</a> or <a href="http://www.ldodds.com/foaf/foaf-a-matic">there</a>, or use your Twitter account via <a href="http://semantictweet.com">SemanticTweet</a>.
                     </p>
                     <p class="note">
-                    <b>Please also note that this is your personal URI and not the URL of your FOAF profile. For more information about the difference between both, you can check the <a href="http://pedantic-web.org/fops.html#inconsist">Pedantic Web page</a> on the topic. In addition, that URI must be dereferencable and must return RDF information about itself.</b
+                    <b>Please also note that this is your personal URI and not the URL of your FOAF profile. For more information about the difference between both, you can check the <a href="http://pedantic-web.org/fops.html#inconsist">Pedantic Web page</a> on the topic. In addition, that URI must be dereferencable and must return RDF information about itself.</b>
                     </p>
                     <label for="smob-uri">FOAF URI:</label> <input type="text" id="smob-uri" name="smob-uri" value="" size="50"><br />
                     <p class="note">
