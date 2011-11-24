@@ -114,7 +114,8 @@ function setupSMOB() {
     $smob_websocket_port = (isset($_GET['smob-websocket-port']) ? $_GET['smob-websocket-port'] : '8081');
     $purge = $_GET['purge'];
     //$feed_path = realpath('../rss').'rss.xml'; //'/var/www/smob/rss/rss.xml'
-    $feed_path = fopen(getcwd().'./../../rss/rss.xml','x');
+    //$feed_path = fopen(getcwd().'./../../rss/rss.xml','x');
+    $feed_path = '/var/www/smob/rss/rss.xml';
     fclose( $feed_path);
     error_log("feed_path".$feed_path,0);
     $me_url = $smob_root.'me';
