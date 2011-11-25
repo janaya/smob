@@ -145,7 +145,8 @@ class PrivateProfile {
   // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
   function view() {
       error_log("PP::view",0);
-      if (SMOBAuth::authorize()) {
+      // FIXME: insecure, deactivated authorization as sempush is not able to able to perform webid authentication
+      //if (SMOBAuth::authorize()) {
           // as sempush can't parse n3, return profile as rdf/xml
           //$turtle = SMOBTools::triples_from_graph(ME_URL);
           //error_log("PrivateProfile::view turtle",0);
@@ -153,18 +154,16 @@ class PrivateProfile {
           //header('Content-Type: text/turtle; charset=utf-8'); 
           //return $turtle;
 
-          //FIXME: the profile should be all in the same graph, and serve it depending
-          // on the privacy settings
           //$rdfxml = SMOBTools::rdfxml_from_graph(ME_URL);
           $rdfxml = SMOBTools::get_profile();
           error_log("PrivateProfile::view rdfxml",0);
           error_log($rdfxml,0);
           header('Content-Type: application/rdf+xml; charset=utf-8'); 
           return $rdfxml;
-      } else {
-          header("Location: ".AUTH_URL."?redirect=".PRIVATE_PROFILE_URL);
-          exit;
-      }
+      //} else {
+      //    header("Location: ".AUTH_URL."?redirect=".PRIVATE_PROFILE_URL);
+      //    exit;
+      //}
   }
   
   function save() {

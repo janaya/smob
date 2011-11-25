@@ -120,11 +120,15 @@ function setupSMOB() {
     error_log("feed_path".$feed_path,0);
     $me_url = $smob_root.'me';
     $me_feed_url = $smob_root.'me/rss';
-    $q = "INSERT
+    $q = "INSERT INTO $smob_root"."data/hub
         { <$smob_hub> a push:SemanticHub . 
-        <$me_feed_url>  push:has_hub <$smob_hub>
-        <$me_feed_url>  push:has_owner <$me_url>}";
-    
+        <$me_feed_url>  push:has_hub <$smob_hub> .
+        <$me_feed_url>  push:has_owner <$me_url> . }";
+    //INSERT INTO <https://localhost/smob2/data/hub>
+    //    { <http://localhost:8080/me> a push:SemanticHub . 
+    //    <https://localhost/smob2/me/rss>  push:has_hub <http://localhost:8080/me> .
+    //    <https://localhost/smob2/me/rss>  push:has_owner <https://localhost/smob2/me> . }
+    $res = SMOBStore::query($q);
     $config = "
 
 define('PURGE', '$purge');

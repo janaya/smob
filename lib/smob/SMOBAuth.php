@@ -40,12 +40,13 @@ class SMOBAuth {
             // TODO, the WebID URI in the certificate should also match the owner 
             // WebID URI for site access or the hub WebID for private profile access
             error_log('fAuth::grant, foafssl authentication',0);
-            $foafssl  = SMOBAuth::getAuth();
+            error_log($_SERVER['SSL_CLIENT_CERT'],0);
+            $foafssl  = SMOBAuth::getAuth($_SERVER['SSL_CLIENT_CERT']);
             $_SESSION['isAuthenticated'] = $foafssl['isAuthenticated'];
             $_SESSION['isOwner'] = $foafssl['isOwner'];
             $_SESSION['isHub'] = $foafssl['isHub'];
             error_log($foafssl['authDiagnostic'],0);
-           return $_SESSION['isAuthenticated'];
+            return $_SESSION['isAuthenticated'];
         } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
             echo "<p>Hello {$_SERVER['PHP_AUTH_USER']}.</p>";
             echo "<p>You entered {$_SERVER['PHP_AUTH_PW']} as your password.</p>";
@@ -58,22 +59,29 @@ class SMOBAuth {
             echo 'Text to send if user hits Cancel button';
             exit;
         } else {
-            // go with sempush authentication...
-            // or deny access
-            error_log("Auth::grant, not authenticated",0);
-            //$_SESSION['isAuthenticated'] = false;
-            //return $_SESSION['isAuthenticated'];
-            return false;
+        //(isset($_GET['cert_uri'])) {
+			error_log(print_r($_POST,1),0);
+			error_log(print_r($_GET,1),0);
+			$cert_uri = $_POST['cert_uri'];
+        	error_log($cert_uri,0);
+        	$result = SMOBTools::do_curl($cert_uri, null, null, $type='GET');
+			error_log($result[0], 0);
+            $foafssl  = SMOBAuth::getAuth($result[0]);
+            $_SESSION['isAuthenticated'] = $foafssl['isAuthenticated'];
+            $_SESSION['isOwner'] = $foafssl['isOwner'];
+            $_SESSION['isHub'] = $foafssl['isHub'];
+            error_log($foafssl['authDiagnostic'],0);
+            return $_SESSION['isAuthenticated'];
         }
     }
     
     /* Function to return the modulus and exponent of the supplied Client SSL Page */
-    function openssl_pkey_get_public_hex()
+    function openssl_pkey_get_public_hex($ssl_client_cert)
     {
-        if ($_SERVER['SSL_CLIENT_CERT'])
+        if ($ssl_client_cert)
         {
           error_log('got a certificate',0);
-            $pub_key = openssl_pkey_get_public($_SERVER['SSL_CLIENT_CERT']);
+            $pub_key = openssl_pkey_get_public($ssl_client_cert);
             $key_data = openssl_pkey_get_details($pub_key);
 
             $key_len   = strlen($key_data['key']);
@@ -99,11 +107,11 @@ class SMOBAuth {
     }
 
     /* Returns an array holding the subjectAltName of the supplied SSL Client Certificate */
-    function openssl_get_subjectAltName()
+    function openssl_get_subjectAltName($ssl_client_cert)
     {
-        if ($_SERVER['SSL_CLIENT_CERT'])
+        if ($ssl_client_cert)
         {
-            $cert = openssl_x509_parse($_SERVER['SSL_CLIENT_CERT']);
+            $cert = openssl_x509_parse($ssl_client_cert);
             if ($cert['extensions']['subjectAltName'])
             {
                 $list = split("[,]", $cert['extensions']['subjectAltName']);
@@ -195,19 +203,13 @@ class SMOBAuth {
         return FALSE;
     }
 
-    function getAuth($foafuri = NULL)
+    function getAuth($ssl_client_cert)
     {
-        if (!$_SERVER['HTTPS'])
-            return ( array( 'isAuthenticated'=>0 , 'authDiagnostic'=>'No client certificate supplied on an unsecure connection') );
-
-        if (!$_SERVER['SSL_CLIENT_CERT'])
-            return ( array( 'isAuthenticated'=>0 , 'authDiagnostic'=>'No client certificate supplied') );
-
         //FIXME: when the request comes from sempush, there'll not be HTTPS/SSL_CLIENT_CERT, so we have to perform authentication with other parameter/header
 
         error_log('certificate:',0);
-        error_log($_SERVER['SSL_CLIENT_CERT'], 0);
-        $certrsakey = SMOBAuth::openssl_pkey_get_public_hex();
+        error_log($ssl_client_cert, 0);
+        $certrsakey = SMOBAuth::openssl_pkey_get_public_hex($ssl_client_cert);
 
         if (!$certrsakey)
             return ( array( 'isAuthenticated'=>0 , 'authDiagnostic'=>'No RSA Key in the supplied client certificate') );
@@ -216,7 +218,7 @@ class SMOBAuth {
 
         $result = array('certRSAKey'=>$certrsakey);
 
-        $san     = SMOBAuth::openssl_get_subjectAltName();
+        $san     = SMOBAuth::openssl_get_subjectAltName($ssl_client_cert);
         $foafuri = $san['URI'];
         error_log('Auth::getAuth foaf uri:',0);
         error_log($foafuri,0);
