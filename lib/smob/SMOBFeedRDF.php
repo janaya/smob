@@ -27,6 +27,7 @@ class SMOBFeedRDF {
     
     
     public function rss() {
+        //FIXME: should this be shown only to authorized users?
         error_log("DEBUG: rssfilepath: ".FEED_FILE_PATH,0);
         if (!file_exists(FEED_FILE_PATH)) {
             error_log("DEBUG: initial RSS file does not exists", 0);

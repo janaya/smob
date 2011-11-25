@@ -409,7 +409,7 @@ WHERE {
             // Reusing do_curl function
             $feed = urlencode($topic_url);
             error_log("topic url: ".$feed,0);
-            $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed");
+            $result = SMOBTools::do_curl($hub_url, $postfields ="hub.mode=publish&hub.url=$feed&hub.foaf=".PRIVATE_PROFILE_URL);
             // all good -- anything in the 200 range
             error_log("post sent",0); 
             if (substr($result[2],0,1) == "2") {

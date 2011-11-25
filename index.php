@@ -37,7 +37,7 @@ if(!SMOBTools::check_config()) {
                         // @TODO: check that the user were not already a following?
                         // Store the new relationship in local repository
                         //$local_user = SMOBTools::user_uri();
-                        $local_user = ME_URL_PATH;
+                        $local_user = ME_URL;
                         $follow = "<$local_user> sioc:follows <$remote_user> . ";
                         $local = "INSERT INTO <".FOLLOWINGS_GRAPH_URL."> { $follow }";
                         SMOBStore::query($local);
@@ -47,7 +47,7 @@ if(!SMOBTools::check_config()) {
                         // Subscribe to the hub
 
                         // Get the Publisher (following) Hub
-                        $remote_user_feed = $remote_user.FEED_URL_PATH;
+                        $remote_user_feed = $remote_user.FEED_URL;
                         //FIXME: simplexml_load_file(): I/O warning : failed to load external entity
                         //$xml = simplexml_load_file($remote_user_feed);
                         //if(count($xml) == 0)
@@ -57,14 +57,14 @@ if(!SMOBTools::check_config()) {
                         //    $hub_url = $link_attributes['href'];
                         //}
                         $hub_url = HUB_URL_SUBSCRIBE;
-                        $callback_url = urlencode(CALLBACK_URL_PATH);
+                        $callback_url = urlencode(CALLBACK_URL);
                         error_log("callback url: ".$callback_url,0);
                         $feed = urlencode($remote_user_feed);
                         error_log("topic url: ".$feed,0);
 
                         // Not using subscriber library as it does not allow async verify
                         // Reusing do_curl function
-                        $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=sync&hub.callback=$callback_url&hub.topic=$feed&hub.foaf=".PRIVATE_PROFILE_URL_PATH);
+                        $result = SMOBTools::do_curl($hub_url, $postfields = "hub.mode=subscribe&hub.verify=sync&hub.callback=$callback_url&hub.topic=$feed&hub.foaf=".PRIVATE_PROFILE_URL);
                         // all good -- anything in the 200 range
                         if (substr($result[2],0,1) == "2") {
                             error_log("DEBUG: Successfully subscribed to topic $remote_user_feed using hubsub $hub_url",0);
@@ -90,7 +90,7 @@ if(!SMOBTools::check_config()) {
                     // @TODO: has it sense that the user remove a follower?. Then the follower should also be notified to remove the current user as following
                     // Instead, when the request comes from another user removing a following, the action will not be run as there is not authentication
                     $remote_user = $u;
-                    $local_user = ME_URL_PATH;
+                    $local_user = ME_URL;
                     $follow = "<$remote_user> sioc:follows <$local_user> . ";
                     $local = "DELETE FROM <".FOLLOWINGS_GRAPH_URL."> { $follow }";
                     SMOBStore::query($local);
@@ -140,7 +140,7 @@ if(!SMOBTools::check_config()) {
                     // Unsubscribe to the Hub
 
                     //@TODO: following Hub should be stored?,
-                    $remote_user_feed = $remote_user.FEED_URL_PATH;
+                    $remote_user_feed = $remote_user.FEED_URL;
                     $xml = simplexml_load_file($remote_user_feed);
                     if(count($xml) == 0)
                         return;
