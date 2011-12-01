@@ -397,8 +397,8 @@ WHERE {
       }
     }";
     $me = SMOBStore::query($query);
-    error_log("Tools::get_profile data",0);
-    error_log(print_r($me,1),0);
+    //error_log("Tools::get_profile data",0);
+    //error_log(print_r($me,1),0);
     
     if(FOAF_URI != ME_URL) {
         $query = "
@@ -409,8 +409,8 @@ WHERE {
           }
         }";
         $foaf = SMOBStore::query($query);
-        error_log("Tools::get_profile data",0);
-        error_log(print_r($foaf,1),0);
+       // error_log("Tools::get_profile data",0);
+        //error_log(print_r($foaf,1),0);
         $me += $foaf;
     }
     $ser = ARC2::getRDFXMLSerializer($conf);

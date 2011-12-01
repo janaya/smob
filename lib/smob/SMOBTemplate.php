@@ -7,7 +7,7 @@
 class SMOBTemplate {
 
     public function publisher_header($reply_of = null) {
-
+        error_log("Template::publisher_header",0);
         $contentblock = $reply_of ? "$('.content-details').show();" : "
         $('#content').focus(function() {
             $('.content-details').show();
@@ -94,6 +94,7 @@ $form .= '
     }
 
     public function header($publisher, $reply_of = null, $ismap = null) {
+        error_log("Template::header",0);
         global $type;
         //if(!defined('SMOB_ROOT')) {
         if(!defined('SMOB_ROOT')) {
@@ -194,6 +195,7 @@ xml:lang="fr">
     }
 
     public function footer() {
+        error_log("Template::footer",0);
         $version = SMOBTools::version();
 ?>
 </div>
@@ -260,6 +262,7 @@ jQuery(function(){
     }
 
     public function users($type, $users) {
+        error_log("Template::users",0);
         $ht = '<h2>'.ucfirst($type).'</h2>';
         if($users) {
             $ht .= '<ul>';
@@ -284,6 +287,7 @@ jQuery(function(){
     }
 
     public function person($person, $uri) {
+        error_log("Template::person",0);
         $names = SMOBTools::either($person['names'], array("Anonymous"));
         $imgs = SMOBTools::either($person['images'], array(IMG_URL.'avatar-blank.jpg'));
         $homepage = $person['homepage'];

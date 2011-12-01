@@ -279,6 +279,8 @@ if(!SMOBTools::check_config()) {
           session_start();
           session_destroy();
           header( 'Location: '.SMOB_ROOT) ;
+      //} elseif($t == 'user'){
+      //    echo User::view();
       } else {
           error_log("default action, calling SMOB",0);
           $smob = new SMOB($t, $u, $p);
@@ -288,6 +290,7 @@ if(!SMOBTools::check_config()) {
 
     // $t is not set
     } else {
+          //echo User::view();
           error_log("default action, calling SMOB",0);
           $smob = new SMOB('posts', $u, $p);
           $smob->reply_of($r);
