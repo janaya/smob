@@ -3,62 +3,23 @@
 //require_once(dirname(__FILE__)."/../../config/config.php");
 //require_once(dirname(__FILE__)."SMOBTools.php");
 //require_once(dirname(__FILE__)."SMOBStore.php");
-define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
 class PrivateProfile {
-  // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
-  function view_private_profile() {
-    $turtle = SMOBTools::triples_from_graph(SMOB_ROOT."me");
-    header('Content-Type: text/turtle; charset=utf-8'); 
-    return $turtle;
-  }
-
-  function get_rel_types() {
-    $rels = array();
-    $rels[''] = '';
-    $filename = 'relationship.json';
-    $jsonfile = fopen($filename,'r');
-    $jsontext = fread($jsonfile,filesize($filename));
-    fclose($jsonfile);
-    $json = json_decode($jsontext, true);
-    foreach ($json as $rel=>$relarray) {
-      if (strpos($rel, "http://purl.org/vocab/relationship/") === 0) {
-        if (array_key_exists('http://www.w3.org/2000/01/rdf-schema#label', $relarray)) {
-#          $label = $json[$rel]['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
-          $label = $relarray['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
-          error_log("position using with",0);
-          error_log(strpos($label, "Using With"),0);
-          if (strpos($label, "Using With") === FALSE) {
-            $rels[$label] = $rel;
-          };
-        };
-      };
-    };
-    return $rels;
-  }
-
-  function set_rel_type_options($rels) {
-    $options = "";
-    foreach($rels as $label=>$rel) {
-      $options .=  "        <option name='$label' value='$rel' >$label</option>\n";
-    };
-    return $options;
-  }
 
   function get_interests($user_uri) {
     // cleaning from previous code errors
-    $query = "DELETE FROM <$user_uri> {
-      <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
-      <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
-    } WHERE {
-      <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
-      <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
-    }";
+    //$query = "DELETE FROM <$user_uri> {
+    //  <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
+    //  <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
+    //} WHERE {
+    //  <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
+    //  <http://localhost:443/smob/ajax/undefined> rdfs:label ?label . 
+    //}";
     //$query = "DELETE {
     //  <$user_uri> foaf:topic_interest <http://localhost:443/smob/ajax/undefined> .
     //  <http://localhost:443/smob/ajax/undefined> rdfs:label 'null' . 
     //}";
-    $data = SMOBStore::query($query);
+    //$data = SMOBStore::query($query);
     $interests = array();
     $query = "SELECT ?interest ?interest_label FROM <$user_uri> WHERE {
       <$user_uri> foaf:topic_interest ?interest .
@@ -75,6 +36,7 @@ class PrivateProfile {
   }
 
   function get_relationships($user_uri) {
+    error_log("PrivateProfile::get_relationships",0);
     $rel_persons = array();
     //"<" + user_uri + "> <" + rel_types[i] + "> <" + persons[i] + "> . ";
     $query = "SELECT ?person ?rel_type ?rel_label FROM <$user_uri> WHERE {
@@ -101,12 +63,12 @@ class PrivateProfile {
   }
 
   function get_initial_private_form_data() {
-    $user_uri = SMOB_ROOT."me";
+    $user_uri = ME_URL;
     $rel_fieldsets = array();
     $rel_persons = PrivateProfile::get_relationships($user_uri);
     error_log(print_r($rel_persons, 1), 0);
-    $rel_types = PrivateProfile::get_rel_types();
-    $rel_type_options = PrivateProfile::set_rel_type_options($rel_types);
+    $rel_types = SMOBTools::get_rel_types();
+    $rel_type_options = SMOBTools::set_rel_type_options($rel_types);
     $index = 0;
     foreach($rel_persons as $rel_type=>$person) {
       $rel_fieldset = "
@@ -161,16 +123,57 @@ class PrivateProfile {
     return $params;
   }
   
-  function view_private_profile_form() {
-    $file = 'private_profile_template.php';
-    // if(IS_AJAX) {
-    // } else {
-    $params = PrivateProfile::get_initial_private_form_data();
-    extract($params);
-    ob_start();
-    include($file);
-    $contents = ob_get_contents();
-    ob_end_clean();
-    return $contents;
+  function edit() {
+      error_log("PP::edit",0);
+      if (SMOBAuth::authorize()) {
+          $file = 'private_profile_template.php';
+          // if(IS_AJAX) {
+          // } else {
+          $params = PrivateProfile::get_initial_private_form_data();
+          extract($params);
+          ob_start();
+          include($file);
+          $contents = ob_get_contents();
+          ob_end_clean();
+          return $contents;
+      } else {
+          header("Location: ".AUTH_URL."?redirect=".PRIVATE_PROFILE_EDIT_URL);
+          exit;
+      }
   }
+
+  // TODO: The private profile graph is the same as the profile graph, privacy preferences will decide what is visible
+  function view() {
+      error_log("PP::view",0);
+      // FIXME: insecure, deactivated authorization as sempush is not able to able to perform webid authentication
+      //if (SMOBAuth::authorize()) {
+          // as sempush can't parse n3, return profile as rdf/xml
+          //$turtle = SMOBTools::triples_from_graph(ME_URL);
+          //error_log("PrivateProfile::view turtle",0);
+          //error_log($turtle,0);
+          //header('Content-Type: text/turtle; charset=utf-8'); 
+          //return $turtle;
+
+          //$rdfxml = SMOBTools::rdfxml_from_graph(ME_URL);
+          $rdfxml = SMOBTools::get_profile();
+          error_log("PrivateProfile::view rdfxml",0);
+          error_log($rdfxml,0);
+          header('Content-Type: application/rdf+xml; charset=utf-8'); 
+          return $rdfxml;
+      //} else {
+      //    header("Location: ".AUTH_URL."?redirect=".PRIVATE_PROFILE_URL);
+      //    exit;
+      //}
+  }
+  
+  function save() {
+    $query = "DELETE FROM <".ME_URL."> ";
+    $res = SMOBStore::query($query);
+    //error_log(var_dump($res, 1), 0);
+    $query = "INSERT INTO <".ME_URL."> { $triples }";
+    error_log($query, 0);
+    $res = SMOBStore::query($query);
+    //error_log(var_dump($res, 1), 0);
+  }
+  
 }

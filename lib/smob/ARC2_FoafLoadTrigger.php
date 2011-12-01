@@ -20,26 +20,26 @@ class ARC2_FoafLoadTrigger extends ARC2_Class {
   }
 
   function go() { /* automatically called by store or endpoint */
-	$a = $this->a;
-	$graph = $a['query_infos']['query']['target_graph'];
-	if(!$graph) {
-		$graph = $a['query_infos']['query']['url'];
-	}
-	$q = "
+    $a = $this->a;
+    $graph = $a['query_infos']['query']['target_graph'];
+    if(!$graph) {
+        $graph = $a['query_infos']['query']['url'];
+    }
+    $q = "
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 SELECT ?p
 WHERE {
-	GRAPH <$graph> {
-		?s foaf:maker ?p .
-	} 
+    GRAPH <$graph> {
+        ?s foaf:maker ?p .
+    } 
 }";
-	$res = $this->store->query($q);
-	$author = $res['result']['rows'][0]['p'];
-	if($author) {
-		$res = $this->store->query("LOAD <$author>");
-	}
-	return;
+    $res = $this->store->query($q);
+    $author = $res['result']['rows'][0]['p'];
+    if($author) {
+        $res = $this->store->query("LOAD <$author>");
+    }
+    return;
   }
 
 }

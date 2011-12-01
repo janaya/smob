@@ -13,23 +13,23 @@ $mappings = $_GET['lod'];
 $reply_of = $_GET['reply_of'];
 
 if($content) {
-	if(get_magic_quotes_gpc()) {
-		$content = stripslashes($content);
-	}
+    if(get_magic_quotes_gpc()) {
+        $content = stripslashes($content);
+    }
 
-	$post = new SMOBPost();
-	$post->set_data(date('c'), $content, $reply_of, $location, $location_uri, $mappings);
-	
-	print "<h2>Publishing your message...</h2>\n";
-	print "<ul>\n";	
-	$post->save();
-	$post->add2rssfile();
-	$post->notify();
-	if($twitter) {
-		$post->tweet();		
-	}
-	if($sindice) {
-		$post->sindice();		
-	}
-	print "</ul>\n";	
+    $post = new SMOBPost();
+    $post->set_data(date('c'), $content, $reply_of, $location, $location_uri, $mappings);
+    
+    print "<h2>Publishing your message...</h2>\n";
+    print "<ul>\n";    
+    $post->save();
+    $post->add_to_rss_file();
+    $post->notify();
+    if($twitter) {
+        $post->tweet();        
+    }
+    if($sindice) {
+        $post->sindice();        
+    }
+    print "</ul>\n";    
 }

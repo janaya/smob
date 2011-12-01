@@ -6,3 +6,11 @@ js/jquery-dynamic-form.js
 js/dbpedia-spotlight-0.2.js
 js/dbpedia-spotlight-0.1.js
 test_data/*
+.buildpath
+.metadata/
+.project
+.settings/
+permissions
+lib/smob/privacy_preference_add_template.php
+lib/smob/privacy_preferences_list_template.php
+lib/smob/privacy_preferences_template.all.php

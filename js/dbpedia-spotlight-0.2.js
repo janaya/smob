@@ -22,41 +22,41 @@
     };
 
    var methods = {
-      init : function( options ) { 	      
+      init : function( options ) {         
         // If options exist, lets merge them with our default settings
-	if ( options ) { 
-	    $.extend( settings, options );
-	}  
+  if ( options ) { 
+      $.extend( settings, options );
+  }  
       },
       annotate: function( options ) {
-	    function update(response) { 
-	   		var content = $(response).find("div");  //the div with the annotated text
-	   		if (settings.powered_by == 'yes') { 
-	   			$(content).append($(powered_by)); 
-	   		};     	
-	   		//var entities = $(content).find("a/[about]");   	
-	   		$(this).html(content.html());      	
-	   	    }    
-	   
-	   	    return this.each(function() {            
-	   	      var params = {'text': $.quoteString($(this).text()), 'confidence': settings.confidence, 'support': settings.support };      
-	   	      $.ajax({ 'url': settings.endpoint+"/annotate", 
-	   		       'data': params,
-	   		       'context': this,
-	   		       'headers': {'Accept': 'application/xhtml+xml'},
-	   		       'success': update
-	   		     });	
-	             });
+      function update(response) { 
+         var content = $(response).find("div");  //the div with the annotated text
+         if (settings.powered_by == 'yes') { 
+           $(content).append($(powered_by)); 
+         };       
+         //var entities = $(content).find("a/[about]");     
+         $(this).html(content.html());        
+           }    
+     
+           return this.each(function() {            
+             var params = {'text': $.quoteString($(this).text()), 'confidence': settings.confidence, 'support': settings.support };      
+             $.ajax({ 'url': settings.endpoint+"/annotate", 
+                'data': params,
+                'context': this,
+                'headers': {'Accept': 'application/xhtml+xml'},
+                'success': update
+              });  
+               });
        },
        candidates: function( options ) {
           function getSelectBox(resources) {
              var snippet =  "<select class='candidates'>";
              //console.log(resources);
              var options = ""; $.each(resources, function(i, r) { 
-             	options += "<option value='" + r["@uri"] + "'>" + r["@label"];
-             	//TODO settings.showScores = ["finalScore"] foreach showscores, add k=v
-             	if (settings.showScores == 'yes') options += " (" + parseFloat(r["@finalScore"]).toPrecision(3) +")";
-             	options += "</option>"; 
+               options += "<option value='" + r["@uri"] + "'>" + r["@label"];
+               //TODO settings.showScores = ["finalScore"] foreach showscores, add k=v
+               if (settings.showScores == 'yes') options += " (" + parseFloat(r["@finalScore"]).toPrecision(3) +")";
+               options += "</option>"; 
              });
              snippet += options;
              snippet += "</select>"
@@ -71,39 +71,39 @@
                 var name = e["@name"];
                 var offset = parseInt(e["@offset"]);
                 var sfLength = parseInt(name.length);
-             	var snippet = text.substring(start, offset)
-             	var surfaceForm = text.substring(offset,offset+sfLength);
-             	start = offset+sfLength;
-             	snippet += "<div id='"+(name+offset)+"' class='annotation'>";
-             	//TODO instead of showing directly the select box, it would be cuter to just show a span, and onClick on that span, build the select box.
-             	snippet += getSelectBox($(e.resource));
-             	snippet += "</div>";
-             	return snippet;
+               var snippet = text.substring(start, offset)
+               var surfaceForm = text.substring(offset,offset+sfLength);
+               start = offset+sfLength;
+               snippet += "<div id='"+(name+offset)+"' class='annotation'>";
+               //TODO instead of showing directly the select box, it would be cuter to just show a span, and onClick on that span, build the select box.
+               snippet += getSelectBox($(e.resource));
+               snippet += "</div>";
+               return snippet;
              }).join("");
              //snippet after last surface form
              annotatedText += text.substring(start, text.length);
              //console.log(annotatedText);
              return annotatedText;
-	  }
+    }
 
-       	    function update(response) { 
-       	        //console.log(response);
-       		var content = parseCandidates(response);
-       		if (settings.powered_by == 'yes') { 
-       			$(content).append($(powered_by)); 
-       		};     	       		
-       		$(this).html(content);      	
-       	    }    
+             function update(response) { 
+                 //console.log(response);
+           var content = parseCandidates(response);
+           if (settings.powered_by == 'yes') { 
+             $(content).append($(powered_by)); 
+           };                  
+           $(this).html(content);        
+             }    
        
-       	    return this.each(function() {            
-       	      var params = {'text': $(this).val(), 'confidence': settings.confidence, 'support': settings.support };      
-       	      $.ajax({ 'url': settings.endpoint+"/candidates", 
-       		       'data': params,
-       		       'context': this,
-       		       'headers': {'Accept': 'application/json'},
-       		       'success': update
-       		     });	
-       	    });
+             return this.each(function() {            
+               var params = {'text': $(this).val(), 'confidence': settings.confidence, 'support': settings.support };      
+               $.ajax({ 'url': settings.endpoint+"/candidates", 
+                  'data': params,
+                  'context': this,
+                  'headers': {'Accept': 'application/json'},
+                  'success': update
+                });  
+             });
        }
 
   }; 

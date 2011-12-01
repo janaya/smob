@@ -13,12 +13,12 @@
 
 abstract class SMOBURIWrapper {
 
-	public function __construct($item) {
-		$this->item = $item;
-	}
-	
-	public function get_uri() {
-		// Needs to be done in each wrapper plug-in
-	}
+    public function __construct($item) {
+        $this->item = $item;
+    }
+    
+    public function get_uri() {
+        // Needs to be done in each wrapper plug-in
+    }
 
 }

@@ -1,6 +1,4 @@
-<?php include('header.php'); ?>  
-
-  <script type="text/javascript"> 
+  <script type="text/javascript">
     var smob_root = "<?php echo SMOB_ROOT; ?>";
     var interest_domids = {
       "label" : "interest_domids",
@@ -16,10 +14,25 @@
       "topic_del" : "del_interest",
       "topic_counter" : "interest_counter"
     }
-  </script> 
-  <script type="text/javascript" src="<?php echo JS_URL; ?>private_profile.js"></script> 
-  <script type="text/javascript"> 
+    var hashtag_domids = {
+      "label" : "hashtag_domids",
+      "topics_block" : "hashtag_block",
+      "topic_block" : "hashtag_fieldset",
+      "topic_label" : "hashtag_label",
+      "topic_interlink" : "hashtag_suggestion",
+      "topic_uri" : "hashtag",
+      "topic_interlink_form" : "hashtag_form",
+      "topic_interlink_block" : "hashtag_suggestions",
+      "topic_interlink_submit" : "hashtag_suggestion_submit",
+      "topic_add" : "add_hashtag",
+      "topic_del" : "del_hashtag",
+      "topic_counter" : "hashtag_counter"
+    }
+  </script>
+  <script type="text/javascript" src="<?php echo JS_URL; ?>private_profile.js"></script>
+  <script type="text/javascript">
     var smob_root = "<?php echo SMOB_ROOT; ?>";
+    // TODO: eliminate function arguments already defined as global vars
 
     $(document).ready(function(){
       // TODO: add validation
@@ -34,6 +47,10 @@
         e.preventDefault();
         addTopic(smob_root, interest_domids);
       });
+      $('#add_hashtag').click(function(e) {
+        e.preventDefault();
+        addTopic(smob_root, hashtag_domids);
+      });
 
       $('#private_submit').click(function(e) {
         e.preventDefault();
@@ -46,58 +63,57 @@
         // }
         //});
         //$("#private_form").validate();
-        post_data2triples(smob_root+"me");
+        post_privacydata2triples(smob_root);
       });
 
     });
-    
+
   </script>
-<div id="main"> 
- 
-<div class="left">  
-  
-<h2>Private profile</h2>
-    <form id="private_form">
 
-    </br>
+<h2>Privacy Settings</h2>
+    <form id="privacy_form">
 
-      <fieldset><legend><b>Interests</b></legend>
+      </br>
+
+      <p><b>Condition</b></p>
+      <fieldset><legend>Hashtag that the microposts must contain</legend>
+        <div id="hashtag_block">
+        </div>
+        <p><a id="add_hashtag" href="">[+]</a></p>
+        <input type="hidden" id="hashtag_counter" value="<?=$params['hashtag_counter'];?>">
+      </fieldset>
+
+      </br>
+
+
+      <p><b>Access Space </b></p>
+      <fieldset><legend>Topics on which the subcribers must be interested in to receive the microposts</legend>
         <div id="interest_block">
-          <?php foreach($params['interest_fieldsets'] as $interest_item): ?>
-            <?=$interest_item;?>
-          <?php endforeach; ?>
-        </div> 
+        </div>
         <p><a id="add_interest" href="">[+]</a></p>
         <input type="hidden" id="interest_counter" value="<?=$params['interest_counter'];?>">
       </fieldset>
 
-    </br>
+      OR<input type="radio"  name="interest_rel" value="0" checked="checked"/> AND <input type="radio" name="interest_rel" value="1" />
 
-      <fieldset><legend><b>Relationships</b></legend>
+
+      <fieldset><legend>Relationships the subcribers must have with me to receive the microposts</legend>
         <select id="rel_type" name="rel_type" style="visibility:hidden;">
             <?=$params['rel_type_options'];?>
         </select>
-
         <div id="rel_block">
-          <?php foreach($params['rel_fieldsets'] as $rel_item): ?>
-            <?=$rel_item;?>
-          <?php endforeach; ?>
-        </div> 
+        </div>
         <p><a id="add_rel" href="">[+]</a></p>
         <input type="hidden" id="rel_counter" value="<?=$params['rel_counter'];?>">
       </fieldset>
 
+      </br>
+
       <button id="private_submit" class="content-details">Save</button>
 
-    </form> 
+    </form>
 
 <h2>Result</h2>
     <div id="result"></div>
     <div id="privacy_result" class="post external" style="display:none;"></div>
- 
-</div> 
- 
 
-<?php include('nav.php'); ?>  
-<?php include('footer.php'); ?> 
- 

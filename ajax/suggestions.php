@@ -35,7 +35,7 @@ function find_uris($wrapper, $term, $type) {
 
 $type = $_GET['type'];
 $term = $_GET['term'];
-
+error_log($term,0);
 
 // URIs from wrappers
 $wrappers = get_wrappers($type);

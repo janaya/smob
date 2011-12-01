@@ -21,24 +21,31 @@ xml:lang="fr">
 <head profile="http://ns.inria.fr/grddl/rdfa/"> 
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
   <title>SMOB</title> 
-  <link rel="icon" type="image/png" href="<?php echo SMOB_ROOT; ?>img/smob-icon.png" /> 
-  <link rel="stylesheet" type="text/css" href="<?php echo SMOB_ROOT; ?>css/style.css" /> 
+  <link rel="icon" type="image/png" href="<?php echo IMG_URL; ?>smob-icon.png" /> 
+  <link rel="stylesheet" type="text/css" href="<?php echo CSS_URL; ?>style.css" /> 
  
   <link type="text/css" href="http://jqueryui.com/latest/themes/base/jquery.ui.all.css" rel="stylesheet" /> 
  
+  <!--
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>  
   <script type="text/javascript">  
     google.load("jquery", "1.4.1");
     google.load("jqueryui", "1.7.2");
   </script> 
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.timers-1.2.js"></script> 
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.autocomplete-min.js"></script> 
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.rating.js"></script> 
- 
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/smob.js"></script> 
+  -->
+
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.js"></script>
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery-ui.min.js"></script>
+  <link type="text/css" href="<?php echo CSS_URL; ?>jquery.ui.all.css"></script>
   
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery-dynamic-form.js"></script>  
-  <script type="text/javascript" src="<?php echo SMOB_ROOT; ?>js/jquery.form.js"></script> 
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.timers-1.2.js"></script> 
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.autocomplete-min.js"></script> 
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.rating.js"></script> 
+ 
+  <script type="text/javascript" src="<?php echo JS_URL; ?>smob.js"></script> 
+  
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery-dynamic-form.js"></script>  
+  <script type="text/javascript" src="<?php echo JS_URL; ?>jquery.form.js"></script> 
   <script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/validate/jquery.validate.js"></script>
  
  

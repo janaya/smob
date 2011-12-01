@@ -1,80 +1,80 @@
 // Publishing functions
 function publish() {
-	var lod = '';
-	$("#lod-form :checked").each(function() {
-		lod = lod + ' ' + $(this).val();		
-	})
-		
-	var params = {'content': $("#content").val(),
-	              'reply_of': $("#reply_of").val(),
-	              'location': $("#location").val(),
-	              'location_uri': $("#location_uri").val(),
-	              'twitter': $("#twitter:checked").length,
-	              'sindice': $("#sindice:checked").length,
-	              'lod': lod,
-	             };		
-				
-	$.get("ajax/pub.php?" + $.param(params)+getCacheBusterParam(), function(data){
-		$("#smob-publish").show("normal");
-		$("#smob-publish").html(data);
-	});
+  var lod = '';
+  $("#lod-form :checked").each(function() {
+    lod = lod + ' ' + $(this).val();    
+  })
+    
+  var params = {'content': $("#content").val(),
+                'reply_of': $("#reply_of").val(),
+                'location': $("#location").val(),
+                'location_uri': $("#location_uri").val(),
+                'twitter': $("#twitter:checked").length,
+                'sindice': $("#sindice:checked").length,
+                'lod': lod,
+               };    
+        
+  $.get("ajax/pub.php?" + $.param(params)+getCacheBusterParam(), function(data){
+    $("#smob-publish").show("normal");
+    $("#smob-publish").html(data);
+  });
 }
 
 // Adapted from http://www.ajaxray.com/blog/2007/11/09/interactive-character-limit-for-textarea-using-jquery/
 function charsleft() {
-	var limit = 140;
-	var text = $('#content').val(); 
-	var textlength = text.length;
-	
-	if(textlength > limit) {
-		$('#charsleft').html(0);
-		$('#content').val(text.substr(0, limit));
-		return false;
-	} else {
-		$('#charsleft').html(limit - textlength);
-		return true;
-	}
+  var limit = 140;
+  var text = $('#content').val(); 
+  var textlength = text.length;
+  
+  if(textlength > limit) {
+    $('#charsleft').html(0);
+    $('#content').val(text.substr(0, limit));
+    return false;
+  } else {
+    $('#charsleft').html(limit - textlength);
+    return true;
+  }
 }
 
 // Tab generation for the interlinking
 function addTab(formid, tabid, data) {
-	var obj = JSON.parse(data);
-	$(formid).append("<div id='" + obj.id + "'>" + obj.html + "</div>");
-	$(tabid).tabs("add", '#'+obj.id, obj.term);
-	size = $(tabid).tabs("length");
+  var obj = JSON.parse(data);
+  $(formid).append("<div id='" + obj.id + "'>" + obj.html + "</div>");
+  $(tabid).tabs("add", '#'+obj.id, obj.term);
+  size = $(tabid).tabs("length");
 }
 
 // LOD links suggestion
 function interlink(domid, formid, tabid) {
-	var text = $(domid).val() + '#'; 
-	var words = jQuery.trim(text).split(' ');	
-	var current_words = words.length - 1;
-	
-	if(current_words > numwords) {		
-		numwords = current_words;
-		words.pop();
-		current = words.pop();
-		first = current.charAt(0);
-		if(first == '#') {
-			$.get("ajax/interlink.php?type=tag&term="+urlencode(current)+getCacheBusterParam(), function(data){
-				addTab(formid, tabid, data);
-			});
-		}
-		else if(first == 'L') {
-			if(current.length > 1) {
-				second = current.charAt(1);
-				if(second == ':') {
-					$.get("ajax/interlink.php?type=location&term="+urlencode(current)+getCacheBusterParam(), function(data){
-						addTab(data);
-					});
-				}
-			}
-		} else if(first == '@') {	
-			$.get("ajax/interlink.php?type=user&term="+urlencode(current)+getCacheBusterParam(), function(data){
-				addTab(data);
-			});
-		}
-	}
+  var text = $(domid).val() + '#'; 
+  var words = jQuery.trim(text).split(' ');  
+  var current_words = words.length - 1;
+  
+  if(current_words > numwords) {    
+    numwords = current_words;
+    words.pop();
+    current = words.pop();
+    first = current.charAt(0);
+    if(first == '#') {
+      $.get("ajax/interlink.php?type=tag&term="+urlencode(current)+getCacheBusterParam(), function(data){
+        addTab(formid, tabid, data);
+      });
+    }
+    else if(first == 'L') {
+      if(current.length > 1) {
+        second = current.charAt(1);
+        if(second == ':') {
+          $.get("ajax/interlink.php?type=location&term="+urlencode(current)+getCacheBusterParam(), function(data){
+            addTab(data);
+          });
+        }
+      }
+    } else if(first == '@') {  
+      $.get("ajax/interlink.php?type=user&term="+urlencode(current)+getCacheBusterParam(), function(data){
+        addTab(data);
+      });
+    }
+  }
 }
 
 function interlink_interest(domid, formid, tabid) {
@@ -83,200 +83,200 @@ function interlink_interest(domid, formid, tabid) {
   if (location.pathname.split("/").length > 3) {
     path = "/"+location.pathname.split("/")[1]+"/";
   }
-	var text = $(domid).val() + '#'; 
-	var words = jQuery.trim(text).split(' ');	
-	var current_words_interest = words.length - 1;
-	
-	if(current_words_interest > numwords_interest) {		
-		numwords_interest = current_words_interest;
-		words.pop();
-		current = words.pop();
-		first = current.charAt(0);
-		if(first == '#') {
-			$.get(path+"ajax/interlink.php?type=tag&term="+urlencode(current)+getCacheBusterParam(), function(data){
-				addTab(formid, tabid, data);
-			});
-		}
-		else if(first == 'L') {
-			if(current.length > 1) {
-				second = current.charAt(1);
-				if(second == ':') {
-					$.get(path+"ajax/interlink.php?type=location&term="+urlencode(current)+getCacheBusterParam(), function(data){
-						addTab(data);
-					});
-				}
-			}
-		} else if(first == '@') {	
-			$.get(path+"ajax/interlink.php?type=user&term="+urlencode(current)+getCacheBusterParam(), function(data){
-				addTab(data);
-			});
-		
-		}
-	}
+  var text = $(domid).val() + '#'; 
+  var words = jQuery.trim(text).split(' ');  
+  var current_words_interest = words.length - 1;
+  
+  if(current_words_interest > numwords_interest) {    
+    numwords_interest = current_words_interest;
+    words.pop();
+    current = words.pop();
+    first = current.charAt(0);
+    if(first == '#') {
+      $.get(path+"ajax/interlink.php?type=tag&term="+urlencode(current)+getCacheBusterParam(), function(data){
+        addTab(formid, tabid, data);
+      });
+    }
+    else if(first == 'L') {
+      if(current.length > 1) {
+        second = current.charAt(1);
+        if(second == ':') {
+          $.get(path+"ajax/interlink.php?type=location&term="+urlencode(current)+getCacheBusterParam(), function(data){
+            addTab(data);
+          });
+        }
+      }
+    } else if(first == '@') {  
+      $.get(path+"ajax/interlink.php?type=user&term="+urlencode(current)+getCacheBusterParam(), function(data){
+        addTab(data);
+      });
+    
+    }
+  }
 }
 // Get news ?
 function getnews() {
-	var np = $('#np').html(); 
-	$.get("ajax/news.php?np="+urlencode(np)+getCacheBusterParam(), function(data) {
-		if(data) {
-			$("#news").show("normal");
-			$('#news').html(data);	
-		}
-	});
+  var np = $('#np').html(); 
+  $.get("ajax/news.php?np="+urlencode(np)+getCacheBusterParam(), function(data) {
+    if(data) {
+      $("#news").show("normal");
+      $('#news').html(data);  
+    }
+  });
 }
 
 // Setup functions
 function process(){
-	showStatus();
-	switch(state) {
-		// DB creation	
-		case 0:
-			log("STEP 1: SMOB database setup ...");
-			$("#head").hide("normal");
-			$("#smob-db-pane").show("normal");	
-			setStep("Go !");
-			nextStep();
-			break;
-		case 1:
-			$("#skip").hide();
-			install_db_settings();
-			nextStep();
-			break;
-		// SMOB settings	
-		case 2:
-			log("STEP 3: SMOB settings ...");
-			$("#skip").show();
-			$("#smob-db-pane").hide("normal");
-			$("#smob-settings-pane").show("normal");
-			setStep("Go !");
-			nextStep();
-			break;
-		case 3:
-			$("#skip").hide();
-			install_smob_settings();
-			nextStep();
-			break;
-		// User settings
-		case 4:
-			log("STEP 4: User settings ...");
-			$("#skip").show();
-			$("#smob-settings-pane").hide("normal");
-			$("#smob-user-pane").show("normal");
-			setStep("Go !");
-			nextStep();
-			break;
-		case 5:
-			$("#skip").hide();
-			install_user_settings();
-			nextStep();
-			break;
-		// End						
-		case 6:
-			log("STEP 4: Done !");
-			$("#create-db-pane").hide("normal");
-			$("#smob-settings-pane").hide("normal");
-			$("#smob-user-pane").hide("normal");
-			$("#step").hide();
-			$("#skip").hide();
-			$("#done-pane").show("normal");
-			break;
-		// Default
-		default:
-	  		log("I'm in trouble - please restart ...");
-	}	
+  showStatus();
+  switch(state) {
+    // DB creation  
+    case 0:
+      log("STEP 1: SMOB database setup ...");
+      $("#head").hide("normal");
+      $("#smob-db-pane").show("normal");  
+      setStep("Go !");
+      nextStep();
+      break;
+    case 1:
+      $("#skip").hide();
+      install_db_settings();
+      nextStep();
+      break;
+    // SMOB settings  
+    case 2:
+      log("STEP 3: SMOB settings ...");
+      $("#skip").show();
+      $("#smob-db-pane").hide("normal");
+      $("#smob-settings-pane").show("normal");
+      setStep("Go !");
+      nextStep();
+      break;
+    case 3:
+      $("#skip").hide();
+      install_smob_settings();
+      nextStep();
+      break;
+    // User settings
+    case 4:
+      log("STEP 4: User settings ...");
+      $("#skip").show();
+      $("#smob-settings-pane").hide("normal");
+      $("#smob-user-pane").show("normal");
+      setStep("Go !");
+      nextStep();
+      break;
+    case 5:
+      $("#skip").hide();
+      install_user_settings();
+      nextStep();
+      break;
+    // End            
+    case 6:
+      log("STEP 4: Done !");
+      $("#create-db-pane").hide("normal");
+      $("#smob-settings-pane").hide("normal");
+      $("#smob-user-pane").hide("normal");
+      $("#step").hide();
+      $("#skip").hide();
+      $("#done-pane").show("normal");
+      break;
+    // Default
+    default:
+        log("I'm in trouble - please restart ...");
+  }  
 }
 
 function resetInstall(){
-	log("Ready.");
-	$("#smob-db-pane").hide();
-	$("#done-pane").hide();
-	$("#skip").hide();
-	setStep("START!");
-	state = 0;
+  log("Ready.");
+  $("#smob-db-pane").hide();
+  $("#done-pane").hide();
+  $("#skip").hide();
+  setStep("START!");
+  state = 0;
 }
 
 function install_db_settings(){
-	var host = $("#db-host").val();
-	var name = $("#db-name").val();
-	var user = $("#db-user").val();
-	var pwd = $("#db-pwd").val();
-	var store = $("#db-store").val();
+  var host = $("#db-host").val();
+  var name = $("#db-name").val();
+  var user = $("#db-user").val();
+  var pwd = $("#db-pwd").val();
+  var store = $("#db-store").val();
 
-	$("#smob-db-pane-in").hide("normal");
-	$("#smob-db-pane-out").show("normal");
+  $("#smob-db-pane-in").hide("normal");
+  $("#smob-db-pane-out").show("normal");
 
-	$.get("ajax/install.php?cmd=create-db&host="+urlencode(host)+"&name="+name+"&user="+user+"&pwd="+pwd+"&store="+store+getCacheBusterParam(), function(data){
-		$("#smob-db-pane-out").html(data);
-	});
+  $.get("ajax/install.php?cmd=create-db&host="+urlencode(host)+"&name="+name+"&user="+user+"&pwd="+pwd+"&store="+store+getCacheBusterParam(), function(data){
+    $("#smob-db-pane-out").html(data);
+  });
 }
 
 function install_smob_settings(){
-	var smob_root = $("#smob-root").val();	
-	var purge = $("#smob-purge").val();			
-		
-	$("#smob-settings-pane-in").hide("normal");
-	$("#smob-settings-pane-out").show("normal");
-	
-	$.get("ajax/install.php?cmd=setup-smob&smob_root="+urlencode(smob_root)+"&purge="+urlencode(purge)+getCacheBusterParam(), function(data){
-		$("#smob-settings-pane-out").html(data);
-	});		
+  var smob_root = $("#smob-root").val();  
+  var purge = $("#smob-purge").val();      
+    
+  $("#smob-settings-pane-in").hide("normal");
+  $("#smob-settings-pane-out").show("normal");
+  
+  $.get("ajax/install.php?cmd=setup-smob&smob_root="+urlencode(smob_root)+"&purge="+urlencode(purge)+getCacheBusterParam(), function(data){
+    $("#smob-settings-pane-out").html(data);
+  });    
 }
 
 function install_user_settings(){
 
-	var foaf_uri = $("#smob-uri").val();
+  var foaf_uri = $("#smob-uri").val();
 
-	var username = $("#smob-username").val();
-	var depiction = $("#smob-depiction").val();
-	
-	var twitter_read = $('input[name=smob-twitter-read]:checked').val();
-	var twitter_post = $('input[name=smob-twitter-post]:checked').val();
+  var username = $("#smob-username").val();
+  var depiction = $("#smob-depiction").val();
+  
+  var twitter_read = $('input[name=smob-twitter-read]:checked').val();
+  var twitter_post = $('input[name=smob-twitter-post]:checked').val();
 
-	var twitter_login = $("#smob-twitter-login").val();
-	var twitter_pass = $("#smob-twitter-pass").val();
+  var twitter_login = $("#smob-twitter-login").val();
+  var twitter_pass = $("#smob-twitter-pass").val();
 
-	var auth = $('input[name=smob-auth]:checked').val()	
+  var auth = $('input[name=smob-auth]:checked').val()  
 
-	$("#smob-user-pane-in").hide("normal");
-	$("#smob-user-pane-out").show("normal");
+  $("#smob-user-pane-in").hide("normal");
+  $("#smob-user-pane-out").show("normal");
 
-	$.get("ajax/install.php?cmd=setup-user&foaf_uri="+urlencode(foaf_uri)+"&username="+urlencode(username)+"&depiction="+urlencode(depiction)+"&twitter_login="+urlencode(twitter_login)+"&twitter_pass="+urlencode(twitter_pass)+"&twitter_read="+urlencode(twitter_read)+"&twitter_post="+urlencode(twitter_post)+"&auth="+auth+getCacheBusterParam(), function(data){
-		$("#smob-user-pane-out").html(data);
-	});
+  $.get("ajax/install.php?cmd=setup-user&foaf_uri="+urlencode(foaf_uri)+"&username="+urlencode(username)+"&depiction="+urlencode(depiction)+"&twitter_login="+urlencode(twitter_login)+"&twitter_pass="+urlencode(twitter_pass)+"&twitter_read="+urlencode(twitter_read)+"&twitter_post="+urlencode(twitter_post)+"&auth="+auth+getCacheBusterParam(), function(data){
+    $("#smob-user-pane-out").html(data);
+  });
 }
 
 /*
 function install_user_settings(){
-	var smob_root = $("#smob-root").val();	
-	var purge = $("#smob-purge").val();			
-	var client_uri = $("#smob-uri").val();
-	var client_twitter_login = $("#smob-twitter-login").val();
-	var client_twitter_pass = $("#smob-twitter-pass").val();
-	var auth = $('input[name=smob-auth]:checked').val()	
-		
-	$("#smob-config-pane-in").hide("normal");
-	$("#smob-config-pane-out").show("normal");
-	
-	$.get("ajax/install.php?cmd=setup-smob&smob_root="+urlencode(smob_root)+"&purge="+urlencode(purge)+"&client_uri="+urlencode(client_uri)+"&client_twitter_login="+urlencode(client_twitter_login)+"&client_twitter_pass="+urlencode(client_twitter_pass)+"&auth="+auth+getCacheBusterParam(), function(data){
-		$("#smob-config-pane-out").html(data);
-	});		
+  var smob_root = $("#smob-root").val();  
+  var purge = $("#smob-purge").val();      
+  var client_uri = $("#smob-uri").val();
+  var client_twitter_login = $("#smob-twitter-login").val();
+  var client_twitter_pass = $("#smob-twitter-pass").val();
+  var auth = $('input[name=smob-auth]:checked').val()  
+    
+  $("#smob-config-pane-in").hide("normal");
+  $("#smob-config-pane-out").show("normal");
+  
+  $.get("ajax/install.php?cmd=setup-smob&smob_root="+urlencode(smob_root)+"&purge="+urlencode(purge)+"&client_uri="+urlencode(client_uri)+"&client_twitter_login="+urlencode(client_twitter_login)+"&client_twitter_pass="+urlencode(client_twitter_pass)+"&auth="+auth+getCacheBusterParam(), function(data){
+    $("#smob-config-pane-out").html(data);
+  });    
 }*/
 
 function log(msg){
-	$("#console").text(msg);	
+  $("#console").text(msg);  
 }
 
 function setStep(msg){
-	$("#step").text(msg);	
+  $("#step").text(msg);  
 }
 
 function showStatus(){
-	$("#status").text(state + " of 6");	
+  $("#status").text(state + " of 6");  
 }
 
 function nextStep(){
-	if(state <= maxstate) state++;
-	else state = maxstate;
+  if(state <= maxstate) state++;
+  else state = maxstate;
 }
 
 // Helper functions
@@ -376,6 +376,6 @@ function urlencode(str) {
 }
 
 function getCacheBusterParam(){
-	// http://mousewhisperer.co.uk/js_page.html
-	return  "&rcb=" + parseInt(Math.random()*99999999); 
+  // http://mousewhisperer.co.uk/js_page.html
+  return  "&rcb=" + parseInt(Math.random()*99999999); 
 }

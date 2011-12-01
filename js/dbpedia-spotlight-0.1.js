@@ -21,16 +21,16 @@
     };
     
     function update(response) { 
-    	var content = $(response).find("div");  //the div with the annotated text
+      var content = $(response).find("div");  //the div with the annotated text
 
-    	if (settings.powered_by == 'yes') { 
-    		$(content).append($(powered_by)); 
-    	}; 
-    	
-    	var entities = $(content).find("a/[about]")    	
-    	
-    	$(this).replaceWith(content);  
-    	
+      if (settings.powered_by == 'yes') { 
+        $(content).append($(powered_by)); 
+      }; 
+      
+      var entities = $(content).find("a/[about]")      
+      
+      $(this).replaceWith(content);  
+      
     }
     
     
@@ -44,12 +44,12 @@
       var params = {'text': this.innerHTML, 'confidence': settings.confidence, 'support': settings.support };
       
       $.ajax({ 'url': settings.endpoint, 
-      	       'data': params,
-      	       'context': this,
-      	       'headers': {'Accept': 'application/xhtml+xml'},
-      	       'success': update
-      	     });
-	
+               'data': params,
+               'context': this,
+               'headers': {'Accept': 'application/xhtml+xml'},
+               'success': update
+             });
+  
     });
 
   };

@@ -3,12 +3,20 @@ RewriteEngine on
 RewriteBase /smob/
 
 RewriteRule ^post/(.*)$ index.php?t=post&u=$1 [L,QSA]
+
 RewriteRule ^user/(.*)$ index.php?t=user&u=$1 [L,QSA]
+
 RewriteRule ^me$ index.php?t=user [L,QSA]
+
+RewriteRule ^me/rss$ index.php?t=rss_owner [L,QSA]
+RewriteRule ^me/rssrdf$ index.php?t=rssrdf_owner [L,QSA]
+#RewriteRule ^me/private(.*)$ lib/smob/SMOBPrivacyTemplate.php [L,QSA]
+
 RewriteRule ^map$ index.php?t=map [L,QSA]
 RewriteRule ^replies$ index.php?t=userReplies [L,QSA]
 RewriteRule ^replies/(.*)$ index.php?t=replies&u=$1 [L,QSA]
 RewriteRule ^resource/(.*)$ index.php?t=resource&u=$1 [L,QSA]
+
 RewriteRule ^data/(.*)$ index.php?t=data&u=$1 [L,QSA]
 RewriteRule ^delete/(.*)$ index.php?t=delete&u=$1 [L,QSA]
 
@@ -17,12 +25,11 @@ RewriteRule ^followers$ index.php?t=followers [L,QSA]
 
 RewriteRule ^add/following/(.*)$ index.php?a=add&t=following&u=$1 [L,QSA]
 RewriteRule ^add/follower/(.*)$ index.php?a=add&t=follower&u=$1 [L,QSA]
+
+
 RewriteRule ^ping/following/(.*)$ index.php?a=add&t=following&u=$1 [L,QSA]
 RewriteRule ^ping/follower/(.*)$ index.php?a=add&t=follower&u=$1 [L,QSA]
 RewriteRule ^ping/item/(.*)$ index.php?a=add&t=item&u=$1 [L,QSA]
-
-RewriteRule ^me/rss$ index.php?t=rss_owner [L,QSA]
-RewriteRule ^me/rssrdf$ index.php?t=rssrdf_owner [L,QSA]
 
 RewriteRule ^remove/following/(.*)$ index.php?a=remove&t=following&u=$1 [L,QSA]
 RewriteRule ^remove/follower/(.*)$ index.php?a=remove&t=follower&u=$1 [L,QSA]
@@ -31,10 +38,18 @@ RewriteRule ^sparql(.*)$ index.php?t=sparql [L,QSA]
 
 RewriteRule ^callback(.*)$ index.php?t=callback [L,QSA]
 RewriteRule ^callbackrdf(.*)$ index.php?t=callbackrdf [L,QSA]
-#RewriteRule ^me/private(.*)$ lib/smob/SMOBPrivacyTemplate.php [L,QSA]
+
 RewriteRule ^private/edit(.*)$ index.php?t=private&a=edit [L,QSA]
 RewriteRule ^private(.*)$ index.php?t=private [L,QSA]
+
+RewriteRule ^privacy/add(.*)$ index.php?t=privacy&a=add [L,QSA]
+RewriteRule ^privacy/edit(.*)$ index.php?t=privacy&a=edit [L,QSA]
+RewriteRule ^privacy(.*)$ index.php?t=privacy [L,QSA]
+
 RewriteRule ^logout(.*)$ index.php?t=logout [L,QSA]
+
+RewriteRule ^test(.*)$ index.php?t=test [L,QSA]
+RewriteRule ^foaf(.*)$ index.php?t=foaf [L,QSA]
 
 RewriteRule ^feedrdf$ sparql?query=CONSTRUCT\%20\%7B\%20?s\%20?p\%20?o\%20.\%20\%7D\%20WHERE\%20\%7B\%20GRAPH\%20?g\%20\%7B\%20?s\%20?p\%20?o\%20.\%20\%7D\%7D
 
